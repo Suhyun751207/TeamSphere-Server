@@ -9,10 +9,10 @@ const repo =repository<profiles, profilesAutoSetKeys>({
 
 
 async function read(): Promise<profiles[]>;
-async function read(id:number): Promise<profiles|undefined>;
-async function read(id?:number ): Promise<profiles[]|profiles|undefined>{
-  if(!id) return repo.select();
-  return repo.select({userId:id})
+async function read(userId:number): Promise<profiles|undefined>;
+async function read(userId?:number ): Promise<profiles[]|profiles|undefined>{
+  if(!userId) return repo.select();
+  return repo.select({userId})
 }
 
 const profilesService={
