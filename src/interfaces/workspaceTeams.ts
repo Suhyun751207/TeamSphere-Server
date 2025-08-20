@@ -1,6 +1,7 @@
-export const workspaceTeamKeys=['id','workspaceId','managerId'] as const;
+export const workspaceTeamKeys=['id','name','workspaceId','managerId'] as const;
 export interface workspaceTeam {
   id: number;
+  name:string | null;
   workspaceId:number;
   managerId:number;
 }
