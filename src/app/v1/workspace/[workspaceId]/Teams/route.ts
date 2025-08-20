@@ -11,13 +11,14 @@ import teamIdRouter from "./[teamId]/route.ts";
 const teamRouter = Router({ mergeParams: true });
 teamRouter.use("/:teamId", teamIdRouter);
 
-// 팀의 대한 정보를 조회
+// 모든 팀의 대한 정보를 조회
 teamRouter.get('/', authenticateToken, checkWorkspaceAccess, catchAsyncErrors(async (req, res) => {
     const workspaceId = req.params.workspaceId;
     const team = await workspaceTeamService.read(Number(workspaceId));
     return res.status(200).json(team);
 }))
-// 팀 생성
+
+// 워크스페이스 관리자, 매니저 권한 가진 사람이 팀 생성
 teamRouter.post('/', authenticateToken, checkWorkspaceAdminOrManager, catchAsyncErrors(async (req, res) => {
     const name = req.body.name;
     const userId = req.user?.userId;
