@@ -1,5 +1,5 @@
-import { repository } from "mysql2-wizard";
-import { ActivityLogs, ActivityLogsAutoSetKeys, ActivityLogsKeys } from "../interfaces/ActivityLogs.ts";
+import { repository, ResultSetHeader } from "mysql2-wizard";
+import { ActivityLogs, ActivityLogsAutoSetKeys, ActivityLogsCreate, ActivityLogsKeys } from "../interfaces/ActivityLogs.ts";
 
 const repo =repository<ActivityLogs, ActivityLogsAutoSetKeys>({
   table: 'TeamSphere.activity_logs',
@@ -15,8 +15,23 @@ async function read(userId?:number ): Promise<ActivityLogs[]|ActivityLogs|undefi
   return repo.select({userId})
 }
 
+async function create(data:ActivityLogsCreate): Promise<ResultSetHeader>{
+  return repo.insert([data]);
+};
+
+async function update(userId:number,data:ActivityLogsCreate):Promise<ResultSetHeader>{
+  return repo.update([[{userId},data]])
+}
+
+async function _delete(userId:number):Promise<ResultSetHeader>{
+  return repo.delete([{userId}])
+}
+
 const activityLogsService={
   read,
+  create,
+  update,
+  delete: _delete,
 }
 
 export default activityLogsService;

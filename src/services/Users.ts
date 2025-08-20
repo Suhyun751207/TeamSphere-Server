@@ -1,5 +1,5 @@
-import { repository } from "mysql2-wizard";
-import { User, UserAutoSetKeys, userKeys } from "../interfaces/Users.ts";
+import { repository, ResultSetHeader } from "mysql2-wizard";
+import { User, UserAutoSetKeys, UserCreate, userKeys } from "../interfaces/Users.ts";
 
 const repo =repository<User, UserAutoSetKeys>({
   table: 'TeamSphere.users',
@@ -15,8 +15,24 @@ async function read(id?:number ): Promise<User[]|User|undefined>{
   return repo.select({id})
 }
 
+async function create(data:UserCreate): Promise<ResultSetHeader>{
+  return repo.insert([data]);
+};
+
+async function update(id:number,data:UserCreate):Promise<ResultSetHeader>{
+  return repo.update([[{id},data]])
+}
+
+async function _delete(id:number):Promise<ResultSetHeader>{
+  return repo.delete([{id}])
+}
+
+
 const userService={
   read,
+  create,
+  update,
+  delete: _delete,
 }
 
 export default userService;

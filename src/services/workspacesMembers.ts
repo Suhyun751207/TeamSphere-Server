@@ -1,5 +1,5 @@
-import { repository } from "mysql2-wizard";
-import { workspaceMemberKeys, workspaceMember, workspaceMemberAutoSetKeys } from "../interfaces/workspacesMembers.ts";
+import { repository, ResultSetHeader } from "mysql2-wizard";
+import { workspaceMemberKeys, workspaceMember, workspaceMemberAutoSetKeys, workspaceMemberCreate } from "../interfaces/workspacesMembers.ts";
 
 const repo =repository<workspaceMember, workspaceMemberAutoSetKeys>({
   table: 'TeamSphere.workspaces_members',
@@ -15,8 +15,23 @@ async function read(workspaceId?:number ): Promise<workspaceMember[]|workspaceMe
   return repo.select({workspaceId})
 }
 
+async function create(data:workspaceMemberCreate): Promise<ResultSetHeader>{
+  return repo.insert([data]);
+};
+
+async function update(id:number,data:workspaceMemberCreate):Promise<ResultSetHeader>{
+  return repo.update([[{id},data]])
+}
+
+async function _delete(id:number):Promise<ResultSetHeader>{
+  return repo.delete([{id}])
+}
+
 const workspaceMemberService={
   read,
+  create,
+  update,
+  delete: _delete,
 }
 
 export default workspaceMemberService;

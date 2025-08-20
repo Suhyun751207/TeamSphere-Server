@@ -1,5 +1,5 @@
-import { repository } from "mysql2-wizard";
-import { tasks, tasksAutoSetKeys, tasksKeys } from "../interfaces/Tasks.ts";
+import { repository, ResultSetHeader } from "mysql2-wizard";
+import { tasks, tasksAutoSetKeys, tasksCreate, tasksKeys } from "../interfaces/Tasks.ts";
 
 const repo =repository<tasks, tasksAutoSetKeys>({
   table: 'TeamSphere.tasks',
@@ -15,8 +15,23 @@ async function read(teamMemberId?:number ): Promise<tasks[]|tasks|undefined>{
   return repo.select({teamMemberId})
 }
 
+async function create(data:tasksCreate): Promise<ResultSetHeader>{
+  return repo.insert([data]);
+};
+
+async function update(teamMemberId:number,data:tasksCreate):Promise<ResultSetHeader>{
+  return repo.update([[{teamMemberId},data]])
+}
+
+async function _delete(teamMemberId:number):Promise<ResultSetHeader>{
+  return repo.delete([{teamMemberId}])
+}
+
 const tasksService={
   read,
+  create,
+  update,
+  delete: _delete,
 }
 
 export default tasksService;
