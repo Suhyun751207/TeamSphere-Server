@@ -3,6 +3,7 @@ import express from "express";
 import { createServer } from "http";
 import route from "./route.ts";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 
 (async () => {
     const app = express();
@@ -17,6 +18,7 @@ import cors from "cors";
             credentials: true,
         })
     );
+    app.use(cookieParser());
     app.use(express.json());
 
     app.use("/", route);
