@@ -86,6 +86,7 @@ CREATE TABLE workspace_team_users
 CREATE TABLE workspace_teams
 (
   id           INT NOT NULL auto_increment,
+  name         varchar(72),
   workspace_id INT NOT NULL,
   manager_id   INT NOT NULL,
   PRIMARY KEY (id)
