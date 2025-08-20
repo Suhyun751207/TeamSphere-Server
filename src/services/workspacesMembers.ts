@@ -19,6 +19,11 @@ async function readByUserId(userId: number): Promise<workspaceMember[]> {
   return repo.select({userId});
 }
 
+async function readByWorkspacesIdUserId(workspaceId: number, userId: number): Promise<workspaceMember[]> {
+  return repo.select({workspaceId, userId});
+}
+
+
 async function create(data:workspaceMemberCreate): Promise<ResultSetHeader>{
   return repo.insert([data]);
 };
@@ -34,6 +39,7 @@ async function _delete(userId:number):Promise<ResultSetHeader>{
 const workspaceMemberService={
   read,
   readByUserId,
+  readByWorkspacesIdUserId,
   create,
   update,
   delete: _delete,
