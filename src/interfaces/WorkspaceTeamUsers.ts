@@ -3,8 +3,8 @@ import { WorkspaceRole } from "../services/ENUM/workspace_roles_enum.ts";
 export const userKeys = ['id', 'memberId', 'teamId', 'role', 'createdAt', 'updatedAt'] as const;
 export interface User {
   id: number;
-  memberId: string;
-  teamId: string;
+  memberId: number;
+  teamId: number;
   role: WorkspaceRole;
   createdAt: Date;
   updatedAt: Date;
