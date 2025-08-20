@@ -9,10 +9,10 @@ const repo =repository<workspaceTeam, workspaceTeamAutoSetKeys>({
 
 
 async function read(): Promise<workspaceTeam[]>;
-async function read(workspaceId:number): Promise<workspaceTeam|undefined>;
-async function read(workspaceId?:number ): Promise<workspaceTeam[]|workspaceTeam|undefined>{
-  if(!workspaceId) return repo.select();
-  return repo.select({workspaceId})
+async function read(id:number): Promise<workspaceTeam|undefined>;
+async function read(id?:number ): Promise<workspaceTeam[]|workspaceTeam|undefined>{
+  if(!id) return repo.select();
+  return repo.select({id})
 }
 
 async function create(data:workspaceTeamCreate): Promise<ResultSetHeader>{
