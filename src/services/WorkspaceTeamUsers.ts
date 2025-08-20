@@ -9,10 +9,14 @@ const repo =repository<User, UserAutoSetKeys>({
 
 
 async function read(): Promise<User[]>;
-async function read(memberId:string): Promise<User|undefined>;
-async function read(memberId?:string ): Promise<User[]|User|undefined>{
+async function read(memberId:number): Promise<User|undefined>;
+async function read(memberId?:number ): Promise<User[]|User|undefined>{
   if(!memberId) return repo.select();
   return repo.select({memberId})
+}
+
+async function readByTeamId(teamId:number): Promise<User[]>{
+  return repo.select({teamId})
 }
 
 async function create(data:UserCreate): Promise<ResultSetHeader>{
@@ -29,6 +33,7 @@ async function _delete(id:number):Promise<ResultSetHeader>{
 
 const workspaceTeamUsersService={
   read,
+  readByTeamId,
   create,
   update,
   delete: _delete,
