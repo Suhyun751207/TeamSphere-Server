@@ -5,13 +5,15 @@ import { checkTeamAdminOrManager, checkTeamMember } from "../../../../../../midd
 import workspaceTeamService from "../../../../../../services/workspaceTeams.ts";
 import { isWorkspaceTeamCreate } from "../../../../../../interfaces/guard/workspaceTeams.guard.ts";
 import workspaceTeamUsersService from "../../../../../../services/WorkspaceTeamUsers.ts";
+import teamIdMemberRouter from "./member/route.ts";
 
 const teamIdRouter = Router({ mergeParams: true });
+teamIdRouter.use("/members", teamIdMemberRouter);
 
 // 특정 팀 조회
 teamIdRouter.get('/', authenticateToken, checkTeamMember, catchAsyncErrors(async (req, res) => {
     const teamId = Number(req.params.teamId);
-    const team = await workspaceTeamService.read(teamId);
+    const team = await workspaceTeamService.readId(teamId);
     const teamMember = await workspaceTeamUsersService.readByTeamId(teamId);
     return res.status(200).json({team, teamMember});
 })) 

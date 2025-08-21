@@ -9,9 +9,13 @@ const repo =repository<workspaceTeam, workspaceTeamAutoSetKeys>({
 
 
 async function read(): Promise<workspaceTeam[]>;
-async function read(id:number): Promise<workspaceTeam|undefined>;
-async function read(id?:number ): Promise<workspaceTeam[]|workspaceTeam|undefined>{
-  if(!id) return repo.select();
+async function read(workspaceId:number): Promise<workspaceTeam|undefined>;
+async function read(workspaceId?:number ): Promise<workspaceTeam[]|workspaceTeam|undefined>{
+  if(!workspaceId) return repo.select();
+  return repo.select({workspaceId})
+}
+
+async function readId(id:number): Promise<workspaceTeam[]|workspaceTeam|undefined>{
   return repo.select({id})
 }
 
@@ -23,12 +27,13 @@ async function update(id:number,data:workspaceTeamCreate):Promise<ResultSetHeade
   return repo.update([[{id},data]])
 }
 
-async function _delete(id:number):Promise<ResultSetHeader>{
-  return repo.delete([{id}])
+async function _delete(workspaceId:number):Promise<ResultSetHeader>{
+  return repo.delete([{workspaceId}])
 }
 
 const workspaceTeamService={
   read,
+  readId,
   create,
   update,
   delete: _delete,

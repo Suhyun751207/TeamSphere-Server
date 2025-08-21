@@ -33,9 +33,14 @@ workspaceIdMemberRouter.post("/", authenticateToken, checkWorkspaceAdminOrManage
     const workspaceId = Number(req.params.workspaceId);
     const data = {...body, workspaceId};
     if (!isWorkspaceMemberCreate(data)) return res.status(400).json({ message: isWorkspaceMemberCreate.message(data) });
-    const userId = req.user?.userId;
+    const userId = req.body.userId;
     const role = data.role;
     if (!role) return res.status(400).json({ message: "role is required" });
+    const existingMembers = await workspaceMemberService.read(workspaceId) as unknown as workspaceMember[];
+    const isUserAlreadyMember = existingMembers.some((member: workspaceMember) => member.userId === userId);
+    if (isUserAlreadyMember) {
+        return res.status(400).json({ message: "이미 존재하는 유저입니다." });
+    }
     const workspaceMemberResult = await workspaceMemberService.create({workspaceId, userId: userId!, role});
     return res.status(201).json(workspaceMemberResult);
 }));
