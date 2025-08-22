@@ -1,0 +1,16 @@
+{
+	"compilerOptions": {
+	  "target": "es2022",             // 최신 JS 문법
+	  "module": "nodenext",           // ✅ nodenext로 설정
+	  "moduleResolution": "nodenext", // ✅ 모듈 해석 방식도 nodenext
+	  "esModuleInterop": true,        
+	  "forceConsistentCasingInFileNames": true,
+	  "strict": true,
+	  "skipLibCheck": true,
+	  "preserveValueImports": false,
+	  "outDir": "./build",
+	  "noEmit": true,                  // ts-node 실행용 → 빌드 X
+	  "allowImportingTsExtensions": true
+	}
+  }
+  

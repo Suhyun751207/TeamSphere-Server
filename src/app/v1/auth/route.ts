@@ -1,10 +1,10 @@
 import { Router } from "express";
-import catchAsyncErrors from "../../../utils/catchAsyncErrors.ts";
-import authService from "../../../services/Auth.ts";
-import { setTokenCookie, clearTokenCookie } from "../../../utils/jwt.ts";
-import { authenticateToken } from "../../../middleware/auth.ts";
-import { isUserCreate } from "../../../interfaces/guard/Users.guard.ts";
-import profilesService from "../../../services/Profiles.ts";
+import catchAsyncErrors from "@utils/catchAsyncErrors.ts";
+import authService from "@services/Auth.ts";
+import { setTokenCookie, clearTokenCookie } from "@utils/jwt.ts";
+import { authenticateToken } from "@middleware/auth.ts";
+import { isUserCreate } from "@interfaces/guard/Users.guard.ts";
+import profilesService from "@services/Profiles.ts";
 
 const authRouter = Router({ mergeParams: true });
 

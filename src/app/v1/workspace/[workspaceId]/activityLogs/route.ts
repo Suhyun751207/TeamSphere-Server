@@ -1,10 +1,10 @@
 import { Router } from "express";
-import catchAsyncErrors from "../../../../../utils/catchAsyncErrors.ts";
-import { authenticateToken } from "../../../../../middleware/auth.ts";
-import { checkWorkspaceAccess } from "../../../../../middleware/workspaceAuth.ts";
-import activityLogsService from "../../../../../services/ActivityLogs.ts";
-import { isActivityLogsCreate } from "../../../../../interfaces/guard/ActivityLogs.guard.ts";
-import workspaceMemberService from "../../../../../services/workspacesMembers.ts";
+import catchAsyncErrors from "@utils/catchAsyncErrors.ts";
+import { authenticateToken } from "@middleware/auth.ts";
+import { checkWorkspaceAccess } from "@middleware/workspaceAuth.ts";
+import activityLogsService from "@services/ActivityLogs.ts";
+import { isActivityLogsCreate } from "@interfaces/guard/ActivityLogs.guard.ts";
+import workspaceMemberService from "@services/workspacesMembers.ts";
 
 const activityLogsRouter = Router({ mergeParams: true });
 

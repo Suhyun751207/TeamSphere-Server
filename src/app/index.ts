@@ -4,7 +4,7 @@ import { createServer } from "http";
 import route from "./route.ts";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import connectDB from "../config/database.js";
+import connectDB from "@config/database.ts";
 
 (async () => {
     await connectDB();

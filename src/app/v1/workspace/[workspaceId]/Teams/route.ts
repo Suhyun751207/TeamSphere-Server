@@ -1,11 +1,11 @@
 import { Router } from "express";
-import catchAsyncErrors from "../../../../../utils/catchAsyncErrors.ts";
-import { authenticateToken } from "../../../../../middleware/auth.ts";
-import { checkWorkspaceAccess, checkWorkspaceAdminOrManager } from "../../../../../middleware/workspaceAuth.ts";
-import workspaceTeamService from "../../../../../services/workspaceTeams.ts";
-import { isWorkspaceTeamCreate } from "../../../../../interfaces/guard/workspaceTeams.guard.ts";
-import workspaceTeamUsersService from "../../../../../services/WorkspaceTeamUsers.ts";
-import workspaceMemberService from "../../../../../services/workspacesMembers.ts";
+import catchAsyncErrors from "@utils/catchAsyncErrors.ts";
+import { authenticateToken } from "@middleware/auth.ts";
+import { checkWorkspaceAccess, checkWorkspaceAdminOrManager } from "@middleware/workspaceAuth.ts";
+import workspaceTeamService from "@services/workspaceTeams.ts";
+import { isWorkspaceTeamCreate } from "@interfaces/guard/workspaceTeams.guard.ts";
+import workspaceTeamUsersService from "@services/WorkspaceTeamUsers.ts";
+import workspaceMemberService from "@services/workspacesMembers.ts";
 import teamIdRouter from "./[teamId]/route.ts";
 
 const teamRouter = Router({ mergeParams: true });

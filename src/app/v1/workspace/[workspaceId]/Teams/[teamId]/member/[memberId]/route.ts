@@ -1,12 +1,12 @@
 import { Router } from "express";
-import catchAsyncErrors from "../../../../../../../../utils/catchAsyncErrors.ts";
-import { authenticateToken } from "../../../../../../../../middleware/auth.ts";
-import { checkTeamAdminOrManager, checkTeamMember } from "../../../../../../../../middleware/workspaceAuth.ts";
-import workspaceTeamUsersService from "../../../../../../../../services/WorkspaceTeamUsers.ts";
-import { isWorkspaceTeamUserCreate } from "../../../../../../../../interfaces/guard/WorkspaceTeamUsers.guard.ts";
-import { WorkspaceRole } from "../../../../../../../../services/ENUM/workspace_roles_enum.ts";
-import workspaceMemberService from "../../../../../../../../services/workspacesMembers.ts";
-import profilesService from "../../../../../../../../services/Profiles.ts";
+import catchAsyncErrors from "@utils/catchAsyncErrors.ts";
+import { authenticateToken } from "@middleware/auth.ts";
+import { checkTeamAdminOrManager, checkTeamMember } from "@middleware/workspaceAuth.ts";
+import workspaceTeamUsersService from "@services/WorkspaceTeamUsers.ts";
+import { isWorkspaceTeamUserCreate } from "@interfaces/guard/WorkspaceTeamUsers.guard.ts";
+import { WorkspaceRole } from "@services/ENUM/workspace_roles_enum.ts";
+import workspaceMemberService from "@services/workspacesMembers.ts";
+import profilesService from "@services/Profiles.ts";
 import taskRouter from "./tasks/route.ts";
 
 const teamIdMemberIdRouter = Router({ mergeParams: true });

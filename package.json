@@ -3,9 +3,8 @@
   "description": "TeamSphere Backend Server - Real-time Collaboration SaaS Dashboard",
   "main": "src/app/index.ts",
   "version": "1.0.0",
-  "type": "module",
   "scripts": {
-    "dev": "nodemon --watch src --ext ts --exec \"node --loader ts-node/esm ./src/app/index.ts\"",
+    "dev": "nodemon --watch src --ext ts --exec \"ts-node -r tsconfig-paths/register ./src/app/index.ts\"",
     "build": "tsc",
     "start": "node src/app/index.js",
     "test": "jest"
@@ -21,6 +20,7 @@
   "dependencies": {
     "@types/cookie-parser": "^1.4.9",
     "@types/mongoose": "^5.11.96",
+    "@types/uuid": "^10.0.0",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
@@ -34,7 +34,8 @@
     "nodemon": "^3.1.10",
     "socket.io": "^4.7.2",
     "tspec": "^0.1.112",
-    "type-wizard": "^1.0.19"
+    "type-wizard": "^1.0.19",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
@@ -47,6 +48,7 @@
     "ts-jest": "^29.1.1",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.9.2"
   }
 }

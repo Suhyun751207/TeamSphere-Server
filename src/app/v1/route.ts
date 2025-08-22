@@ -1,5 +1,5 @@
 import { Router } from "express";
-import catchAsyncErrors from "../../utils/catchAsyncErrors.ts";
+import catchAsyncErrors from "@utils/catchAsyncErrors.ts";
 import authRouter from "./auth/route.ts";
 import workspaceRouter from "./workspace/router.ts";
 const v1Router = Router();

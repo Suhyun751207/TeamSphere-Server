@@ -1,10 +1,10 @@
 import { Router } from "express";
-import catchAsyncErrors from "../../../../utils/catchAsyncErrors.ts";
-import { isWorkspaceCreate } from "../../../../interfaces/guard/workspaces.guard.ts";
-import workspaceService from "../../../../services/workspaces.ts";
-import { authenticateToken } from "../../../../middleware/auth.ts";
-import { checkWorkspaceAccess, checkWorkspaceAdminOrManager } from "../../../../middleware/workspaceAuth.ts";
-import workspaceMemberService from "../../../../services/workspacesMembers.ts";
+import catchAsyncErrors from "@utils/catchAsyncErrors.ts";
+import { isWorkspaceCreate } from "@interfaces/guard/workspaces.guard.ts";
+import workspaceService from "@services/workspaces.ts";
+import { authenticateToken } from "@middleware/auth.ts";
+import { checkWorkspaceAccess, checkWorkspaceAdminOrManager } from "@middleware/workspaceAuth.ts";
+import workspaceMemberService from "@services/workspacesMembers.ts";
 import workspaceIdMemberRouter from "./members/route.ts";
 import activityLogsRouter from "./activityLogs/route.ts";
 import teamRouter from "./Teams/route.ts";

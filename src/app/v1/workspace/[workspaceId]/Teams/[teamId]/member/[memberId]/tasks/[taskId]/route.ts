@@ -1,13 +1,13 @@
 import { Router } from "express";
-import catchAsyncErrors from "../../../../../../../../../../utils/catchAsyncErrors.ts";
-import { authenticateToken } from "../../../../../../../../../../middleware/auth.ts";
-import { checkTeamAdminOrManager, checkTeamMember } from "../../../../../../../../../../middleware/workspaceAuth.ts";
-import tasksService from "../../../../../../../../../../services/Tasks.ts";
-import workspaceTeamUsersService from "../../../../../../../../../../services/WorkspaceTeamUsers.ts";
-import { isTasksCreate } from "../../../../../../../../../../interfaces/guard/Tasks.guard.ts";
+import catchAsyncErrors from "@utils/catchAsyncErrors.ts";
+import { authenticateToken } from "@middleware/auth.ts";
+import { checkTeamAdminOrManager, checkTeamMember } from "@middleware/workspaceAuth.ts";
+import tasksService from "@services/Tasks.ts";
+import workspaceTeamUsersService from "@services/WorkspaceTeamUsers.ts";
+import { isTasksCreate } from "@interfaces/guard/Tasks.guard.ts";
 
-import { TaskPriority } from "../../../../../../../../../../services/ENUM/task_priority_enum.ts";
-import { TaskState } from "../../../../../../../../../../services/ENUM/task_states_enum.ts";
+import { TaskPriority } from "@services/ENUM/task_priority_enum.ts";
+import { TaskState } from "@services/ENUM/task_states_enum.ts";
 
 const taskIdRouter = Router({ mergeParams: true });
 
