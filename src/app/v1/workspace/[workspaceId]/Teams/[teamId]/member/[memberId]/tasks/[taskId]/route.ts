@@ -22,10 +22,8 @@ taskIdRouter.get('/', authenticateToken, checkTeamMember, catchAsyncErrors(async
 }));
 
 taskIdRouter.patch('/', authenticateToken, checkTeamMember, catchAsyncErrors(async (req, res) => {
-    const teamId = Number(req.params.teamId);
-    const memberId = Number(req.params.memberId);
-    const taskId = Number(req.params.taskId);
-    const teamInfo = await workspaceTeamUsersService.readMemberIdAndTeamId(memberId, teamId);
+    const { teamId, memberId, taskId } = req.params;
+    const teamInfo = await workspaceTeamUsersService.readMemberIdAndTeamId(Number(memberId), Number(teamId));
     if (!teamInfo || teamInfo.length === 0) {
         return res.status(400).json({ message: "team task 수정 실패" });
     }
@@ -35,7 +33,7 @@ taskIdRouter.patch('/', authenticateToken, checkTeamMember, catchAsyncErrors(asy
     const data = { state, priority, task };
     if (!isTasksCreate(data)) return res.status(400).json({ message: isTasksCreate.message(data) });
 
-    const result = await tasksService.update(taskId, data);
+    const result = await tasksService.update(Number(taskId), data);
     return res.status(200).json(result);
 }));
 
