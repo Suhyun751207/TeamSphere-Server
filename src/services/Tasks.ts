@@ -19,8 +19,8 @@ async function create(data:tasksCreate): Promise<ResultSetHeader>{
   return repo.insert([data]);
 };
 
-async function update(teamMemberId:number,data:tasksCreate):Promise<ResultSetHeader>{
-  return repo.update([[{teamMemberId},data]])
+async function update(id:number,data:tasksCreate):Promise<ResultSetHeader>{
+  return repo.update([[{id},data]])
 }
 
 async function _delete(teamMemberId:number):Promise<ResultSetHeader>{
