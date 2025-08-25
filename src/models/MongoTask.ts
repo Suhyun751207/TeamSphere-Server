@@ -5,7 +5,6 @@ export interface MongoTaskDocument extends Omit<MongoTask, 'id'>, Document {
   id: number;
 }
 
-// Auto-increment 플러그인을 위한 카운터 스키마
 const counterSchema = new Schema({
   _id: { type: String, required: true },
   seq: { type: Number, default: 0 }
@@ -50,7 +49,6 @@ const MongoTaskSchema = new Schema<MongoTaskDocument>({
   versionKey: false
 });
 
-// Auto-increment 미들웨어
 MongoTaskSchema.pre('save', async function(next) {
   if (this.isNew) {
     try {
@@ -67,7 +65,6 @@ MongoTaskSchema.pre('save', async function(next) {
   next();
 });
 
-// 인덱스 설정
 MongoTaskSchema.index({ task_id: 1 });
 MongoTaskSchema.index({ created_at: -1 });
 MongoTaskSchema.index({ tags: 1 });

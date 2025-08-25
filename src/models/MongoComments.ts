@@ -5,7 +5,6 @@ export interface MongoCommentsDocument extends Omit<MongoComments, 'id'>, Docume
   id: number;
 }
 
-// Counter 모델 import (MongoTask.ts에서 정의된 것을 재사용)
 import { Counter } from '@models/MongoTask.ts';
 
 const MongoCommentsSchema = new Schema<MongoCommentsDocument>({
@@ -41,7 +40,6 @@ const MongoCommentsSchema = new Schema<MongoCommentsDocument>({
   versionKey: false
 });
 
-// Auto-increment 미들웨어
 MongoCommentsSchema.pre('save', async function(next) {
   if (this.isNew) {
     try {
@@ -58,7 +56,6 @@ MongoCommentsSchema.pre('save', async function(next) {
   next();
 });
 
-// 인덱스 설정
 MongoCommentsSchema.index({ task_id: 1, created_at: -1 });
 MongoCommentsSchema.index({ member_id: 1, created_at: -1 });
 MongoCommentsSchema.index({ parent_id: 1, created_at: 1 });
