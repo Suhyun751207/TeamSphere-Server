@@ -10,6 +10,7 @@ declare global {
 }
 
 export const authenticateToken = (req: Request, res: Response, next: NextFunction): void => {
+  // 현재 로그인 중인 사용자의 정보를 확인하여 req.user에 저장
   try {
     const token = req.cookies?.accesstoken;
 
@@ -33,6 +34,7 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
 };
 
 export const optionalAuth = (req: Request, _res: Response, next: NextFunction): void => {
+  // 현재 로그인 중인 사용자의 정보를 확인하여 req.user에 저장
   try {
     const token = req.cookies?.accesstoken;
 

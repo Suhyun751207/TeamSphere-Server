@@ -3,6 +3,7 @@ import workspaceMemberService from '../services/workspacesMembers.ts';
 import workspaceTeamUsersService from '../services/WorkspaceTeamUsers.ts';
 
 export const checkWorkspaceAccess = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  // 현재 로그인 중인 사용자의 정보를 확인하여 req.user에 저장
   try {
     const userId = req.user?.userId;
     const workspaceId = Number(req.params.workspaceId);
@@ -45,6 +46,7 @@ export const checkWorkspaceAccess = async (req: Request, res: Response, next: Ne
 };
 
 export const checkWorkspaceAdminOrManager = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  // 현재 로그인 중인 사용자의 정보를 확인하여 req.user에 저장
   try {
     const userId = req.user?.userId;
     const workspaceId = Number(req.params.workspaceId);
@@ -96,6 +98,7 @@ export const checkWorkspaceAdminOrManager = async (req: Request, res: Response, 
 };
 
 export const checkTeamAdminOrManager = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  // 현재 로그인 중인 사용자의 정보를 확인하여 req.user에 저장
   try {
     const userId = req.user?.userId;
     const workspaceId = Number(req.params.workspaceId);
