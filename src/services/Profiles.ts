@@ -15,6 +15,12 @@ async function read(userId?:number ): Promise<profiles[]|profiles|undefined>{
   return repo.select({userId})
 }
 
+async function readById(id: number): Promise<profiles | undefined> {
+  const rows = await repo.select({ userId: id });
+  return rows[0];
+}
+
+
 async function create(data:profilesCreate): Promise<ResultSetHeader>{
   return repo.insert([data]);
 };
@@ -30,6 +36,7 @@ async function _delete(userId:number):Promise<ResultSetHeader>{
 
 const profilesService={
   read,
+  readById,
   create,
   update,
   delete: _delete,
