@@ -1,38 +1,23 @@
 export const mongoCommentsKeys = [
-  '_id',
-  'taskId',
-  'userId',
+  'id',
+  'task_id',
+  'member_id',
+  'parent_id',
   'content',
-  'parentCommentId',
-  'mentions',
-  'attachments',
-  'isEdited',
-  'editHistory',
-  'createdAt',
-  'updatedAt'
+  'created_at',
+  'updated_at'
 ] as const;
 
 export interface MongoComments {
-  taskId: string; // MongoTask의 _id 참조
-  userId: number; // MySQL users 테이블의 id 참조
+  id: number; // auto_increment ID
+  task_id: number; // MongoTask의 id 참조 (FK)
+  member_id: number; // MySQL users 테이블의 id 참조
+  parent_id?: number | null; // 대댓글을 위한 부모 댓글 ID
   content: string;
-  parentCommentId?: string; // 대댓글을 위한 부모 댓글 ID
-  mentions?: number[]; // 멘션된 사용자 ID 배열
-  attachments?: {
-    fileName: string;
-    fileUrl: string;
-    fileSize: number;
-    uploadedAt: Date;
-  }[];
-  isEdited: boolean;
-  editHistory?: {
-    content: string;
-    editedAt: Date;
-  }[];
-  createdAt: Date;
-  updatedAt: Date;
+  created_at: Date;
+  updated_at: Date;
 }
 
-export type MongoCommentsAutoSetKeys = "createdAt" | "updatedAt" | "isEdited";
+export type MongoCommentsAutoSetKeys = "id" | "created_at" | "updated_at";
 export interface MongoCommentsCreate extends Omit<MongoComments, MongoCommentsAutoSetKeys> {}
-export interface MongoCommentsUpdate extends Partial<Omit<MongoComments, MongoCommentsAutoSetKeys | "taskId" | "userId">> {}
+export interface MongoCommentsUpdate extends Partial<Omit<MongoComments, MongoCommentsAutoSetKeys | "task_id" | "member_id" | "parent_id">> {}

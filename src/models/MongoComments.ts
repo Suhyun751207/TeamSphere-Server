@@ -1,61 +1,66 @@
 import mongoose, { Schema, Document } from 'mongoose';
 import { MongoComments } from '@interfaces/MongoComments.ts';
 
-export interface MongoCommentsDocument extends Omit<MongoComments, '_id'>, Document {}
+export interface MongoCommentsDocument extends Omit<MongoComments, 'id'>, Document {
+  id: number;
+}
 
-const AttachmentSchema = new Schema({
-  fileName: { type: String, required: true },
-  fileUrl: { type: String, required: true },
-  fileSize: { type: Number, required: true },
-  uploadedAt: { type: Date, default: Date.now }
-}, { _id: false });
-
-const EditHistorySchema = new Schema({
-  content: { type: String, required: true },
-  editedAt: { type: Date, default: Date.now }
-}, { _id: false });
+// Counter 모델 import (MongoTask.ts에서 정의된 것을 재사용)
+import { Counter } from '@models/MongoTask.ts';
 
 const MongoCommentsSchema = new Schema<MongoCommentsDocument>({
-  taskId: { 
-    type: String, 
-    required: true,
-    index: true 
+  id: { 
+    type: Number, 
+    unique: true,
+    index: true
   },
-  userId: { 
+  task_id: { 
     type: Number, 
     required: true,
     index: true 
+  },
+  member_id: { 
+    type: Number, 
+    required: true,
+    index: true 
+  },
+  parent_id: { 
+    type: Number,
+    index: true,
+    default: null
   },
   content: { 
     type: String, 
     required: true,
     trim: true,
     maxlength: 1000
-  },
-  parentCommentId: { 
-    type: String,
-    index: true,
-    default: null
-  },
-  mentions: [{ 
-    type: Number,
-    index: true
-  }],
-  attachments: [AttachmentSchema],
-  isEdited: { 
-    type: Boolean, 
-    default: false 
-  },
-  editHistory: [EditHistorySchema]
+  }
 }, {
-  timestamps: true,
-  collection: 'comments'
+  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  collection: 'comments',
+  versionKey: false
+});
+
+// Auto-increment 미들웨어
+MongoCommentsSchema.pre('save', async function(next) {
+  if (this.isNew) {
+    try {
+      const counter = await Counter.findByIdAndUpdate(
+        'comment_id',
+        { $inc: { seq: 1 } },
+        { new: true, upsert: true }
+      ) as any;
+      this.id = counter?.seq || 1;
+    } catch (error) {
+      return next(error as Error);
+    }
+  }
+  next();
 });
 
 // 인덱스 설정
-MongoCommentsSchema.index({ taskId: 1, createdAt: -1 });
-MongoCommentsSchema.index({ userId: 1, createdAt: -1 });
-MongoCommentsSchema.index({ parentCommentId: 1, createdAt: 1 });
-MongoCommentsSchema.index({ mentions: 1 });
+MongoCommentsSchema.index({ task_id: 1, created_at: -1 });
+MongoCommentsSchema.index({ member_id: 1, created_at: -1 });
+MongoCommentsSchema.index({ parent_id: 1, created_at: 1 });
 
 export const MongoCommentsModel = mongoose.model<MongoCommentsDocument>('Comments', MongoCommentsSchema);

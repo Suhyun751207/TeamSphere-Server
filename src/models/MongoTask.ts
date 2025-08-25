@@ -1,19 +1,25 @@
 import mongoose, { Schema, Document } from 'mongoose';
 import { MongoTask } from '@interfaces/MongoTask.ts';
-import { task_states_enum } from '@services/ENUM/task_states_enum.ts';
-import { task_priority_enum } from '@services/ENUM/task_priority_enum.ts';
 
-export interface MongoTaskDocument extends Omit<MongoTask, '_id'>, Document {}
+export interface MongoTaskDocument extends Omit<MongoTask, 'id'>, Document {
+  id: number;
+}
 
-const AttachmentSchema = new Schema({
-  fileName: { type: String, required: true },
-  fileUrl: { type: String, required: true },
-  fileSize: { type: Number, required: true },
-  uploadedAt: { type: Date, default: Date.now }
-}, { _id: false });
+// Auto-increment 플러그인을 위한 카운터 스키마
+const counterSchema = new Schema({
+  _id: { type: String, required: true },
+  seq: { type: Number, default: 0 }
+});
+
+const Counter = mongoose.model('Counter', counterSchema);
 
 const MongoTaskSchema = new Schema<MongoTaskDocument>({
-  workspaceTeamUserId: { 
+  id: { 
+    type: Number, 
+    unique: true,
+    index: true
+  },
+  task_id: { 
     type: Number, 
     required: true,
     index: true 
@@ -22,53 +28,49 @@ const MongoTaskSchema = new Schema<MongoTaskDocument>({
     type: String, 
     required: true,
     trim: true,
-    maxlength: 200
+    maxlength: 128
   },
-  description: { 
+  content: { 
     type: String, 
     trim: true,
-    maxlength: 2000
-  },
-  state: { 
-    type: String, 
-    required: true,
-    enum: task_states_enum,
-    default: 'To Do'
-  },
-  priority: { 
-    type: String, 
-    required: true,
-    enum: task_priority_enum,
-    default: 'Medium'
-  },
-  dueDate: { 
-    type: Date,
-    index: true
-  },
-  assignedTo: [{ 
-    type: Number,
-    index: true
-  }],
-  createdBy: { 
-    type: Number, 
-    required: true,
-    index: true
+    maxlength: 2048
   },
   tags: [{ 
     type: String,
     trim: true,
     maxlength: 50
   }],
-  attachments: [AttachmentSchema]
+  attachments_path: [{ 
+    type: String,
+    trim: true
+  }]
 }, {
-  timestamps: true,
-  collection: 'tasks'
+  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  collection: 'tasks',
+  versionKey: false
+});
+
+// Auto-increment 미들웨어
+MongoTaskSchema.pre('save', async function(next) {
+  if (this.isNew) {
+    try {
+      const counter = await Counter.findByIdAndUpdate(
+        'task_id',
+        { $inc: { seq: 1 } },
+        { new: true, upsert: true }
+      );
+      this.id = counter.seq;
+    } catch (error) {
+      return next(error as Error);
+    }
+  }
+  next();
 });
 
 // 인덱스 설정
-MongoTaskSchema.index({ workspaceTeamUserId: 1, state: 1 });
-MongoTaskSchema.index({ assignedTo: 1, dueDate: 1 });
-MongoTaskSchema.index({ createdBy: 1, createdAt: -1 });
+MongoTaskSchema.index({ task_id: 1 });
+MongoTaskSchema.index({ created_at: -1 });
 MongoTaskSchema.index({ tags: 1 });
 
 export const MongoTaskModel = mongoose.model<MongoTaskDocument>('Task', MongoTaskSchema);
+export { Counter };

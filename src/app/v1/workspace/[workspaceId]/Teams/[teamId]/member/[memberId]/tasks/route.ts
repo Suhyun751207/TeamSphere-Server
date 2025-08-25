@@ -9,12 +9,12 @@ import { isTasksCreate } from "@interfaces/guard/Tasks.guard.ts";
 import { TaskPriority } from "@services/ENUM/task_priority_enum.ts";
 import { TaskState } from "@services/ENUM/task_states_enum.ts";
 
-import taskIdRouter from "./[taskId]/route.ts";
+import tasksIdRouter from "./[taskId]/route.ts";
 
-const taskRouter = Router({ mergeParams: true });
-taskRouter.use('/:taskId', taskIdRouter);
+const tasksRouter = Router({ mergeParams: true });
+tasksRouter.use('/:tasksId', tasksIdRouter);
 
-taskRouter.get('/', authenticateToken, checkTeamMember, catchAsyncErrors(async (req, res) => {
+tasksRouter.get('/', authenticateToken, checkTeamMember, catchAsyncErrors(async (req, res) => {
     const teamId = Number(req.params.teamId);
     const memberId = Number(req.params.memberId);
     const results = await workspaceTeamUsersService.readMemberIdAndTeamId(memberId, teamId);
@@ -24,7 +24,7 @@ taskRouter.get('/', authenticateToken, checkTeamMember, catchAsyncErrors(async (
     return res.status(200).json(result);
 }))
 
-taskRouter.post('/', authenticateToken, checkTeamMember, catchAsyncErrors(async (req, res) => {
+tasksRouter.post('/', authenticateToken, checkTeamMember, catchAsyncErrors(async (req, res) => {
     const memberId = Number(req.params.memberId);
     const teamId = Number(req.params.teamId);
     const teamInfo = await workspaceTeamUsersService.readMemberIdAndTeamId(memberId, teamId);
@@ -40,4 +40,4 @@ taskRouter.post('/', authenticateToken, checkTeamMember, catchAsyncErrors(async 
     return res.status(200).json(result);
 }));
 
-export default taskRouter;
+export default tasksRouter;
