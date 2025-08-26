@@ -1,17 +1,32 @@
 import mongoose, { Schema, Document } from 'mongoose';
-import { Messages } from '@interfaces/Messages.ts';
-import { Message } from '@interfaces/Message.ts';
+import { MongoMessages } from '../interfaces/MongoMessages';
+import { MongoRooms } from '../interfaces/MongoRooms';
 
-export interface MessagesDocument extends Omit<Messages, 'id'>, Document {
+export interface MessagesDocument extends Document {
   id: number;
+  type: 'dm' | 'workspace' | 'team';
+  chatId: number;
+  participants: number[];
+  name?: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-export interface MessageDocument extends Omit<Message, 'id'>, Document {
+export interface MessageDocument extends Document {
   id: number;
+  messagesId: number;
+  userId: number;
+  content: string;
+  messageType: string;
+  replyToId?: number;
+  createdAt: Date;
+  updatedAt?: Date;
+  isDeleted: boolean;
+  isEdited: boolean;
 }
 
 // Counter 모델 재사용 (MongoTask.ts에서 정의된 것)
-import { Counter } from '@models/MongoTask.ts';
+import { Counter } from './MongoTask';
 
 // Messages 스키마 (채팅방)
 const MessagesSchema = new Schema<MessagesDocument>({
@@ -20,7 +35,7 @@ const MessagesSchema = new Schema<MessagesDocument>({
     unique: true,
     index: true
   },
-  chatType: { 
+  type: { 
     type: String, 
     required: true,
     enum: ['workspace', 'team', 'dm'],
@@ -76,13 +91,13 @@ const MessageSchema = new Schema<MessageDocument>({
     default: null
   },
   isDeleted: { 
-    type: Number,
-    default: 0,
+    type: Boolean,
+    default: false,
     index: true
   },
   isEdited: { 
-    type: Number,
-    default: 0
+    type: Boolean,
+    default: false
   }
 }, {
   timestamps: { createdAt: 'createdAt', updatedAt: false },

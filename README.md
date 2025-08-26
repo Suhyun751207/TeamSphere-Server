@@ -254,26 +254,185 @@ DELETE /v1/workspace/:workspaceId/teams/:teamId/member/:memberId          # 팀 
 ### 📋 Task Management (Hybrid Database)
 ```http
 # MySQL Tasks (기본 작업 정보)
-GET    /v1/workspace/:workspaceId/teams/:teamId/member/:memberId/tasks           # 작업 목록
-POST   /v1/workspace/:workspaceId/teams/:teamId/member/:memberId/tasks           # 작업 생성
-PATCH  /v1/workspace/:workspaceId/teams/:teamId/member/:memberId/tasks/:tasksId  # 작업 수정
+GET    /v1/workspace/:workspaceId/teams/:teamId/member/:memberId/tasks                 # 팀 멤버 작업 목록 (MySQL)
+POST   /v1/workspace/:workspaceId/teams/:teamId/member/:memberId/tasks                 # 팀 멤버 작업 생성 (MySQL)
+GET    /v1/workspace/:workspaceId/teams/:teamId/member/:memberId/tasks/:tasksId        # 작업 단일 조회(현재 구현은 목록 반환)
+PATCH  /v1/workspace/:workspaceId/teams/:teamId/member/:memberId/tasks/:tasksId        # 작업 수정 (MySQL)
 
 # MongoDB Tasks (확장 작업 정보)
-GET    /v1/workspace/:workspaceId/teams/:teamId/member/:memberId/tasks/:tasksId/task        # MongoDB 작업 목록
-POST   /v1/workspace/:workspaceId/teams/:teamId/member/:memberId/tasks/:tasksId/task        # MongoDB 작업 생성
-GET    /v1/workspace/:workspaceId/teams/:teamId/member/:memberId/tasks/:tasksId/task/:taskId # MongoDB 작업 상세
-PATCH  /v1/workspace/:workspaceId/teams/:teamId/member/:memberId/tasks/:tasksId/task/:taskId # MongoDB 작업 수정
+GET    /v1/workspace/:workspaceId/teams/:teamId/member/:memberId/tasks/:tasksId/task          # Mongo Task 조회 (body.id 사용)
+POST   /v1/workspace/:workspaceId/teams/:teamId/member/:memberId/tasks/:tasksId/task          # Mongo Task 생성 (MySQL task와 연결)
+GET    /v1/workspace/:workspaceId/teams/:teamId/member/:memberId/tasks/:tasksId/task/:taskId  # Mongo Task 단일 조회
+PATCH  /v1/workspace/:workspaceId/teams/:teamId/member/:memberId/tasks/:tasksId/task/:taskId  # Mongo Task 수정
 ```
+
+Auth & Access Control: 모든 엔드포인트는 `authenticateToken` + `checkTeamMember` 필요. (댓글 삭제는 추가 권한 확인 포함)
+
+Enums:
+- TaskState: `'Done' | 'In Progress' | 'To Do'`
+- TaskPriority: `'High' | 'Low' | 'Medium'`
+
+Request/Response Schemas
+
+- MySQL Create Task
+  - Request Body
+    ```json
+    {
+      "state": "In Progress",
+      "priority": "High",
+      "task": "Optional short note"
+    }
+    ```
+  - Response (MySQL ResultSetHeader 예시)
+    ```json
+    {
+      "affectedRows": 1,
+      "insertId": 123,
+      "warningStatus": 0
+    }
+    ```
+
+- MySQL List Tasks
+  - Response (Array<tasks>)
+    ```json
+    [
+      {
+        "id": 1,
+        "teamMemberId": 45,
+        "state": "To Do",
+        "priority": "Medium",
+        "task": null,
+        "externalId": null,
+        "createdAt": "2025-08-26T11:00:00.000Z",
+        "updatedAt": "2025-08-26T11:00:00.000Z"
+      }
+    ]
+    ```
+
+- MySQL Update Task
+  - Request Body (동일 스키마)
+    ```json
+    {
+      "state": "Done",
+      "priority": "Low",
+      "task": "Wrapped up"
+    }
+    ```
+  - Response (MySQL ResultSetHeader 예시)
+    ```json
+    {
+      "affectedRows": 1,
+      "insertId": 0,
+      "warningStatus": 0
+    }
+    ```
+
+- Mongo Task Create (확장 데이터)
+  - Request Body
+    ```json
+    {
+      "title": "Implement comments",
+      "content": "Add nested replies and mentions",
+      "tags": ["backend", "mongodb"],
+      "attachments_path": ["/files/spec.pdf"]
+    }
+    ```
+  - Response (MongoTask)
+    ```json
+    {
+      "id": 10,
+      "task_id": 123, 
+      "title": "Implement comments",
+      "content": "Add nested replies and mentions",
+      "tags": ["backend", "mongodb"],
+      "attachments_path": ["/files/spec.pdf"],
+      "created_at": "2025-08-26T11:00:00.000Z",
+      "updated_at": "2025-08-26T11:00:00.000Z"
+    }
+    ```
+
+- Mongo Task Update
+  - Request Body (모든 필드 optional)
+    ```json
+    {
+      "title": "Updated title",
+      "content": "Updated content",
+      "tags": null,
+      "attachments_path": ["/files/new.pdf"]
+    }
+    ```
+  - Response (MongoTask)
+    ```json
+    {
+      "id": 10,
+      "task_id": 123,
+      "title": "Updated title",
+      "content": "Updated content",
+      "tags": null,
+      "attachments_path": ["/files/new.pdf"],
+      "created_at": "2025-08-26T11:00:00.000Z",
+      "updated_at": "2025-08-26T12:34:56.000Z"
+    }
+    ```
 
 ### 💬 Comments System (MongoDB)
 ```http
-# 댓글 관리
-GET    /v1/workspace/.../tasks/:tasksId/task/:taskId/comments                    # 댓글 목록
-POST   /v1/workspace/.../tasks/:tasksId/task/:taskId/comments                    # 댓글 작성
-GET    /v1/workspace/.../tasks/:tasksId/task/:taskId/comments/:commentsId        # 댓글 상세
-PATCH  /v1/workspace/.../tasks/:tasksId/task/:taskId/comments/:commentsId        # 댓글 수정
-DELETE /v1/workspace/.../tasks/:tasksId/task/:taskId/comments/:commentsId        # 댓글 삭제
+# 댓글 관리 (모든 엔드포인트: authenticateToken + checkTeamMember)
+GET    /v1/workspace/:workspaceId/teams/:teamId/member/:memberId/tasks/:tasksId/task/:taskId/comments               # 특정 Mongo Task 댓글 목록
+POST   /v1/workspace/:workspaceId/teams/:teamId/member/:memberId/tasks/:tasksId/task/:taskId/comments               # 댓글 생성 (멤버는 토큰에서 추출)
+GET    /v1/workspace/:workspaceId/teams/:teamId/member/:memberId/tasks/:tasksId/task/:taskId/comments/:commentsId   # 댓글 단일 조회
+PATCH  /v1/workspace/:workspaceId/teams/:teamId/member/:memberId/tasks/:tasksId/task/:taskId/comments/:commentsId   # 댓글 수정
+DELETE /v1/workspace/:workspaceId/teams/:teamId/member/:memberId/tasks/:tasksId/task/:taskId/comments/:commentsId   # 댓글 삭제 (소유자 또는 Admin/Manager)
 ```
+
+Schemas
+
+- Create Comment
+  - Request Body
+    ```json
+    {
+      "content": "Looks good!",
+      "parent_id": 42
+    }
+    ```
+  - Notes: `member_id`는 서버가 JWT 토큰(`req.user.userId`)에서 설정합니다. `parent_id`는 선택이며 존재 유효성 검사를 수행합니다.
+  - Response (MongoComments)
+    ```json
+    {
+      "id": 1001,
+      "task_id": 10,
+      "member_id": 3,
+      "parent_id": 42,
+      "content": "Looks good!",
+      "created_at": "2025-08-26T11:00:00.000Z",
+      "updated_at": "2025-08-26T11:00:00.000Z"
+    }
+    ```
+
+- Update Comment
+  - Request Body
+    ```json
+    { "content": "Edited content" }
+    ```
+  - Response (MongoComments)
+    ```json
+    {
+      "id": 1001,
+      "task_id": 10,
+      "member_id": 3,
+      "parent_id": 42,
+      "content": "Edited content",
+      "created_at": "2025-08-26T11:00:00.000Z",
+      "updated_at": "2025-08-26T12:00:00.000Z"
+    }
+    ```
+
+- Delete Comment
+  - 권한: 댓글 소유자 또는 팀 역할이 `Admin | Manager`인 사용자만 허용됩니다.
+  - Response
+    ```json
+    { "success": true }
+    ```
 
 ### 📊 Data Models
 

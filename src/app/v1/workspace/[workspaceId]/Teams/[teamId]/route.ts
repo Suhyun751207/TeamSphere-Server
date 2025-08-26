@@ -6,9 +6,11 @@ import workspaceTeamService from "@services/workspaceTeams.ts";
 import { isWorkspaceTeamCreate } from "@interfaces/guard/workspaceTeams.guard.ts";
 import workspaceTeamUsersService from "@services/WorkspaceTeamUsers.ts";
 import teamIdMemberRouter from "./member/route.ts";
+import teamMessageRouter from "./message/route.ts";
 
 const teamIdRouter = Router({ mergeParams: true });
 teamIdRouter.use("/members", teamIdMemberRouter);
+teamIdRouter.use("/message", teamMessageRouter);
 
 // 특정 팀 조회
 teamIdRouter.get('/', authenticateToken, checkTeamMember, catchAsyncErrors(async (req, res) => {

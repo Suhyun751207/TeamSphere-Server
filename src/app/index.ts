@@ -5,9 +5,11 @@ import route from "./route.ts";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import connectDB from "@config/database.ts";
+import { redisService } from "@config/redis";
 
 (async () => {
     await connectDB();
+    await redisService.connect();
     const app = express();
     const httpServer = createServer(app);
     
