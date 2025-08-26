@@ -1,4 +1,4 @@
-import { MessagesModel, MessageModel, MessagesDocument, MessageDocument } from '@models/MongoChat.ts';
+import { MessageModel, MessageDocument, MessagesModel } from '@models/MongoChat.ts';
 import { MessageCreate, MessageUpdate } from '@interfaces/Message.ts';
 
 // Message 서비스 (개별 메시지 관리)
