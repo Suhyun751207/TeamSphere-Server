@@ -11,9 +11,8 @@ const ProfileRouter = Router({ mergeParams: true });
 ProfileRouter.use('/:profileId', ProfileIdRouter);
 
 ProfileRouter.get('/', authenticateToken, catchAsyncErrors(async (req, res) => {
-    const userId = req.user?.userId;
-    const user = await userService.readById(userId!);
-    const profile = await profilesService.readById(userId!);
+    const user = await userService.read();
+    const profile = await profilesService.read();
     const data = { user, profile }
     return res.status(200).json(data);
 }));
