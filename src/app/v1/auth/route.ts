@@ -48,32 +48,4 @@ authRouter.get("/logout", catchAsyncErrors(async (_req, res) => {
     });
 }));
 
-authRouter.get("/me", authenticateToken, catchAsyncErrors(async (req, res) => {
-    if (!req.user) {
-        return res.status(401).json({
-            success: false,
-            message: "인증이 필요합니다."
-        });
-    }
-    const result = await authService.getProfile(req.user.userId);
-    const Profile = await profilesService.read(req.user.userId);
-    if (!result.success) {
-        return res.status(404).json(result);
-    }
-    return res.status(200).json({
-        success: result.success,
-        message: result.message,
-        user: result.user,
-        profile: Profile
-    });
-}));
-
-authRouter.get("/verify", authenticateToken, catchAsyncErrors(async (req, res) => {
-    return res.status(200).json({
-        success: true,
-        message: "유효한 토큰입니다.",
-        user: req.user
-    });
-}));
-
 export default authRouter;
