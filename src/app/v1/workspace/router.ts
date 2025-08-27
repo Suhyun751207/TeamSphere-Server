@@ -14,10 +14,12 @@ workspaceRouter.use("/:workspaceId", workspaceIdRouter);
 workspaceRouter.get("/", authenticateToken, catchAsyncErrors(async (req, res) => {
     const userId = req.user?.userId;
     const userWorkspaceMembers = await workspaceMemberService.readByUserId(userId!);
-    const workspaces = await Promise.all(userWorkspaceMembers.map((member) => {
-        return workspaceService.read(member.workspaceId);
-    }));
-    return res.status(200).json(workspaces);
+    const workspaces = await Promise.all(
+        userWorkspaceMembers.map(async (member) => {
+            return workspaceService.read(member.workspaceId);
+        })
+    );
+    return res.status(200).json(workspaces.filter(Boolean));
 }));
 
 // 자신이 관리자인 워크스페이스 생성
