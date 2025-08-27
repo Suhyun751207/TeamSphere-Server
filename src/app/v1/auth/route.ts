@@ -39,7 +39,7 @@ authRouter.post("/login", catchAsyncErrors(async (req, res) => {
     });
 }));
 
-authRouter.post("/logout", catchAsyncErrors(async (_req, res) => {
+authRouter.get("/logout", catchAsyncErrors(async (_req, res) => {
     clearTokenCookie(res);
 
     return res.status(200).json({
