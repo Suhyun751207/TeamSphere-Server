@@ -30,39 +30,59 @@
 - 토큰 검증 및 자동 갱신
 - 쿠키 기반 토큰 관리
 - bcryptjs 패스워드 해싱
+- 역할 기반 접근 제어 (Admin, Manager, Member, Viewer)
 
 ### 👥 **사용자 관리**
-- 사용자 프로필 관리 (성별, 생년월일, 전화번호 등)
+- 사용자 프로필 관리 (이름, 나이, 성별, 전화번호, 프로필 이미지)
+- 구독 상태 관리 (Free, Premium)
 - 사용자별 워크스페이스 접근 권한 관리
 
 ### 🏢 **워크스페이스 관리**
 - 워크스페이스 생성, 조회, 수정
 - 멤버 초대 및 역할 관리 (Admin, Manager, Member, Viewer)
 - 워크스페이스별 권한 기반 접근 제어
+- 워크스페이스 멤버 목록 조회 및 관리
 
 ### 👥 **팀 관리**
-- 워크스페이스 내 팀 생성 및 관리
+- 워크스페이스 내 팀 생성, 조회, 수정, 삭제
 - 팀 멤버 추가/제거
-- 팀별 역할 및 권한 관리
+- 팀별 역할 및 권한 관리 (Admin, Manager, Member)
+- 팀 상세 정보 및 멤버 목록 조회
 
 ### 📋 **작업 관리 (Hybrid Database)**
 - **MySQL**: 기본 작업 정보 (상태, 우선순위, 할당자)
+  - 작업 상태: TODO, IN_PROGRESS, DONE
+  - 우선순위: HIGH, MEDIUM, LOW
+  - 작업 생성, 조회, 수정
 - **MongoDB**: 확장 작업 정보 (제목, 내용, 태그, 첨부파일)
-- 작업 생성, 조회, 수정, 삭제
+  - 작업 제목 및 상세 내용
+  - 태그 시스템 (배열 형태)
+  - 첨부파일 경로 관리
+  - MySQL 작업과 연동된 확장 정보
 
 ### 💬 **댓글 시스템 (MongoDB)**
-- 작업별 댓글 작성
-- 대댓글 (중첩 댓글) 지원
+- 작업별 댓글 작성 및 조회
+- 대댓글 (중첩 댓글) 지원 (parent_id)
 - 댓글 수정/삭제 권한 관리
+- 댓글 소유자 및 팀 관리자 권한 체크
+
+### 💬 **실시간 메시징 시스템 (MongoDB)**
+- **채팅방 관리**: DM, 워크스페이스, 팀 채팅방
+- **메시지 기능**: 텍스트, 이미지, 파일 메시지 지원
+- **고급 기능**: 답장, 첨부파일, 메시지 수정/삭제
+- **실시간 통신**: Socket.IO 기반 실시간 메시징
+- **페이지네이션**: 메시지 목록 페이징 지원
 
 ### 📊 **활동 로그**
 - 워크스페이스 내 모든 활동 추적
-- 실시간 활동 로그 조회
+- 실시간 활동 로그 조회 및 생성
+- 사용자 행동 기록 및 감사 추적
 
 ### 🛡️ **보안 & 검증**
 - type-wizard를 활용한 런타임 타입 검증
 - CORS 설정 및 보안 미들웨어
 - 권한 기반 API 접근 제어
+- JWT 토큰 기반 인증 미들웨어
 
 ## 🛠️ Tech Stack
 
@@ -72,7 +92,7 @@
 
 ### **Database**
 - **MySQL** - 관계형 데이터베이스 (사용자, 워크스페이스, 팀 정보)
-- **MongoDB** - NoSQL 데이터베이스 (작업, 댓글 정보)
+- **MongoDB** - NoSQL 데이터베이스 (작업, 댓글, 메시징 정보)
 - **mysql2-wizard** - MySQL ORM
 - **Mongoose** - MongoDB ODM
 
@@ -93,7 +113,7 @@
 - **Jest** - 테스팅 프레임워크
 
 ### **Real-time & Utilities**
-- **Socket.IO** - 실시간 통신
+- **Socket.IO** - 실시간 통신 (메시징 시스템)
 - **CORS** - Cross-Origin Resource Sharing
 - **UUID** - 고유 식별자 생성
 - **dotenv** - 환경변수 관리
@@ -107,12 +127,18 @@ MySQL (관계형 데이터)          MongoDB (문서형 데이터)
 ├── profiles                  │   ├── title, content
 ├── workspaces                │   ├── tags[]
 ├── workspace_members         │   └── attachments_path[]
-├── workspace_teams           └── comments
-├── workspace_team_users          ├── content
-└── tasks (기본 정보)             ├── parent_id (대댓글)
-    ├── state                     └── member_id
-    ├── priority
-    └── workspace_team_user_id
+├── workspace_teams           ├── comments
+├── workspace_team_users      │   ├── content
+├── tasks (기본 정보)          │   ├── parent_id (대댓글)
+│   ├── state                 │   └── member_id
+│   ├── priority              ├── rooms (채팅방)
+│   └── workspace_team_user_id│   ├── type (dm/workspace/team)
+└── activity_logs             │   ├── participants[]
+                              │   └── lastMessage
+                              └── messages
+                                  ├── content, messageType
+                                  ├── replyToId, attachments[]
+                                  └── isDeleted, isEdited
 ```
 
 ### **Path Aliases**
@@ -129,6 +155,7 @@ MySQL (관계형 데이터)          MongoDB (문서형 데이터)
 
 - **Node.js** v16.0.0 or higher
 - **MySQL** v8.0 or higher
+- **MongoDB** v4.4 or higher
 - **npm** or **yarn** package manager
 - **Git** for version control
 
@@ -146,9 +173,21 @@ npm install
 ```
 
 ### 3. Database Setup
+
+**MySQL Setup:**
 Create a MySQL database named `TeamSphere`:
 ```sql
 CREATE DATABASE TeamSphere;
+```
+
+**MongoDB Setup:**
+Ensure MongoDB is running on your system:
+```bash
+# Start MongoDB service (Windows)
+net start MongoDB
+
+# Start MongoDB service (macOS/Linux)
+sudo systemctl start mongod
 ```
 
 ### 4. Environment Configuration
@@ -233,6 +272,7 @@ DELETE /v1/workspace/:workspaceId/members/:id    # 멤버 제거
 
 # 활동 로그
 GET    /v1/workspace/:workspaceId/activityLog    # 활동 로그 조회
+POST   /v1/workspace/:workspaceId/activityLog    # 활동 로그 생성
 ```
 
 ### 👥 Team Management
@@ -256,21 +296,56 @@ DELETE /v1/workspace/:workspaceId/teams/:teamId/member/:memberId          # 팀 
 # MySQL Tasks (기본 작업 정보)
 GET    /v1/workspace/:workspaceId/teams/:teamId/member/:memberId/tasks                 # 팀 멤버 작업 목록 (MySQL)
 POST   /v1/workspace/:workspaceId/teams/:teamId/member/:memberId/tasks                 # 팀 멤버 작업 생성 (MySQL)
-GET    /v1/workspace/:workspaceId/teams/:teamId/member/:memberId/tasks/:tasksId        # 작업 단일 조회(현재 구현은 목록 반환)
+GET    /v1/workspace/:workspaceId/teams/:teamId/member/:memberId/tasks/:tasksId        # 작업 단일 조회
 PATCH  /v1/workspace/:workspaceId/teams/:teamId/member/:memberId/tasks/:tasksId        # 작업 수정 (MySQL)
 
 # MongoDB Tasks (확장 작업 정보)
-GET    /v1/workspace/:workspaceId/teams/:teamId/member/:memberId/tasks/:tasksId/task          # Mongo Task 조회 (body.id 사용)
+GET    /v1/workspace/:workspaceId/teams/:teamId/member/:memberId/tasks/:tasksId/task          # Mongo Task 조회
 POST   /v1/workspace/:workspaceId/teams/:teamId/member/:memberId/tasks/:tasksId/task          # Mongo Task 생성 (MySQL task와 연결)
 GET    /v1/workspace/:workspaceId/teams/:teamId/member/:memberId/tasks/:tasksId/task/:taskId  # Mongo Task 단일 조회
 PATCH  /v1/workspace/:workspaceId/teams/:teamId/member/:memberId/tasks/:tasksId/task/:taskId  # Mongo Task 수정
+
+# MongoDB 작업 조회 (간편 API)
+GET    /v1/mongo/tasks/:taskId                                                               # MongoDB 작업 상세 조회 (댓글 포함)
 ```
 
-Auth & Access Control: 모든 엔드포인트는 `authenticateToken` + `checkTeamMember` 필요. (댓글 삭제는 추가 권한 확인 포함)
+### 💬 Comments System (MongoDB)
+```http
+# 댓글 관리 (모든 엔드포인트: authenticateToken + checkTeamMember)
+GET    /v1/workspace/:workspaceId/teams/:teamId/member/:memberId/tasks/:tasksId/task/:taskId/comments               # 특정 Mongo Task 댓글 목록
+POST   /v1/workspace/:workspaceId/teams/:teamId/member/:memberId/tasks/:tasksId/task/:taskId/comments               # 댓글 생성
+GET    /v1/workspace/:workspaceId/teams/:teamId/member/:memberId/tasks/:tasksId/task/:taskId/comments/:commentsId   # 댓글 단일 조회
+PATCH  /v1/workspace/:workspaceId/teams/:teamId/member/:memberId/tasks/:tasksId/task/:taskId/comments/:commentsId   # 댓글 수정
+DELETE /v1/workspace/:workspaceId/teams/:teamId/member/:memberId/tasks/:tasksId/task/:taskId/comments/:commentsId   # 댓글 삭제 (소유자 또는 Admin/Manager)
+```
 
-Enums:
-- TaskState: `'Done' | 'In Progress' | 'To Do'`
-- TaskPriority: `'High' | 'Low' | 'Medium'`
+### 👤 User Profile Management
+```http
+GET    /v1/user/profile              # 현재 사용자 프로필 조회
+POST   /v1/user/profile              # 새 프로필 생성
+GET    /v1/user/profile/:profileId   # 특정 사용자 프로필 조회
+PATCH  /v1/user/profile/:profileId   # 프로필 정보 수정
+```
+
+### 💬 Real-time Messaging System (MongoDB)
+```http
+# 채팅방 관리
+POST   /v1/workspace/:workspaceId/message/rooms                           # 워크스페이스 채팅방 생성/조회
+GET    /v1/workspace/:workspaceId/message/rooms/:roomId/messages          # 채팅방 메시지 목록 조회 (페이지네이션)
+POST   /v1/workspace/:workspaceId/message/rooms/:roomId/messages          # 새 메시지 전송
+
+# 메시지 관리
+PUT    /v1/workspace/:workspaceId/message/messages/:messageId             # 메시지 수정
+DELETE /v1/workspace/:workspaceId/message/messages/:messageId             # 메시지 삭제
+```
+
+**Auth & Access Control:** 모든 엔드포인트는 `authenticateToken` + 적절한 권한 확인 필요
+
+**Enums:**
+- TaskState: `'TODO' | 'IN_PROGRESS' | 'DONE'`
+- TaskPriority: `'HIGH' | 'MEDIUM' | 'LOW'`
+- MessageType: `'text' | 'image' | 'file' | 'system'`
+- RoomType: `'dm' | 'workspace' | 'team'`
 
 Request/Response Schemas
 
@@ -375,64 +450,23 @@ Request/Response Schemas
     }
     ```
 
-### 💬 Comments System (MongoDB)
-```http
-# 댓글 관리 (모든 엔드포인트: authenticateToken + checkTeamMember)
-GET    /v1/workspace/:workspaceId/teams/:teamId/member/:memberId/tasks/:tasksId/task/:taskId/comments               # 특정 Mongo Task 댓글 목록
-POST   /v1/workspace/:workspaceId/teams/:teamId/member/:memberId/tasks/:tasksId/task/:taskId/comments               # 댓글 생성 (멤버는 토큰에서 추출)
-GET    /v1/workspace/:workspaceId/teams/:teamId/member/:memberId/tasks/:tasksId/task/:taskId/comments/:commentsId   # 댓글 단일 조회
-PATCH  /v1/workspace/:workspaceId/teams/:teamId/member/:memberId/tasks/:tasksId/task/:taskId/comments/:commentsId   # 댓글 수정
-DELETE /v1/workspace/:workspaceId/teams/:teamId/member/:memberId/tasks/:tasksId/task/:taskId/comments/:commentsId   # 댓글 삭제 (소유자 또는 Admin/Manager)
-```
 
-Schemas
+### 📊 Key Features Summary
 
-- Create Comment
-  - Request Body
-    ```json
-    {
-      "content": "Looks good!",
-      "parent_id": 42
-    }
-    ```
-  - Notes: `member_id`는 서버가 JWT 토큰(`req.user.userId`)에서 설정합니다. `parent_id`는 선택이며 존재 유효성 검사를 수행합니다.
-  - Response (MongoComments)
-    ```json
-    {
-      "id": 1001,
-      "task_id": 10,
-      "member_id": 3,
-      "parent_id": 42,
-      "content": "Looks good!",
-      "created_at": "2025-08-26T11:00:00.000Z",
-      "updated_at": "2025-08-26T11:00:00.000Z"
-    }
-    ```
+#### **Hybrid Database Design**
+- **MySQL**: 관계형 데이터 (사용자, 워크스페이스, 팀, 기본 작업 정보)
+- **MongoDB**: 문서형 데이터 (확장 작업 정보, 댓글, 실시간 메시징)
 
-- Update Comment
-  - Request Body
-    ```json
-    { "content": "Edited content" }
-    ```
-  - Response (MongoComments)
-    ```json
-    {
-      "id": 1001,
-      "task_id": 10,
-      "member_id": 3,
-      "parent_id": 42,
-      "content": "Edited content",
-      "created_at": "2025-08-26T11:00:00.000Z",
-      "updated_at": "2025-08-26T12:00:00.000Z"
-    }
-    ```
+#### **Real-time Features**
+- Socket.IO 기반 실시간 메시징
+- 실시간 활동 로그 추적
+- 워크스페이스/팀/DM 채팅 지원
 
-- Delete Comment
-  - 권한: 댓글 소유자 또는 팀 역할이 `Admin | Manager`인 사용자만 허용됩니다.
-  - Response
-    ```json
-    { "success": true }
-    ```
+#### **Security & Authorization**
+- JWT 토큰 기반 인증
+- 역할 기반 접근 제어 (Admin, Manager, Member, Viewer)
+- 런타임 타입 검증 (type-wizard)
+- 권한별 API 접근 제어
 
 ### 📊 Data Models
 
@@ -449,6 +483,8 @@ Schemas
 #### MongoDB Collections
 - **tasks** - 확장 작업 정보 (제목, 내용, 태그, 첨부파일)
 - **comments** - 댓글 (내용, 대댓글 지원)
+- **rooms** - 채팅방 (DM, 워크스페이스, 팀 채팅)
+- **messages** - 메시지 (텍스트, 파일, 답장, 수정/삭제 지원)
 
 ### 🔒 Authentication & Authorization
 
@@ -470,18 +506,29 @@ Schemas
 server/
 ├── src/
 │   ├── app/                                    # 애플리케이션 설정
-│   │   ├── index.ts                           # 메인 서버 진입점
+│   │   ├── index.ts                           # 메인 서버 진입점 (MongoDB 연결 포함)
 │   │   ├── route.ts                           # 루트 라우터
 │   │   └── v1/                                # API 버전 1
 │   │       ├── route.ts                       # V1 메인 라우터
 │   │       ├── auth/                          # 인증 모듈
 │   │       │   └── route.ts                   # 인증 엔드포인트
+│   │       ├── mongo/                         # MongoDB 직접 접근 API
+│   │       │   └── route.ts                   # MongoDB 작업 조회 API
+│   │       ├── user/                          # 사용자 프로필 관리
+│   │       │   └── profile/                   # 프로필 엔드포인트
+│   │       │       └── route.ts               # 프로필 CRUD
 │   │       └── workspace/                     # 워크스페이스 모듈
 │   │           ├── router.ts                  # 워크스페이스 라우터
 │   │           └── [workspaceId]/             # 워크스페이스별 라우팅
 │   │               ├── route.ts               # 워크스페이스 상세
 │   │               ├── members/               # 멤버 관리
 │   │               ├── activityLogs/          # 활동 로그
+│   │               ├── message/               # 실시간 메시징 시스템
+│   │               │   ├── route.ts           # 채팅방 관리
+│   │               │   └── rooms/             # 채팅방별 라우팅
+│   │               │       └── [roomId]/      # 특정 채팅방
+│   │               │           └── messages/  # 메시지 관리
+│   │               │               └── route.ts # 메시지 CRUD
 │   │               └── Teams/                 # 팀 관리
 │   │                   └── [teamId]/          # 팀별 라우팅
 │   │                       └── member/        # 팀 멤버 관리
@@ -498,7 +545,8 @@ server/
 │   │                                                   └── [commentsId]/
 │   │                                                       └── route.ts # 댓글 CRUD
 │   ├── config/                                # 설정 파일
-│   │   └── database.ts                        # 데이터베이스 연결 설정
+│   │   ├── database.ts                        # MySQL 연결 설정
+│   │   └── mongodb.ts                         # MongoDB 연결 설정
 │   ├── interfaces/                            # TypeScript 인터페이스
 │   │   ├── Users.ts                          # 사용자 타입 정의
 │   │   ├── Profiles.ts                       # 프로필 타입 정의
@@ -509,6 +557,8 @@ server/
 │   │   ├── Tasks.ts                          # MySQL 작업 타입
 │   │   ├── MongoTask.ts                      # MongoDB 작업 타입
 │   │   ├── MongoComments.ts                  # MongoDB 댓글 타입
+│   │   ├── MongoRoom.ts                      # MongoDB 채팅방 타입
+│   │   ├── MongoMessage.ts                   # MongoDB 메시지 타입
 │   │   ├── ActivityLogs.ts                   # 활동 로그 타입
 │   │   └── guard/                            # 런타임 타입 가드
 │   │       ├── Users.guard.ts                # 사용자 타입 가드
@@ -520,13 +570,17 @@ server/
 │   │       ├── Tasks.guard.ts                # MySQL 작업 타입 가드
 │   │       ├── MongoTask.guard.ts            # MongoDB 작업 타입 가드
 │   │       ├── MongoComments.guard.ts        # MongoDB 댓글 타입 가드
+│   │       ├── MongoRoom.guard.ts            # MongoDB 채팅방 타입 가드
+│   │       ├── MongoMessage.guard.ts         # MongoDB 메시지 타입 가드
 │   │       └── ActivityLogs.guard.ts         # 활동 로그 타입 가드
 │   ├── middleware/                           # 미들웨어
 │   │   ├── auth.ts                          # JWT 인증 미들웨어
 │   │   └── workspaceAuth.ts                 # 워크스페이스 권한 미들웨어
 │   ├── models/                              # MongoDB 모델
 │   │   ├── MongoTask.ts                     # MongoDB 작업 스키마
-│   │   └── MongoComments.ts                 # MongoDB 댓글 스키마
+│   │   ├── MongoComments.ts                 # MongoDB 댓글 스키마
+│   │   ├── MongoRoom.ts                     # MongoDB 채팅방 스키마
+│   │   └── MongoMessage.ts                  # MongoDB 메시지 스키마
 │   ├── services/                            # 비즈니스 로직 레이어
 │   │   ├── Auth.ts                          # 인증 서비스
 │   │   ├── Users.ts                         # 사용자 서비스
@@ -538,12 +592,16 @@ server/
 │   │   ├── Tasks.ts                         # MySQL 작업 서비스
 │   │   ├── MongoTaskService.ts              # MongoDB 작업 서비스
 │   │   ├── MongoCommentsService.ts          # MongoDB 댓글 서비스
+│   │   ├── MongoRoomService.ts              # MongoDB 채팅방 서비스
+│   │   ├── MongoMessageService.ts           # MongoDB 메시지 서비스
 │   │   ├── ActivityLogs.ts                  # 활동 로그 서비스
-│   │   └── ENUM/                            # 열거형 정의
+│   │   └── ENUM/                            # 열거형 ��의
 │   │       ├── workspace_roles_enum.ts      # 워크스페이스 역할
 │   │       ├── task_states_enum.ts          # 작업 상태
 │   │       ├── task_priority_enum.ts        # 작업 우선순위
 │   │       ├── subscription_states_enum.ts  # 구독 상태
+│   │       ├── message_types_enum.ts        # 메시지 타입
+│   │       ├── room_types_enum.ts           # 채팅방 타입
 │   │       └── genders_enum.ts              # 성별
 │   └── utils/                               # 유틸리티 함수
 │       ├── catchAsyncErrors.ts              # 비동기 에러 처리
@@ -551,12 +609,14 @@ server/
 │       ├── password.ts                      # 패스워드 유틸리티
 │       └── initSocket.ts                    # Socket.IO 초기화
 ├── db/                                      # 데이터베이스 관련
-│   ├── SQL_Query.sql                        # SQL 스키마
-│   └── TeamSphere.vuerd.json                # ERD 파일
+│   ├── SQL_Query.sql                        # MySQL 스키마
+│   ├── TeamSphere.vuerd.json                # ERD 파일
+│   └── messages.json                        # 메시지 샘플 데이터
 ├── .env.example                             # 환경변수 템플릿
 ├── .gitignore                               # Git 제외 파일
 ├── package.json                             # 패키지 의존성
-├── tsconfig.json                            # TypeScript 설정
+├── tsconfig.json                            # TypeScript 설정 (Path aliases 포함)
+├── API.md                                   # 상세 API 문서
 └── README.md                                # 프로젝트 문서
 ```
 
