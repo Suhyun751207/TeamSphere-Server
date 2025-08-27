@@ -31,7 +31,7 @@ const MongoRoomsSchema = new Schema<MongoRoomsDocument>({
   },
   chatId: {
     type: Number,
-    required: true
+    required: false
   },
   participants: [{
     type: Number,
@@ -55,8 +55,11 @@ const MongoRoomsSchema = new Schema<MongoRoomsDocument>({
   }
 });
 
-// 인덱스 설정
-MongoRoomsSchema.index({ type: 1, chatId: 1 }, { unique: true });
+// 인덱스 설정 - workspace/team은 chatId로 고유성 보장
+MongoRoomsSchema.index({ type: 1, chatId: 1 }, { 
+  unique: true, 
+  partialFilterExpression: { type: { $in: ['workspace', 'team'] } }
+});
 MongoRoomsSchema.index({ participants: 1 });
 MongoRoomsSchema.index({ 'lastMessage.createdAt': -1 });
 

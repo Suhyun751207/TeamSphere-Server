@@ -12,7 +12,9 @@ declare global {
 export const authenticateToken = (req: Request, res: Response, next: NextFunction): void => {
   // 현재 로그인 중인 사용자의 정보를 확인하여 req.user에 저장
   try {
-    const token = req.cookies?.accesstoken;
+    // Authorization 헤더에서 토큰 추출 (Bearer 토큰)
+    const authHeader = req.headers.authorization;
+    const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : req.cookies?.accesstoken;
 
     if (!token) {
       res.status(401).json({
@@ -21,6 +23,8 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
       });
       return;
     }
+
+    // JWT 토큰 검증
     const decoded = verifyToken(token);
     req.user = decoded;
     next();

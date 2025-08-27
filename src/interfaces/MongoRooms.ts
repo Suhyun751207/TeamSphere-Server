@@ -3,7 +3,7 @@ import { ObjectId } from 'mongodb';
 export interface MongoRooms {
   _id?: ObjectId;
   type: 'dm' | 'workspace' | 'team';
-  chatId: number; // MySQL의 dm.id / workspace.id / team.id 등
+  chatId: number | null; // MySQL의 dm.id / workspace.id / team.id 등
   participants: number[]; // users.id (MySQL PK 배열)
   name?: string; // 선택적 (워크스페이스/팀에만 사용)
   createdAt: Date;
@@ -18,7 +18,7 @@ export interface MongoRooms {
 
 export interface CreateMongoRoomsRequest {
   type: 'dm' | 'workspace' | 'team';
-  chatId: number;
+  chatId: number | null;
   participants: number[];
   name?: string;
 }

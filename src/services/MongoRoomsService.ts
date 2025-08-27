@@ -6,6 +6,11 @@ export class MongoRoomsService {
   // 채팅방 생성
   async createRoom(data: CreateMongoRoomsRequest): Promise<MongoRoomsDocument> {
     try {
+      // DM 타입의 경우 participants 배열을 정렬하여 일관성 보장
+      if (data.type === 'dm' && data.participants) {
+        data.participants = data.participants.sort((a, b) => a - b);
+      }
+      
       const room = new MongoRoomsModel({
         ...data,
         createdAt: new Date(),
@@ -18,7 +23,7 @@ export class MongoRoomsService {
   }
 
   // 채팅방 조회 (ID로)
-  async getRoomById(roomId: string): Promise<MongoRoomsDocument | null> {
+  async getRoomById(roomId: ObjectId | string): Promise<MongoRoomsDocument | null> {
     try {
       return await MongoRoomsModel.findById(roomId);
     } catch (error) {
@@ -72,26 +77,6 @@ export class MongoRoomsService {
     }
   }
 
-  // 마지막 메시지 업데이트
-  async updateLastMessage(roomId: string, messageId: ObjectId, content: string, userId: number): Promise<MongoRoomsDocument | null> {
-    try {
-      return await MongoRoomsModel.findByIdAndUpdate(
-        roomId,
-        {
-          lastMessage: {
-            messageId,
-            content,
-            createdAt: new Date(),
-            userId
-          },
-          updatedAt: new Date()
-        },
-        { new: true }
-      );
-    } catch (error) {
-      throw new Error(`Failed to update last message: ${error}`);
-    }
-  }
 
   // 채팅방 참여자 추가
   async addParticipant(roomId: string, userId: number): Promise<MongoRoomsDocument | null> {
@@ -132,6 +117,52 @@ export class MongoRoomsService {
       return !!result;
     } catch (error) {
       throw new Error(`Failed to delete room: ${error}`);
+    }
+  }
+
+  // 사용자가 참여한 특정 타입의 채팅방 목록 조회
+  async getRoomsByUserAndType(userId: number, type: 'dm' | 'workspace' | 'team'): Promise<MongoRoomsDocument[]> {
+    try {
+      return await MongoRoomsModel
+        .find({ participants: userId, type })
+        .sort({ 'lastMessage.createdAt': -1, updatedAt: -1 });
+    } catch (error) {
+      throw new Error(`Failed to get rooms by user and type: ${error}`);
+    }
+  }
+
+  // DM 채팅방 찾기 (두 사용자 간)
+  async findDMRoom(userId1: number, userId2: number): Promise<MongoRoomsDocument | null> {
+    try {
+      // participants 배열을 정렬하여 일관성 보장
+      const sortedParticipants = [userId1, userId2].sort((a, b) => a - b);
+      return await MongoRoomsModel.findOne({
+        type: 'dm',
+        participants: { $all: sortedParticipants, $size: 2 }
+      });
+    } catch (error) {
+      throw new Error(`Failed to find DM room: ${error}`);
+    }
+  }
+
+  // 마지막 메시지 업데이트 (새로운 시그니처)
+  async updateLastMessage(roomId: ObjectId | string, lastMessage: {
+    messageId: ObjectId;
+    content: string;
+    createdAt: Date;
+    userId: number;
+  }): Promise<MongoRoomsDocument | null> {
+    try {
+      return await MongoRoomsModel.findByIdAndUpdate(
+        roomId,
+        {
+          lastMessage,
+          updatedAt: new Date()
+        },
+        { new: true }
+      );
+    } catch (error) {
+      throw new Error(`Failed to update last message: ${error}`);
     }
   }
 }

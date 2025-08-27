@@ -3,24 +3,6 @@ import { MongoMessages } from '../interfaces/MongoMessages';
 
 export interface MongoMessagesDocument extends Omit<MongoMessages, '_id'>, Document {}
 
-const AttachmentSchema = new Schema({
-  fileName: {
-    type: String,
-    required: true
-  },
-  fileUrl: {
-    type: String,
-    required: true
-  },
-  fileSize: {
-    type: Number,
-    required: true
-  },
-  mimeType: {
-    type: String,
-    required: true
-  }
-}, { _id: false });
 
 const MongoMessagesSchema = new Schema<MongoMessagesDocument>({
   roomId: {
@@ -38,7 +20,7 @@ const MongoMessagesSchema = new Schema<MongoMessagesDocument>({
   },
   messageType: {
     type: String,
-    enum: ['text', 'image', 'file', 'system'],
+    enum: ['text', 'image', 'file'],
     default: 'text'
   },
   replyToId: {
@@ -52,7 +34,8 @@ const MongoMessagesSchema = new Schema<MongoMessagesDocument>({
   },
   updatedAt: {
     type: Date,
-    required: false
+    required: false,
+    default: null
   },
   isDeleted: {
     type: Boolean,
@@ -61,8 +44,7 @@ const MongoMessagesSchema = new Schema<MongoMessagesDocument>({
   isEdited: {
     type: Boolean,
     default: false
-  },
-  attachments: [AttachmentSchema]
+  }
 });
 
 // 인덱스 설정

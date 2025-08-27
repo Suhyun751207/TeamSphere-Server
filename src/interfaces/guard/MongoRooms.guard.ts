@@ -8,7 +8,7 @@ export function isMongoRooms(obj: any): obj is MongoRooms {
     (obj._id === undefined || obj._id instanceof ObjectId) &&
     typeof obj.type === 'string' &&
     ['dm', 'workspace', 'team'].includes(obj.type) &&
-    typeof obj.chatId === 'number' &&
+    (typeof obj.chatId === 'number' || obj.chatId === null) &&
     Array.isArray(obj.participants) &&
     obj.participants.every((p: any) => typeof p === 'number') &&
     (obj.name === undefined || typeof obj.name === 'string') &&
@@ -24,7 +24,7 @@ export function isCreateMongoRoomsRequest(obj: any): obj is CreateMongoRoomsRequ
     typeof obj === 'object' &&
     typeof obj.type === 'string' &&
     ['dm', 'workspace', 'team'].includes(obj.type) &&
-    typeof obj.chatId === 'number' &&
+    (typeof obj.chatId === 'number' || obj.chatId === null) &&
     Array.isArray(obj.participants) &&
     obj.participants.every((p: any) => typeof p === 'number') &&
     (obj.name === undefined || typeof obj.name === 'string')

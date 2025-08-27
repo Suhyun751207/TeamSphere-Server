@@ -1,34 +1,46 @@
 import "dotenv/config";
 import express from "express";
 import { createServer } from "http";
-import route from "./route.ts";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import connectDB from "@config/database.ts";
-import { redisService } from "@config/redis";
+import dotenv from "dotenv";
+import connectDB from "@config/database";
+import { initializeSocket } from "@config/socket";
+import route from "./route.ts";
 
+dotenv.config();
+
+const app = express();
+const server = createServer(app);
+const PORT = process.env.PORT || 8080;
+
+// CORS 설정
+app.use(
+    cors({
+        origin: [
+            "localhost:3000",
+            "http://localhost:3000"
+        ],
+        credentials: true,
+    })
+);
+
+app.use(express.json());
+app.use(cookieParser());
+
+// API 라우트
+app.use("/", route);
+
+// MongoDB 연결 및 Socket.IO 초기화
 (async () => {
     await connectDB();
-    await redisService.connect();
-    const app = express();
-    const httpServer = createServer(app);
     
-    app.use(
-        cors({
-            origin: [
-                "localhost:3000",
-                "http://localhost:3000"
-            ],
-            credentials: true,
-        })
-    );
-    app.use(cookieParser());
-    app.use(express.json());
-
-    app.use("/", route);
-
+    // Socket.IO 초기화
+    initializeSocket(server);
+    
     const port = +(process.env.PORT ?? 8080);
-    httpServer.listen(port, "0.0.0.0", () => {
+    server.listen(port, "0.0.0.0", () => {
         console.log(`Server is listening on http://localhost:${port}`);
+        console.log(`Socket.IO server is ready`);
     });
 })();

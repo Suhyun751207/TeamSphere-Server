@@ -5,32 +5,20 @@ export interface MongoMessages {
   roomId: ObjectId; // rooms._id (MongoDB 참조)
   userId: number; // MySQL users.id
   content: string;
-  messageType: 'text' | 'image' | 'file' | 'system';
+  messageType: 'text' | 'image' | 'file';
   replyToId?: ObjectId; // 다른 메시지 참조 (nullable)
   createdAt: Date;
-  updatedAt?: Date;
+  updatedAt?: Date | null;
   isDeleted: boolean;
   isEdited: boolean;
-  attachments?: {
-    fileName: string;
-    fileUrl: string;
-    fileSize: number;
-    mimeType: string;
-  }[];
 }
 
 export interface CreateMongoMessagesRequest {
   roomId: ObjectId;
   userId: number;
   content: string;
-  messageType?: 'text' | 'image' | 'file' | 'system';
+  messageType?: 'text' | 'image' | 'file';
   replyToId?: ObjectId;
-  attachments?: {
-    fileName: string;
-    fileUrl: string;
-    fileSize: number;
-    mimeType: string;
-  }[];
 }
 
 export interface UpdateMongoMessagesRequest {

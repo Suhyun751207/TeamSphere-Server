@@ -10,13 +10,12 @@ export function isMongoMessages(obj: any): obj is MongoMessages {
     typeof obj.userId === 'number' &&
     typeof obj.content === 'string' &&
     typeof obj.messageType === 'string' &&
-    ['text', 'image', 'file', 'system'].includes(obj.messageType) &&
+    ['text', 'image', 'file'].includes(obj.messageType) &&
     (obj.replyToId === undefined || obj.replyToId instanceof ObjectId) &&
     obj.createdAt instanceof Date &&
-    (obj.updatedAt === undefined || obj.updatedAt instanceof Date) &&
+    (obj.updatedAt === undefined || obj.updatedAt instanceof Date || obj.updatedAt === null) &&
     typeof obj.isDeleted === 'boolean' &&
-    typeof obj.isEdited === 'boolean' &&
-    (obj.attachments === undefined || isAttachments(obj.attachments))
+    typeof obj.isEdited === 'boolean'
   );
 }
 
@@ -28,9 +27,8 @@ export function isCreateMongoMessagesRequest(obj: any): obj is CreateMongoMessag
     typeof obj.userId === 'number' &&
     typeof obj.content === 'string' &&
     (obj.messageType === undefined || 
-      (typeof obj.messageType === 'string' && ['text', 'image', 'file', 'system'].includes(obj.messageType))) &&
-    (obj.replyToId === undefined || obj.replyToId instanceof ObjectId) &&
-    (obj.attachments === undefined || isAttachments(obj.attachments))
+      (typeof obj.messageType === 'string' && ['text', 'image', 'file'].includes(obj.messageType))) &&
+    (obj.replyToId === undefined || obj.replyToId instanceof ObjectId)
   );
 }
 
@@ -44,16 +42,3 @@ export function isUpdateMongoMessagesRequest(obj: any): obj is UpdateMongoMessag
   );
 }
 
-function isAttachments(obj: any): boolean {
-  return (
-    Array.isArray(obj) &&
-    obj.every((attachment: any) =>
-      attachment &&
-      typeof attachment === 'object' &&
-      typeof attachment.fileName === 'string' &&
-      typeof attachment.fileUrl === 'string' &&
-      typeof attachment.fileSize === 'number' &&
-      typeof attachment.mimeType === 'string'
-    )
-  );
-}

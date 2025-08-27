@@ -26,7 +26,7 @@ export const verifyToken = (token: string): JwtPayload => {
 export const setTokenCookie = (res: Response, token: string): void => {
   const cookieOptions = {
     expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-    httpOnly: true,
+    httpOnly: false,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'strict' as const,
   };

@@ -25,24 +25,14 @@ export class MongoMessagesService {
       const savedMessage = await message.save();
       
       // 채팅방의 마지막 메시지 업데이트
-      await this.roomsService.updateLastMessage(
-        data.roomId.toString(),
-        savedMessage._id,
-        data.content,
-        data.userId
-      );
+      await this.roomsService.updateLastMessage(data.roomId, {
+        messageId: savedMessage._id!,
+        content: data.content,
+        createdAt: savedMessage.createdAt,
+        userId: data.userId
+      });
       
-      // Redis를 통한 실시간 메시지 전송
-      try {
-        const roomChannel = redisService.getRoomChannel(data.roomId.toString());
-        await redisService.publishMessage(roomChannel, {
-          type: 'new_message',
-          message: savedMessage,
-          timestamp: new Date()
-        });
-      } catch (error) {
-        console.error('Failed to publish message to Redis:', error);
-      }
+      // Redis 제거 - Socket.IO만 사용
       
       return savedMessage;
     } catch (error) {
@@ -60,7 +50,7 @@ export class MongoMessagesService {
   }
 
   // 채팅방의 메시지 목록 조회
-  async getMessagesByRoomId(roomId: string, page: number = 1, limit: number = 50): Promise<{
+  async getMessagesByRoomId(roomId: ObjectId | string, page: number = 1, limit: number = 50): Promise<{
     messages: MongoMessagesDocument[];
     total: number;
     page: number;
@@ -191,36 +181,4 @@ export class MongoMessagesService {
     }
   }
 
-  // 첨부파일이 있는 메시지 조회
-  async getMessagesWithAttachments(roomId: string, page: number = 1, limit: number = 20): Promise<{
-    messages: MongoMessagesDocument[];
-    total: number;
-    page: number;
-    totalPages: number;
-  }> {
-    try {
-      const skip = (page - 1) * limit;
-      
-      const messages = await MongoMessagesModel
-        .find({ 
-          roomId,
-          attachments: { $exists: true, $ne: [] },
-          isDeleted: false 
-        })
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit);
-      
-      const total = await MongoMessagesModel.countDocuments({ 
-        roomId,
-        attachments: { $exists: true, $ne: [] },
-        isDeleted: false 
-      });
-      const totalPages = Math.ceil(total / limit);
-
-      return { messages, total, page, totalPages };
-    } catch (error) {
-      throw new Error(`Failed to get messages with attachments: ${error}`);
-    }
-  }
 }
