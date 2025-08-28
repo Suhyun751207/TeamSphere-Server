@@ -5,11 +5,12 @@ import userService from "@services/Users";
 import { isUserUpdate } from "@interfaces/guard/Users.guard";
 import authService from "@services/Auth";
 import ProfileRouter from "./profile/route.ts";
-import MessageRouter from "./message/route.ts";
+import roomsRouter from "./rooms/route.ts";
 
 const userRouter = Router({ mergeParams: true });
+
 userRouter.use('/profile', ProfileRouter);
-userRouter.use('/message', MessageRouter);
+userRouter.use('/rooms', roomsRouter);
 
 userRouter.get('/', authenticateToken, catchAsyncErrors(async (req, res) => {
     const userId = req.user?.userId;

@@ -1,0 +1,37 @@
+import { repository, ResultSetHeader } from "mysql2-wizard";
+import { messageKeys, Message, MessageAutoSetKeys, MessageCreate } from "../interfaces/message.ts";
+
+const repo =repository<Message, MessageAutoSetKeys>({
+  table: 'TeamSphere.message',
+  keys: messageKeys,
+  // printQuery: true
+});
+
+
+async function read(): Promise<Message[]>;
+async function read(id:number): Promise<Message|undefined>;
+async function read(id?:number ): Promise<Message[]|Message|undefined>{
+  if(!id) return repo.select();
+  return repo.select({id})
+}
+
+async function create(data:MessageCreate): Promise<ResultSetHeader>{
+  return repo.insert([data]);
+};
+
+async function update(id:number,data:MessageCreate):Promise<ResultSetHeader>{
+  return repo.update([[{id},data]])
+}
+
+async function _delete(id:number):Promise<ResultSetHeader>{
+  return repo.delete([{id}])
+}
+
+const messageService={
+  read,
+  create,
+  update,
+  delete: _delete,
+}
+
+export default messageService;
