@@ -14,7 +14,6 @@ const app = express();
 const server = createServer(app);
 const PORT = process.env.PORT || 8080;
 
-// CORS 설정
 app.use(
     cors({
         origin: [
@@ -28,19 +27,15 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
-// API 라우트
 app.use("/", route);
 
-// MongoDB 연결 및 Socket.IO 초기화
 (async () => {
     await connectDB();
     
-    // Socket.IO 초기화
     initializeSocket(server);
     
     const port = +(process.env.PORT ?? 8080);
     server.listen(port, "0.0.0.0", () => {
         console.log(`Server is listening on http://localhost:${port}`);
-        console.log(`Socket.IO server is ready`);
     });
 })();
