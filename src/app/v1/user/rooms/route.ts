@@ -16,10 +16,8 @@ roomsRouter.get('/', authenticateToken, catchAsyncErrors(async (req, res) => {
     
     const roomsWithDetails = await Promise.all(
         (userRooms || []).map(async (userRoom) => {
-            const roomDetails = await roomsService.read(userRoom.roomId);
             return {
-                ...userRoom,
-                room: roomDetails
+                ...userRoom
             };
         })
     );
