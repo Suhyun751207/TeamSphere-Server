@@ -8,8 +8,8 @@ export const isMessageCreate=createTypeGuard<MessageCreate>({
     type: {type: "string", enum: message_ENUM},
     content: {type: "string"},
     imagePath: {type: "string", nullable: true},
-    isEdited: {type: "boolean", nullable: true},
-    isValid: {type: "boolean", nullable: true},
+    isEdited: {type: "boolean"},
+    isValid: {type: "boolean"},
 }).optional();
 
 export const isMessageUpdate=createTypeGuard<MessageUpdate>({

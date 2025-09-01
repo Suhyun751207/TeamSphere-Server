@@ -6,8 +6,13 @@ import { isMessageCreate, isMessageUpdate } from "@interfaces/guard/Message.guar
 
 const messageRouter = Router({ mergeParams: true });
 
+messageRouter.get('/:messageId', authenticateToken, catchAsyncErrors(async (req, res) => {
+    const messages = await messageService.readId(Number(req.params.messageId));
+    return res.status(200).json(messages);
+}));
+
 messageRouter.post('/', authenticateToken, catchAsyncErrors(async (req, res) => {
-    const data = { roomId: Number(req.params.roomId), userId: Number(req.user?.userId), type: "TEXT", content: req.body.content };
+    const data = { roomId: Number(req.params.roomId), userId: Number(req.user?.userId), type: "TEXT", imagePath: req.body.imagePath || null, content: req.body.content, isEdited: false, isValid: true };
     if (!isMessageCreate(data)) return res.status(400).json({ message: isMessageCreate.message(data) });
     const message = await messageService.create(data);
     return res.status(201).json(message);
@@ -19,10 +24,12 @@ messageRouter.patch('/:messageId', authenticateToken, catchAsyncErrors(async (re
     const message = await messageService.read(Number(messageId));
     if (!message) return res.status(404).json({ message: "Message not found" });
     if (message.userId !== Number(req.user?.userId)) return res.status(401).json({ message: "Unauthorized" });
-    const data = { roomId: Number(req.params.roomId), userId: Number(req.user?.userId), type: "TEXT", imagePath: req.body.imagePath || null, content: req.body.content, isEdited: true, isValid: true };
+    const data = { roomId: Number(req.params.roomId), userId: Number(req.user?.userId), type: "TEXT", imagePath: req.body.imagePath || null, content: req.body.content || null, isEdited: true, isValid: true };
     if (!isMessageUpdate(data)) return res.status(400).json({ message: isMessageUpdate.message(data) });
     const updatedMessage = await messageService.update(Number(messageId), data);
     return res.status(200).json(updatedMessage);
 }));
+
+
 
 export default messageRouter;

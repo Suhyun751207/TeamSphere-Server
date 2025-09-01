@@ -20,6 +20,11 @@ async function readById(id: number): Promise<RoomUser | undefined> {
   return rows[0];
 } 
 
+async function readId(id: number): Promise<RoomUser[] | undefined> {
+  const rows = await repo.select({ roomId: id });
+  return rows;
+} 
+
 async function readByUserId(id: number): Promise<RoomUser[] | undefined> {
   const rows = await repo.select({ userId: id });
   return rows;
@@ -41,6 +46,7 @@ async function _delete(id:number):Promise<ResultSetHeader>{
 const roomUserService={
   read,
   readById,
+  readId,
   readByUserId,
   create,
   update,

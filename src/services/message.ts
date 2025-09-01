@@ -15,6 +15,16 @@ async function read(id?:number ): Promise<Message[]|Message|undefined>{
   return repo.select({id})
 }
 
+async function readId(id:number): Promise<Message>{
+  const res = await repo.select({id})
+  return res[0]
+}
+
+async function readRoomIdMessage(id:number): Promise<Message[]|undefined>{
+  if(!id) return repo.select();
+  return repo.select({roomId: id})
+}
+
 async function create(data:MessageCreate): Promise<ResultSetHeader>{
   return repo.insert([data]);
 };
@@ -29,6 +39,8 @@ async function _delete(id:number):Promise<ResultSetHeader>{
 
 const messageService={
   read,
+  readId,
+  readRoomIdMessage,
   create,
   update,
   delete: _delete,

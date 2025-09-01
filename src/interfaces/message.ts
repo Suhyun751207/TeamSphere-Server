@@ -7,7 +7,7 @@ export interface Message {
     userId: number;
     type: MessageType;
     content: string;
-    imagePath: string;
+    imagePath: string | null;
     isEdited: boolean;
     isValid: boolean;
     createdAt: Date;

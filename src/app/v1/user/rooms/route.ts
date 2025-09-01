@@ -17,7 +17,8 @@ roomsRouter.get('/', authenticateToken, catchAsyncErrors(async (req, res) => {
     const roomsWithDetails = await Promise.all(
         (userRooms || []).map(async (userRoom) => {
             return {
-                ...userRoom
+                ...userRoom,
+                room: await roomsService.readIdPatch(userRoom.roomId)
             };
         })
     );

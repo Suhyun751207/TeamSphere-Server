@@ -15,6 +15,11 @@ async function read(id?:number ): Promise<Rooms[]|Rooms|undefined>{
   return repo.select({id})
 }
 
+async function readIdPatch(id:number): Promise<Rooms>{
+  const rows = await repo.select({ id });
+  return rows[0];
+}
+
 async function readById(id: number): Promise<Rooms[] | undefined> {
   const rows = await repo.select({ id });
   return rows;
@@ -36,6 +41,7 @@ async function _delete(id:number):Promise<ResultSetHeader>{
 const roomsService={
   read,
   readById,
+  readIdPatch,
   create,
   update,
   delete: _delete,
