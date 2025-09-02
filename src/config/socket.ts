@@ -33,6 +33,9 @@ interface MessageResponse {
 
 let io: SocketIOServer;
 
+// Track online users per room
+const onlineUsers = new Map<number, Set<number>>(); // roomId -> Set of userIds
+
 export const initializeSocket = (server: HTTPServer) => {
   io = new SocketIOServer(server, {
     cors: {
@@ -72,11 +75,23 @@ export const initializeSocket = (server: HTTPServer) => {
       socket.join(roomKey);
       console.log(`User ${socket.userId} joined room ${roomId}`);
       
+      // Track online user
+      if (!onlineUsers.has(roomId)) {
+        onlineUsers.set(roomId, new Set());
+      }
+      onlineUsers.get(roomId)!.add(socket.userId!);
+      
       // Notify other users in the room that someone joined
       socket.to(roomKey).emit('user_joined', {
         userId: socket.userId,
         roomId: roomId,
         timestamp: new Date()
+      });
+      
+      // Send current online users to the joining user
+      socket.emit('online_users', {
+        roomId: roomId,
+        onlineUsers: Array.from(onlineUsers.get(roomId) || [])
       });
     });
 
@@ -87,6 +102,14 @@ export const initializeSocket = (server: HTTPServer) => {
       
       socket.leave(roomKey);
       console.log(`User ${socket.userId} left room ${roomId}`);
+      
+      // Remove user from online tracking
+      if (onlineUsers.has(roomId)) {
+        onlineUsers.get(roomId)!.delete(socket.userId!);
+        if (onlineUsers.get(roomId)!.size === 0) {
+          onlineUsers.delete(roomId);
+        }
+      }
       
       // Notify other users in the room that someone left
       socket.to(roomKey).emit('user_left', {
@@ -193,6 +216,24 @@ export const initializeSocket = (server: HTTPServer) => {
     socket.on('disconnect', () => {
       console.log(`User ${socket.userId} disconnected`);
       
+      // Remove user from all rooms' online tracking
+      for (const [roomId, users] of onlineUsers.entries()) {
+        if (users.has(socket.userId!)) {
+          users.delete(socket.userId!);
+          if (users.size === 0) {
+            onlineUsers.delete(roomId);
+          }
+          
+          // Notify room members that user went offline
+          const roomKey = `room_${roomId}`;
+          socket.to(roomKey).emit('user_offline', {
+            userId: socket.userId,
+            roomId: roomId,
+            timestamp: new Date()
+          });
+        }
+      }
+      
       // Notify all rooms that this user has disconnected
       socket.broadcast.emit('user_disconnected', {
         userId: socket.userId,
@@ -209,6 +250,11 @@ export const getSocketIO = () => {
     throw new Error('Socket.IO not initialized');
   }
   return io;
+};
+
+// Get online users for a specific room
+export const getOnlineUsers = (roomId: number): number[] => {
+  return Array.from(onlineUsers.get(roomId) || []);
 };
 
 export { io };
