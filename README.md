@@ -28,7 +28,7 @@
 ### 🔐 **Authentication & Authorization**
 - JWT 기반 인증 시스템 (회원가입, 로그인, 로그아웃)
 - 토큰 검증 및 자동 갱신
-- 쿠키 기반 토큰 관리
+- 쿠키 기반 토큰 관리 (`accesstoken` 쿠키)
 - bcryptjs 패스워드 해싱
 - 역할 기반 접근 제어 (Admin, Manager, Member, Viewer)
 
@@ -66,12 +66,16 @@
 - 댓글 수정/삭제 권한 관리
 - 댓글 소유자 및 팀 관리자 권한 체크
 
-### 💬 **실시간 메시징 시스템 (MongoDB)**
+### 💬 **실시간 메시징 시스템 (MongoDB + Socket.IO)**
 - **채팅방 관리**: DM, 워크스페이스, 팀 채팅방
 - **메시지 기능**: 텍스트, 이미지, 파일 메시지 지원
 - **고급 기능**: 답장, 첨부파일, 메시지 수정/삭제
 - **실시간 통신**: Socket.IO 기반 실시간 메시징
+  - `join_room`, `leave_room` - 채팅방 입장/퇴장
+  - `send_message` - 메시지 전송
+  - `room_updated` - 실시간 방 업데이트
 - **페이지네이션**: 메시지 목록 페이징 지원
+- **자동 정렬**: 마지막 메시지 시간 기준 채팅방 정렬
 
 ### 📊 **활동 로그**
 - 워크스페이스 내 모든 활동 추적
@@ -113,10 +117,11 @@
 - **Jest** - 테스팅 프레임워크
 
 ### **Real-time & Utilities**
-- **Socket.IO** - 실시간 통신 (메시징 시스템)
-- **CORS** - Cross-Origin Resource Sharing
+- **Socket.IO** - 실시간 통신 (메시징 시스템, JWT 인증 연동)
+- **CORS** - Cross-Origin Resource Sharing (localhost:3000 허용)
 - **UUID** - 고유 식별자 생성
 - **dotenv** - 환경변수 관리
+- **cookie-parser** - 쿠키 파싱 (JWT 토큰 추출)
 
 ## 🏗️ Architecture
 
@@ -134,11 +139,13 @@ MySQL (관계형 데이터)          MongoDB (문서형 데이터)
 │   ├── priority              ├── rooms (채팅방)
 │   └── workspace_team_user_id│   ├── type (dm/workspace/team)
 └── activity_logs             │   ├── participants[]
-                              │   └── lastMessage
+                              │   ├── lastMessageId
+                              │   └── createdAt
                               └── messages
                                   ├── content, messageType
                                   ├── replyToId, attachments[]
-                                  └── isDeleted, isEdited
+                                  ├── isDeleted, isEdited
+                                  └── createdAt (정렬 기준)
 ```
 
 ### **Path Aliases**
@@ -221,6 +228,8 @@ npm run dev
 
 Server will be running at `http://localhost:8080`
 
+**Socket.IO**: 실시간 통신도 같은 포트에서 제공됩니다.
+
 ## ⚙️ Configuration
 
 ### Environment Variables
@@ -240,6 +249,11 @@ Server will be running at `http://localhost:8080`
 Currently configured for:
 - `localhost:3000` (React development server)
 - Add your frontend URLs in `src/app/index.ts`
+
+### Socket.IO Configuration
+- JWT 토큰 기반 인증 (`accesstoken` 쿠키에서 추출)
+- 자동 연결 및 재연결 지원
+- 채팅방별 실시간 이벤트 관리
 
 ## 📚 API Documentation
 
@@ -327,12 +341,19 @@ GET    /v1/user/profile/:profileId   # 특정 사용자 프로필 조회
 PATCH  /v1/user/profile/:profileId   # 프로필 정보 수정
 ```
 
-### 💬 Real-time Messaging System (MongoDB)
+### 💬 Real-time Messaging System (MongoDB + Socket.IO)
 ```http
 # 채팅방 관리
-POST   /v1/workspace/:workspaceId/message/rooms                           # 워크스페이스 채팅방 생성/조회
-GET    /v1/workspace/:workspaceId/message/rooms/:roomId/messages          # 채팅방 메시지 목록 조회 (페이지네이션)
-POST   /v1/workspace/:workspaceId/message/rooms/:roomId/messages          # 새 메시지 전송
+GET    /v1/user/rooms                                                   # 사용자 채팅방 목록 조회
+GET    /v1/user/rooms/:roomId/messages                                  # 채팅방 메시지 목록 조회 (페이지네이션)
+POST   /v1/user/rooms/:roomId/messages                                  # 새 메시지 전송
+GET    /v1/user/rooms/:roomId/messages/:messageId                       # 특정 메시지 조회
+
+# Socket.IO 실시간 이벤트
+join_room      # 채팅방 입장
+leave_room     # 채팅방 퇴장  
+send_message   # 메시지 전송
+room_updated   # 방 업데이트 (새 메시지 시 자동 발생)
 
 # 메시지 관리
 PUT    /v1/workspace/:workspaceId/message/messages/:messageId             # 메시지 수정
@@ -506,7 +527,7 @@ Request/Response Schemas
 server/
 ├── src/
 │   ├── app/                                    # 애플리케이션 설정
-│   │   ├── index.ts                           # 메인 서버 진입점 (MongoDB 연결 포함)
+│   │   ├── index.ts                           # 메인 서버 진입점 (MongoDB, Socket.IO 연결 포함)
 │   │   ├── route.ts                           # 루트 라우터
 │   │   └── v1/                                # API 버전 1
 │   │       ├── route.ts                       # V1 메인 라우터
@@ -517,6 +538,11 @@ server/
 │   │       ├── user/                          # 사용자 프로필 관리
 │   │       │   └── profile/                   # 프로필 엔드포인트
 │   │       │       └── route.ts               # 프로필 CRUD
+│   │       ├── user/                          # 사용자 관련 API
+│   │       │   ├── profile/                   # 프로필 엔드포인트
+│   │       │   │   └── route.ts               # 프로필 CRUD
+│   │       │   └── rooms/                     # 채팅방 API (실시간 메시징)
+│   │       │       └── route.ts               # 채팅방 및 메시지 관리
 │   │       └── workspace/                     # 워크스페이스 모듈
 │   │           ├── router.ts                  # 워크스페이스 라우터
 │   │           └── [workspaceId]/             # 워크스페이스별 라우팅
@@ -546,7 +572,8 @@ server/
 │   │                                                       └── route.ts # 댓글 CRUD
 │   ├── config/                                # 설정 파일
 │   │   ├── database.ts                        # MySQL 연결 설정
-│   │   └── mongodb.ts                         # MongoDB 연결 설정
+│   │   ├── mongodb.ts                         # MongoDB 연결 설정
+│   │   └── socket.ts                          # Socket.IO 설정 및 이벤트 핸들러
 │   ├── interfaces/                            # TypeScript 인터페이스
 │   │   ├── Users.ts                          # 사용자 타입 정의
 │   │   ├── Profiles.ts                       # 프로필 타입 정의
@@ -607,7 +634,7 @@ server/
 │       ├── catchAsyncErrors.ts              # 비동기 에러 처리
 │       ├── jwt.ts                           # JWT 유틸리티
 │       ├── password.ts                      # 패스워드 유틸리티
-│       └── initSocket.ts                    # Socket.IO 초기화
+│       └── initSocket.ts                    # Socket.IO 초기화 및 이벤트 핸들러
 ├── db/                                      # 데이터베이스 관련
 │   ├── SQL_Query.sql                        # MySQL 스키마
 │   ├── TeamSphere.vuerd.json                # ERD 파일
