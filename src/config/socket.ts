@@ -48,7 +48,7 @@ export const initializeSocket = (server: HTTPServer) => {
   // Authentication middleware
   io.use((socket: any, next) => {
     const token = socket.handshake.auth.token;
-    
+
     if (!token) {
       return next(new Error('Authentication token required'));
     }
@@ -66,28 +66,28 @@ export const initializeSocket = (server: HTTPServer) => {
 
   io.on('connection', (socket: AuthenticatedSocket) => {
     console.log(`User ${socket.userId} connected`);
-    
+
     // Join a room for real-time messaging
     socket.on('join_room', (data: JoinRoomData) => {
       const { roomId } = data;
       const roomKey = `room_${roomId}`;
-      
+
       socket.join(roomKey);
       console.log(`User ${socket.userId} joined room ${roomId}`);
-      
+
       // Track online user
       if (!onlineUsers.has(roomId)) {
         onlineUsers.set(roomId, new Set());
       }
       onlineUsers.get(roomId)!.add(socket.userId!);
-      
+
       // Notify other users in the room that someone joined
       socket.to(roomKey).emit('user_joined', {
         userId: socket.userId,
         roomId: roomId,
         timestamp: new Date()
       });
-      
+
       // Send current online users to the joining user
       socket.emit('online_users', {
         roomId: roomId,
@@ -99,10 +99,10 @@ export const initializeSocket = (server: HTTPServer) => {
     socket.on('leave_room', (data: JoinRoomData) => {
       const { roomId } = data;
       const roomKey = `room_${roomId}`;
-      
+
       socket.leave(roomKey);
       console.log(`User ${socket.userId} left room ${roomId}`);
-      
+
       // Remove user from online tracking
       if (onlineUsers.has(roomId)) {
         onlineUsers.get(roomId)!.delete(socket.userId!);
@@ -110,7 +110,7 @@ export const initializeSocket = (server: HTTPServer) => {
           onlineUsers.delete(roomId);
         }
       }
-      
+
       // Notify other users in the room that someone left
       socket.to(roomKey).emit('user_left', {
         userId: socket.userId,
@@ -123,7 +123,7 @@ export const initializeSocket = (server: HTTPServer) => {
     socket.on('send_message', async (data: SendMessageData) => {
       try {
         const { roomId, content, type = 'TEXT' } = data;
-        
+
         if (!socket.userId) {
           socket.emit('message_error', { error: 'User not authenticated' });
           return;
@@ -141,11 +141,11 @@ export const initializeSocket = (server: HTTPServer) => {
         };
 
         const result = await messageService.create(messageData);
-        
+
         if (result.insertId) {
           // Fetch the created message with full details
           const createdMessage = await messageService.readId(result.insertId);
-          
+
           const messageResponse: MessageResponse = {
             id: createdMessage.id,
             roomId: createdMessage.roomId,
@@ -162,7 +162,7 @@ export const initializeSocket = (server: HTTPServer) => {
           // Emit to all users in the room (including sender)
           const roomKey = `room_${roomId}`;
           io.to(roomKey).emit('new_message', messageResponse);
-          
+
           // Emit room update event for room list updates
           io.emit('room_updated', {
             roomId: roomId,
@@ -175,14 +175,14 @@ export const initializeSocket = (server: HTTPServer) => {
             },
             timestamp: new Date()
           });
-          
+
           console.log(`Message ${result.insertId} sent to room ${roomId} by user ${socket.userId}`);
         } else {
           socket.emit('message_error', { error: 'Failed to save message' });
         }
       } catch (error) {
         console.error('Error handling send_message:', error);
-        socket.emit('message_error', { 
+        socket.emit('message_error', {
           error: 'Failed to send message',
           details: error instanceof Error ? error.message : 'Unknown error'
         });
@@ -193,7 +193,7 @@ export const initializeSocket = (server: HTTPServer) => {
     socket.on('typing_start', (data: JoinRoomData) => {
       const { roomId } = data;
       const roomKey = `room_${roomId}`;
-      
+
       socket.to(roomKey).emit('user_typing', {
         userId: socket.userId,
         roomId: roomId,
@@ -204,7 +204,7 @@ export const initializeSocket = (server: HTTPServer) => {
     socket.on('typing_stop', (data: JoinRoomData) => {
       const { roomId } = data;
       const roomKey = `room_${roomId}`;
-      
+
       socket.to(roomKey).emit('user_typing', {
         userId: socket.userId,
         roomId: roomId,
@@ -215,7 +215,7 @@ export const initializeSocket = (server: HTTPServer) => {
     // Handle disconnection
     socket.on('disconnect', () => {
       console.log(`User ${socket.userId} disconnected`);
-      
+
       // Remove user from all rooms' online tracking
       for (const [roomId, users] of onlineUsers.entries()) {
         if (users.has(socket.userId!)) {
@@ -223,7 +223,7 @@ export const initializeSocket = (server: HTTPServer) => {
           if (users.size === 0) {
             onlineUsers.delete(roomId);
           }
-          
+
           // Notify room members that user went offline
           const roomKey = `room_${roomId}`;
           socket.to(roomKey).emit('user_offline', {
@@ -233,7 +233,7 @@ export const initializeSocket = (server: HTTPServer) => {
           });
         }
       }
-      
+
       // Notify all rooms that this user has disconnected
       socket.broadcast.emit('user_disconnected', {
         userId: socket.userId,

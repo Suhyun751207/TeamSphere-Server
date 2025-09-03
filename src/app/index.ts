@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import connectDB from "@config/database";
 import { initializeSocket } from "@config/socket";
+import { setupSwagger } from "@config/swagger";
 import route from "./route.ts";
 
 dotenv.config();
@@ -27,6 +28,9 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
+// Swagger 설정
+setupSwagger(app);
+
 app.use("/", route);
 
 (async () => {
@@ -34,7 +38,7 @@ app.use("/", route);
     
     initializeSocket(server);
     
-    const port = +(process.env.PORT ?? 8080);
+    const port = +(process.env.PORT ?? 8081);
     server.listen(port, "0.0.0.0", () => {
         console.log(`Server is listening on http://localhost:${port}`);
     });

@@ -14,6 +14,50 @@ import tasksIdRouter from "./[taskId]/route.ts";
 const tasksRouter = Router({ mergeParams: true });
 tasksRouter.use('/:tasksId', tasksIdRouter);
 
+/**
+ * @swagger
+ * /v1/workspace/{workspaceId}/teams/{teamId}/member/{memberId}/tasks:
+ *   get:
+ *     summary: 팀 멤버의 작업 목록 조회
+ *     tags: [Tasks]
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: workspaceId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: 워크스페이스 ID
+ *       - in: path
+ *         name: teamId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: 팀 ID
+ *       - in: path
+ *         name: memberId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: 멤버 ID
+ *     responses:
+ *       200:
+ *         description: 작업 목록 조회 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Task'
+ *       403:
+ *         description: 팀 멤버 권한 필요
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 tasksRouter.get('/', authenticateToken, checkTeamMember, catchAsyncErrors(async (req, res) => {
     const teamId = Number(req.params.teamId);
     const memberId = Number(req.params.memberId);
@@ -24,6 +68,75 @@ tasksRouter.get('/', authenticateToken, checkTeamMember, catchAsyncErrors(async 
     return res.status(200).json(result);
 }))
 
+/**
+ * @swagger
+ * /v1/workspace/{workspaceId}/teams/{teamId}/member/{memberId}/tasks:
+ *   post:
+ *     summary: 새 작업 생성
+ *     tags: [Tasks]
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: workspaceId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: 워크스페이스 ID
+ *       - in: path
+ *         name: teamId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: 팀 ID
+ *       - in: path
+ *         name: memberId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: 멤버 ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - state
+ *               - priority
+ *             properties:
+ *               state:
+ *                 type: string
+ *                 enum: ['TODO', 'IN_PROGRESS', 'DONE', 'CANCELLED']
+ *                 example: 'TODO'
+ *               priority:
+ *                 type: string
+ *                 enum: ['LOW', 'MEDIUM', 'HIGH', 'URGENT']
+ *                 example: 'MEDIUM'
+ *               task:
+ *                 type: string
+ *                 example: '새로운 기능 개발'
+ *     responses:
+ *       200:
+ *         description: 작업 생성 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Task'
+ *       400:
+ *         description: 잘못된 요청
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       403:
+ *         description: 팀 멤버 권한 필요
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 tasksRouter.post('/', authenticateToken, checkTeamMember, catchAsyncErrors(async (req, res) => {
     const memberId = Number(req.params.memberId);
     const teamId = Number(req.params.teamId);

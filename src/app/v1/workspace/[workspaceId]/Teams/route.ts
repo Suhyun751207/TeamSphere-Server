@@ -11,14 +11,97 @@ import teamIdRouter from "./[teamId]/route.ts";
 const teamRouter = Router({ mergeParams: true });
 teamRouter.use("/:teamId", teamIdRouter);
 
-// 모든 팀의 대한 정보를 조회
+/**
+ * @swagger
+ * /v1/workspace/{workspaceId}/teams:
+ *   get:
+ *     summary: 워크스페이스 내 모든 팀 조회
+ *     tags: [Teams]
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: workspaceId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: 워크스페이스 ID
+ *     responses:
+ *       200:
+ *         description: 팀 목록 조회 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Team'
+ *       403:
+ *         description: 워크스페이스 접근 권한 없음
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 teamRouter.get('/', authenticateToken, checkWorkspaceAccess, catchAsyncErrors(async (req, res) => {
     const workspaceId = req.params.workspaceId;
     const team = await workspaceTeamService.read(Number(workspaceId));
     return res.status(200).json(team);
 }))
 
-// 워크스페이스 관리자, 매니저 권한 가진 사람이 팀 생성
+/**
+ * @swagger
+ * /v1/workspace/{workspaceId}/teams:
+ *   post:
+ *     summary: 새 팀 생성
+ *     tags: [Teams]
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: workspaceId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: 워크스페이스 ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: "개발팀"
+ *     responses:
+ *       201:
+ *         description: 팀 생성 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 teamResult:
+ *                   type: object
+ *                 teamUsersResult:
+ *                   type: object
+ *       400:
+ *         description: 잘못된 요청
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       403:
+ *         description: 관리자 또는 매니저 권한 필요
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 teamRouter.post('/', authenticateToken, checkWorkspaceAdminOrManager, catchAsyncErrors(async (req, res) => {
     const name = req.body.name;
     const userId = req.user?.userId;

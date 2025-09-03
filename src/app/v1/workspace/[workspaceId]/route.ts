@@ -16,7 +16,43 @@ workspaceIdRouter.use("/activityLog", activityLogsRouter);
 workspaceIdRouter.use("/teams", teamRouter);
 workspaceIdRouter.use("/message", messageRouter);
 
-// 워크스페이스의 대한 정보를 조회
+/**
+ * @swagger
+ * /v1/workspace/{workspaceId}:
+ *   get:
+ *     summary: 워크스페이스 상세 정보 조회
+ *     tags: [Workspace]
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: workspaceId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: 워크스페이스 ID
+ *     responses:
+ *       200:
+ *         description: 워크스페이스 정보 조회 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 workspace:
+ *                   $ref: '#/components/schemas/Workspace'
+ *                 workspaceMember:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *       403:
+ *         description: 워크스페이스 접근 권한 없음
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 workspaceIdRouter.get("/", authenticateToken, checkWorkspaceAccess, catchAsyncErrors(async (req, res) => {
     const workspaceId = req.params.workspaceId;
     const workspace = await workspaceService.read(Number(workspaceId));
@@ -24,7 +60,55 @@ workspaceIdRouter.get("/", authenticateToken, checkWorkspaceAccess, catchAsyncEr
     return res.status(200).json({workspace, workspaceMember});
 }));
 
-// 워크스페이스 수정
+/**
+ * @swagger
+ * /v1/workspace/{workspaceId}:
+ *   patch:
+ *     summary: 워크스페이스 정보 수정
+ *     tags: [Workspace]
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: workspaceId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: 워크스페이스 ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: "Updated Workspace"
+ *               description:
+ *                 type: string
+ *                 example: "수정된 워크스페이스 설명"
+ *     responses:
+ *       200:
+ *         description: 워크스페이스 수정 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Workspace'
+ *       400:
+ *         description: 잘못된 요청
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       403:
+ *         description: 관리자 또는 매니저 권한 필요
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 workspaceIdRouter.patch("/", authenticateToken, checkWorkspaceAdminOrManager, catchAsyncErrors(async (req, res) => {
     const body = req.body;
     const adminId = req.user?.userId;

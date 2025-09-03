@@ -29,7 +29,7 @@ async function create(data:MessageCreate): Promise<ResultSetHeader>{
   return repo.insert([data]);
 };
 
-async function update(id:number,data:MessageCreate):Promise<ResultSetHeader>{
+async function update(id:number,data:Partial<MessageCreate>):Promise<ResultSetHeader>{
   return repo.update([[{id},data]])
 }
 

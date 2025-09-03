@@ -6,6 +6,8 @@ import { isUserUpdate } from "@interfaces/guard/Users.guard";
 import authService from "@services/Auth";
 import ProfileRouter from "./profile/route.ts";
 import roomsRouter from "./rooms/route.ts";
+import attendanceRecordsService from "@services/AttendanceRecords.ts";
+import { isAttendanceRecordsCreate } from "@interfaces/guard/AttendanceRecords.guard.ts";
 
 const userRouter = Router({ mergeParams: true });
 
@@ -17,6 +19,21 @@ userRouter.get('/', authenticateToken, catchAsyncErrors(async (req, res) => {
     const user = await userService.read(userId!);
     return res.status(200).json(user);
 }));
+
+userRouter.get('/attendance', authenticateToken, catchAsyncErrors(async (req, res) => {
+    const userId = req.user?.userId;
+    const user = await attendanceRecordsService.readUserId(userId!);
+    return res.status(200).json(user);
+}));
+
+userRouter.post('/attendance', authenticateToken, catchAsyncErrors(async (req, res) => {
+    const userId = req.user?.userId;
+    const data = { userId };
+    if (!isAttendanceRecordsCreate(data)) return res.status(400).json({ message: isAttendanceRecordsCreate.message(data) });
+    const user = await attendanceRecordsService.create(data);
+    return res.status(200).json({ message: "출석 기록이 생성되었습니다.", user });
+}));
+
 
 // 로그인 상태에서 비밀번호 변경
 userRouter.patch('/', authenticateToken, catchAsyncErrors(async (req, res) => {
@@ -34,19 +51,19 @@ userRouter.patch('/', authenticateToken, catchAsyncErrors(async (req, res) => {
 // 비로그인 상태에서 이메일로 비밀번호 변경
 userRouter.patch('/notlogin', catchAsyncErrors(async (req, res) => {
     const { email, password, newPassword } = req.body;
-    
+
     if (!email) return res.status(400).json({ message: "이메일이 필요합니다." });
     if (!password) return res.status(400).json({ message: "현재 비밀번호가 필요합니다." });
     if (!newPassword) return res.status(400).json({ message: "새로운 비밀번호가 필요합니다." });
-    
+
     const data = { email, password };
     if (!isUserUpdate(data)) return res.status(400).json({ message: isUserUpdate.message(data) });
-    
+
     const users = await userService.read();
     const user = users.find(u => u.email === email);
-    
+
     if (!user) return res.status(400).json({ message: "존재하지 않는 이메일입니다." });
-    
+
     const result = await authService.updatePassword(user.id, data, newPassword);
     return res.status(200).json(result);
 }));

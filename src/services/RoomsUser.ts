@@ -42,6 +42,10 @@ async function _delete(id:number):Promise<ResultSetHeader>{
   return repo.delete([{id}])
 }
 
+async function deleteByRoomIdAndUserId(roomId: number, userId: number): Promise<ResultSetHeader> {
+  return repo.delete([{roomId, userId}]);
+}
+
 
 const roomUserService={
   read,
@@ -51,6 +55,7 @@ const roomUserService={
   create,
   update,
   delete: _delete,
+  deleteByRoomIdAndUserId,
 }
 
 export default roomUserService;

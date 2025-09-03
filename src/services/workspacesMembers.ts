@@ -27,6 +27,11 @@ async function readByWorkspacesIdUserId(workspaceId: number, userId: number): Pr
   return repo.select({workspaceId, userId});
 }
 
+async function readByUserIdAndWorkspaceId(userId: number, workspaceId: number): Promise<workspaceMember | null> {
+  const result = await repo.select({userId, workspaceId});
+  return result.length > 0 ? result[0] : null;
+}
+
 
 async function create(data:workspaceMemberCreate): Promise<ResultSetHeader>{
   return repo.insert([data]);
@@ -45,6 +50,7 @@ const workspaceMemberService={
   readById,
   readByUserId,
   readByWorkspacesIdUserId,
+  readByUserIdAndWorkspaceId,
   create,
   update,
   delete: _delete,
