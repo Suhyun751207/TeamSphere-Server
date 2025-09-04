@@ -34,6 +34,13 @@ userRouter.post('/attendance', authenticateToken, catchAsyncErrors(async (req, r
     return res.status(200).json({ message: "출석 기록이 생성되었습니다.", user });
 }));
 
+userRouter.get('/attendance/:userid', authenticateToken, catchAsyncErrors(async (req, res) => {
+    const userId = req.params.userid;
+    const user = await attendanceRecordsService.readUserId(Number(userId));
+    return res.status(200).json(user);
+}));
+
+
 
 // 로그인 상태에서 비밀번호 변경
 userRouter.patch('/', authenticateToken, catchAsyncErrors(async (req, res) => {
