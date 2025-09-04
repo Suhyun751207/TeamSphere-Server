@@ -1,6 +1,4 @@
 import mongoose, { Schema, Document } from 'mongoose';
-import { MongoMessages } from '../interfaces/MongoMessages';
-import { MongoRooms } from '../interfaces/MongoRooms';
 
 export interface MessagesDocument extends Document {
   id: number;

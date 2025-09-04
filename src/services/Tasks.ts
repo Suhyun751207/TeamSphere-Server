@@ -15,6 +15,10 @@ async function read(teamMemberId?: number): Promise<tasks[] | tasks | undefined>
   return repo.select({ teamMemberId })
 }
 
+async function readByTaskId(task_id: number): Promise<tasks[] | undefined> {
+  return repo.select({ id: task_id })
+}
+
 async function create(data: tasksCreate): Promise<ResultSetHeader> {
   return repo.insert([data]);
 };
@@ -29,6 +33,7 @@ async function _delete(teamMemberId: number): Promise<ResultSetHeader> {
 
 const tasksService = {
   read,
+  readByTaskId,
   create,
   update,
   delete: _delete,
