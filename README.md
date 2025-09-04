@@ -190,7 +190,7 @@ CREATE DATABASE TeamSphere;
 **MongoDB Setup:**
 Ensure MongoDB is running on your system:
 ```bash
-# Start MongoDB service (Windows)
+# Start MongoDB service (Windows)  
 net start MongoDB
 
 # Start MongoDB service (macOS/Linux)
@@ -266,9 +266,12 @@ http://localhost:8080/v1
 ```http
 POST   /v1/auth/signup    # 회원가입
 POST   /v1/auth/login     # 로그인
-POST   /v1/auth/logout    # 로그아웃
-GET    /v1/auth/me        # 현재 사용자 정보 조회
-GET    /v1/auth/verify    # 토큰 검증
+GET    /v1/auth/logout    # 로그아웃
+```
+
+### 📊 Dashboard
+```http
+GET    /v1/dashboard     # 대시보드 데이터 조회 (현재 테스트 응답)
 ```
 
 ### 🏢 Workspace Management
@@ -333,31 +336,59 @@ PATCH  /v1/workspace/:workspaceId/teams/:teamId/member/:memberId/tasks/:tasksId/
 DELETE /v1/workspace/:workspaceId/teams/:teamId/member/:memberId/tasks/:tasksId/task/:taskId/comments/:commentsId   # 댓글 삭제 (소유자 또는 Admin/Manager)
 ```
 
-### 👤 User Profile Management
+### 👤 User Management
 ```http
+# 사용자 정보
+GET    /v1/user                      # 현재 사용자 정보 조회
+PATCH  /v1/user                      # 로그인 상태에서 비밀번호 변경
+PATCH  /v1/user/notlogin             # 비로그인 상태에서 비밀번호 변경
+
+# 출석 기록
+GET    /v1/user/attendance           # 사용자 출석 기록 조회
+POST   /v1/user/attendance           # 출석 기록 생성
+
+# 프로필 관리
 GET    /v1/user/profile              # 현재 사용자 프로필 조회
 POST   /v1/user/profile              # 새 프로필 생성
 GET    /v1/user/profile/:profileId   # 특정 사용자 프로필 조회
 PATCH  /v1/user/profile/:profileId   # 프로필 정보 수정
+
+# DM 채팅방 (개인 메시징)
+GET    /v1/user/rooms                # 사용자 DM 채팅방 목록
+POST   /v1/user/rooms                # 새 DM 채팅방 생성
+GET    /v1/user/rooms/:roomId        # 특정 DM 채팅방 조회
+POST   /v1/user/rooms/:roomId/:userId # DM 채팅방에 사용자 추가
+DELETE /v1/user/rooms/:roomId/:userId # DM 채팅방에서 사용자 제거
+GET    /v1/user/rooms/:roomId/message # DM 채팅방 메시지 목록
+POST   /v1/user/rooms/:roomId/message # DM 메시지 전송
 ```
 
-### 💬 Real-time Messaging System (MongoDB + Socket.IO)
+### 💬 Workspace Messaging System (MongoDB + Socket.IO)
 ```http
-# 채팅방 관리
-GET    /v1/user/rooms                                                   # 사용자 채팅방 목록 조회
-GET    /v1/user/rooms/:roomId/messages                                  # 채팅방 메시지 목록 조회 (페이지네이션)
-POST   /v1/user/rooms/:roomId/messages                                  # 새 메시지 전송
-GET    /v1/user/rooms/:roomId/messages/:messageId                       # 특정 메시지 조회
+# 워크스페이스 채팅방 관리
+GET    /v1/workspace/:workspaceId/message                                    # 워크스페이스 채팅방 목록
+POST   /v1/workspace/:workspaceId/message                                    # 새 워크스페이스 채팅방 생성
+GET    /v1/workspace/:workspaceId/message/:roomId                            # 특정 채팅방 조회
+GET    /v1/workspace/:workspaceId/message/:roomId/members                    # 채팅방 멤버 목록
+POST   /v1/workspace/:workspaceId/message/:roomId/:userId                    # 채팅방에 멤버 추가
+DELETE /v1/workspace/:workspaceId/message/:roomId/:userId                  # 채팅방에서 멤버 제거
+
+# 워크스페이스 메시지 관리
+GET    /v1/workspace/:workspaceId/message/:roomId/message                    # 채팅방 메시지 목록
+POST   /v1/workspace/:workspaceId/message/:roomId/message                    # 메시지 전송
+GET    /v1/workspace/:workspaceId/message/:roomId/message/:messageId         # 특정 메시지 조회
+PATCH  /v1/workspace/:workspaceId/message/:roomId/message/:messageId         # 메시지 수정
+DELETE /v1/workspace/:workspaceId/message/:roomId/message/:messageId         # 메시지 삭제
+
+# 팀 메시징
+GET    /v1/workspace/:workspaceId/teams/:teamId/message                      # 팀 채팅방 메시지 목록
+POST   /v1/workspace/:workspaceId/teams/:teamId/message                      # 팀 메시지 전송
 
 # Socket.IO 실시간 이벤트
 join_room      # 채팅방 입장
 leave_room     # 채팅방 퇴장  
 send_message   # 메시지 전송
 room_updated   # 방 업데이트 (새 메시지 시 자동 발생)
-
-# 메시지 관리
-PUT    /v1/workspace/:workspaceId/message/messages/:messageId             # 메시지 수정
-DELETE /v1/workspace/:workspaceId/message/messages/:messageId             # 메시지 삭제
 ```
 
 **Auth & Access Control:** 모든 엔드포인트는 `authenticateToken` + 적절한 권한 확인 필요
