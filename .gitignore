@@ -63,3 +63,11 @@ firebase-adminsdk-fbsvc-8a94f50787.json
 API.md
 
 ./lib
+lib/
+public/
+%USERPROFILE%/
+firebase.json
+.firebaserc
+scripts/
+swagger.json
+.firebase/
