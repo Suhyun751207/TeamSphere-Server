@@ -61,3 +61,5 @@ Thumbs.db
 tsconfig.json.backup
 firebase-adminsdk-fbsvc-8a94f50787.json
 API.md
+
+./lib
