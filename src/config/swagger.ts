@@ -191,6 +191,33 @@ const options: swaggerJSDoc.Options = {
             message: { type: 'string' },
             data: { type: 'object' }
           }
+        },
+        ActivityLog: {
+          type: 'object',
+          properties: {
+            id: { type: 'integer' },
+            workspaceId: { type: 'integer' },
+            userId: { type: 'integer' },
+            action: { type: 'string' },
+            description: { type: 'string' },
+            targetType: { type: 'string' },
+            targetId: { type: 'integer' },
+            createdAt: { type: 'string', format: 'date-time' }
+          }
+        },
+        AttendanceRecord: {
+          type: 'object',
+          properties: {
+            id: { type: 'integer' },
+            userId: { type: 'integer' },
+            workspaceId: { type: 'integer' },
+            checkInTime: { type: 'string', format: 'date-time' },
+            checkOutTime: { type: 'string', format: 'date-time', nullable: true },
+            status: { type: 'string', enum: ['PRESENT', 'ABSENT', 'LATE'] },
+            date: { type: 'string', format: 'date' },
+            createdAt: { type: 'string', format: 'date-time' },
+            updatedAt: { type: 'string', format: 'date-time' }
+          }
         }
       }
     },
