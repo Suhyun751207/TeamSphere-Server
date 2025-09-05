@@ -103,6 +103,7 @@ messageRouter.post('/', authenticateToken, catchAsyncErrors(async (req, res) => 
     const data = { roomId: Number(req.params.roomId), userId: Number(req.user?.userId), type: "TEXT", imagePath: req.body.imagePath || null, content: req.body.content, isEdited: false, isValid: true };
     if (!isMessageCreate(data)) return res.status(400).json({ message: isMessageCreate.message(data) });
     const message = await messageService.create(data);
+    // Message 59 sent to room 1 by user 1
     return res.status(201).json(message);
 }));
 

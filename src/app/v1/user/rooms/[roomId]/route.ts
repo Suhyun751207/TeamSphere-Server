@@ -24,21 +24,21 @@ roomIdRouter.get('/', authenticateToken, catchAsyncErrors(async (req, res) => {
 roomIdRouter.get('/members', authenticateToken, catchAsyncErrors(async (req, res) => {
     const roomId = req.params.roomId;
     const members = await roomUserService.readId(Number(roomId));
-    
+
     if (!members) {
         return res.status(404).json({ message: "Room not found or no members" });
     }
-    
+
     // Get online users from socket tracking
     const { getOnlineUsers } = await import('@config/socket.ts');
     const onlineUserIds = getOnlineUsers(Number(roomId));
-    
+
     // Add online status to members
     const membersWithStatus = members.map((member: any) => ({
         ...member,
         isOnline: onlineUserIds.includes(member.userId)
     }));
-    
+
     return res.status(200).json({ data: membersWithStatus });
 }));
 
