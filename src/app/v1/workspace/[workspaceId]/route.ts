@@ -9,12 +9,14 @@ import workspaceIdMemberRouter from "./members/route.ts";
 import activityLogsRouter from "./activityLogs/route.ts";
 import teamRouter from "./Teams/route.ts";
 import messageRouter from "./message/route.ts";
+import DashboardWorkspaceIdRouter from "./dashboard/route.ts";
 
 const workspaceIdRouter = Router({ mergeParams: true });
 workspaceIdRouter.use("/members", workspaceIdMemberRouter);
 workspaceIdRouter.use("/activityLog", activityLogsRouter);
 workspaceIdRouter.use("/teams", teamRouter);
 workspaceIdRouter.use("/message", messageRouter);
+workspaceIdRouter.use("/dashboard", DashboardWorkspaceIdRouter);
 
 /**
  * @swagger
