@@ -61,28 +61,33 @@ roomsUserIdRouter.post('/add', authenticateToken, checkWorkspaceAccess, catchAsy
     const userId = req.params.userId;
     const workspaceId = req.params.workspaceId;
     const requestUserId = req.user?.userId;
-    console.log(requestUserId);
-    console.log(userId);
-    console.log(workspaceId);
-    console.log(roomId);
-    
-    
+    if (requestUserId === Number(userId)) {
+        return res.status(400).json({ message: "자신을 추가할 수 없습니다." });
+    }
+
     // Validate parameters
     if (!requestUserId || !userId || !workspaceId || !roomId) {
         return res.status(400).json({ message: "필수 매개변수가 누락되었습니다." });
     }
-    
+
     // 추가할 사용자도 워크스페이스 멤버인지 확인
-    const isTargetMember = await workspacesMembersService.readByUserIdAndWorkspaceId(Number(requestUserId), Number(workspaceId));
+    const isTargetMember = await workspacesMembersService.readByUserIdAndWorkspaceId(Number(userId), Number(workspaceId));
     if (!isTargetMember) {
         return res.status(400).json({ message: "추가할 사용자가 워크스페이스 멤버가 아닙니다." });
     }
-    
+
+    // 사용자가 이미 해당 룸의 멤버인지 확인
+    const roomMembers = await roomUserService.readId(Number(roomId));
+    const existingMember = roomMembers?.find(member => member.userId === Number(userId));
+    if (existingMember) {
+        return res.status(400).json({ message: "사용자가 이미 해당 룸의 멤버입니다." });
+    }
+
     const data = { roomId: Number(roomId), userId: Number(userId) };
     if (!isRoomUserCreate(data)) {
         return res.status(400).json({ message: isRoomUserCreate.message(data) });
     }
-    
+
     const roomUser = await roomUserService.create(data);
     return res.status(201).json(roomUser);
 }));
@@ -134,7 +139,7 @@ roomsUserIdRouter.delete('/remove', authenticateToken, checkWorkspaceAccess, cat
     const userId = req.params.userId;
     const workspaceId = req.params.workspaceId;
     const requestUserId = req.user?.userId;
-    
+
     const roomUser = await roomUserService.deleteByRoomIdAndUserId(Number(roomId), Number(userId));
     return res.status(200).json(roomUser);
 }));
