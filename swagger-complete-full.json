@@ -1,0 +1,225 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "TeamSphere API",
+    "version": "1.0.0",
+    "description": "TeamSphere 팀 협업 플랫폼 완전한 API 문서"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Development server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "cookieAuth": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "token"
+      }
+    },
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "email": { "type": "string", "format": "email" },
+          "username": { "type": "string" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "Profile": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "userId": { "type": "integer" },
+          "name": { "type": "string" },
+          "age": { "type": "integer" },
+          "gender": { "type": "string", "enum": ["Male", "Female", "Other"] },
+          "phone": { "type": "string" },
+          "imagePath": { "type": "string" },
+          "subscriptionState": { "type": "string" }
+        }
+      },
+      "Room": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "type": { "type": "string", "enum": ["DM", "WORKSPACE"] },
+          "roomId": { "type": "integer", "nullable": true },
+          "title": { "type": "string", "nullable": true },
+          "lastMessageId": { "type": "integer", "nullable": true },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "Workspace": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "adminId": { "type": "integer" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "Team": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "workspaceId": { "type": "integer" },
+          "name": { "type": "string" },
+          "managerId": { "type": "integer" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "Task": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "teamMemberId": { "type": "integer" },
+          "state": { "type": "string", "enum": ["TODO", "IN_PROGRESS", "DONE", "CANCELLED"] },
+          "priority": { "type": "string", "enum": ["LOW", "MEDIUM", "HIGH", "URGENT"] },
+          "task": { "type": "string", "nullable": true },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "MongoTask": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "task_id": { "type": "integer" },
+          "title": { "type": "string" },
+          "content": { "type": "string" },
+          "tags": { "type": "array", "items": { "type": "string" } },
+          "attachments_path": { "type": "array", "items": { "type": "string" } },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "Message": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "roomId": { "type": "integer" },
+          "userId": { "type": "integer" },
+          "content": { "type": "string" },
+          "type": { "type": "string", "enum": ["TEXT", "IMAGE", "FILE"] },
+          "imagePath": { "type": "string", "nullable": true },
+          "isEdited": { "type": "boolean" },
+          "isValid": { "type": "boolean" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "MongoComment": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "task_id": { "type": "integer" },
+          "member_id": { "type": "integer" },
+          "content": { "type": "string" },
+          "parent_id": { "type": "integer", "nullable": true },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "ActivityLog": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "workspaceId": { "type": "integer" },
+          "userId": { "type": "integer" },
+          "action": { "type": "string" },
+          "description": { "type": "string" },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "AttendanceRecord": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "userId": { "type": "integer" },
+          "workspaceId": { "type": "integer" },
+          "checkInTime": { "type": "string", "format": "date-time" },
+          "checkOutTime": { "type": "string", "format": "date-time", "nullable": true },
+          "status": { "type": "string", "enum": ["PRESENT", "ABSENT", "LATE"] },
+          "date": { "type": "string", "format": "date" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": { "type": "string" },
+          "error": { "type": "string" },
+          "statusCode": { "type": "integer" }
+        }
+      },
+      "Success": {
+        "type": "object",
+        "properties": {
+          "message": { "type": "string" },
+          "data": { "type": "object" }
+        }
+      }
+    }
+  },
+  "security": [
+    { "bearerAuth": [] },
+    { "cookieAuth": [] }
+  ],
+  "tags": [
+    { "name": "General", "description": "일반 API" },
+    { "name": "Auth", "description": "인증 관련 API" },
+    { "name": "Dashboard", "description": "대시보드 API" },
+    { "name": "User", "description": "사용자 관리 API" },
+    { "name": "Profile", "description": "프로필 관리 API" },
+    { "name": "Attendance", "description": "출석 관리 API" },
+    { "name": "Workspace", "description": "워크스페이스 관리 API" },
+    { "name": "Members", "description": "워크스페이스 멤버 관리 API" },
+    { "name": "Activity Logs", "description": "활동 로그 API" },
+    { "name": "Teams", "description": "팀 관리 API" },
+    { "name": "Team Members", "description": "팀 멤버 관리 API" },
+    { "name": "Tasks", "description": "작업 관리 API (MySQL)" },
+    { "name": "MongoDB Tasks", "description": "MongoDB 작업 관리 API" },
+    { "name": "MongoDB Comments", "description": "MongoDB 댓글 관리 API" },
+    { "name": "DM Messages", "description": "개인 메시지 API" },
+    { "name": "Messages", "description": "워크스페이스 메시지 API" },
+    { "name": "Room Members", "description": "룸 멤버 관리 API" }
+  ],
+  "paths": {
+    "/v1": {
+      "get": {
+        "summary": "API 상태 확인",
+        "tags": ["General"],
+        "responses": {
+          "200": {
+            "description": "API 상태 확인 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string", "example": "test" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

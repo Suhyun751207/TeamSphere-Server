@@ -257,6 +257,19 @@ Currently configured for:
 
 ## 📚 API Documentation
 
+### Swagger UI Documentation
+**Complete interactive API documentation is available at:**
+```
+http://localhost:8080/docs
+```
+
+The Swagger UI provides:
+- **Interactive API testing** - Test all endpoints directly from the browser
+- **Complete schema documentation** - All request/response models with examples
+- **Authentication support** - JWT Bearer token and cookie authentication
+- **Organized by categories** - Auth, Dashboard, Workspace, Teams, Tasks, Messages, etc.
+- **Real-time validation** - Schema validation and error handling examples
+
 ### Base URL
 ```
 http://localhost:8080/v1
@@ -503,7 +516,34 @@ Request/Response Schemas
     ```
 
 
-### 📊 Key Features Summary
+### 📊 Complete API Coverage
+
+**Total Endpoints Documented: 80+ endpoints across 13 categories**
+
+#### **API Categories in Swagger Documentation**
+1. **Auth APIs** (3 endpoints) - 인증 관련 API
+2. **Dashboard API** (1 endpoint) - 대시보드 API  
+3. **User APIs** (5 endpoints) - 사용자 관리 API
+4. **Profile APIs** (4 endpoints) - 프로필 관리 API
+5. **Workspace APIs** (6 endpoints) - 워크스페이스 관리 API
+6. **Teams APIs** (8 endpoints) - 팀 관리 API
+7. **Tasks APIs** (4 endpoints) - 작업 관리 API (MySQL)
+8. **MongoTasks APIs** (4 endpoints) - MongoDB 작업 관리 API
+9. **Comments APIs** (5 endpoints) - 댓글 관리 API
+10. **Messages APIs** (20+ endpoints) - 메시징 API (DM + Workspace)
+11. **Activity APIs** (2 endpoints) - 활동 로그 API
+12. **Attendance APIs** (3 endpoints) - 출석 관리 API
+13. **Members APIs** (10+ endpoints) - 멤버 관리 API
+
+#### **Comprehensive Schema Documentation**
+- **User, Profile, Room, Workspace, Team** - Core entity schemas
+- **WorkspaceMember, TeamMember** - Role-based membership schemas
+- **Task, MongoTask, MongoComment** - Hybrid database task schemas
+- **Message** - Real-time messaging schemas with edit history
+- **ActivityLog, AttendanceRecord** - Tracking and monitoring schemas
+- **Error, Success** - Standardized response schemas
+
+#### **Key Features Summary**
 
 #### **Hybrid Database Design**
 - **MySQL**: 관계형 데이터 (사용자, 워크스페이스, 팀, 기본 작업 정보)
@@ -519,6 +559,13 @@ Request/Response Schemas
 - 역할 기반 접근 제어 (Admin, Manager, Member, Viewer)
 - 런타임 타입 검증 (type-wizard)
 - 권한별 API 접근 제어
+
+#### **API Documentation & Testing**
+- **Swagger UI** - Interactive API documentation at `/docs`
+- **OpenAPI 3.0** compliant specification
+- **JWT Authentication** integrated in Swagger UI
+- **Real-time validation** and error handling examples
+- **Comprehensive schemas** with examples and validation rules
 
 ### 📊 Data Models
 
@@ -603,7 +650,7 @@ server/
 │   │                                                       └── route.ts # 댓글 CRUD
 │   ├── config/                                # 설정 파일
 │   │   ├── database.ts                        # MySQL 연결 설정
-│   │   ├── mongodb.ts                         # MongoDB 연결 설정
+│   │   ├── swagger.ts                         # Swagger OpenAPI 설정 및 문서화
 │   │   └── socket.ts                          # Socket.IO 설정 및 이벤트 핸들러
 │   ├── interfaces/                            # TypeScript 인터페이스
 │   │   ├── Users.ts                          # 사용자 타입 정의
