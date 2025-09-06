@@ -19,6 +19,7 @@ const options: swaggerJSDoc.Options = {
     tags: [
       { name: 'Auth', description: '인증 관련 API' },
       { name: 'Dashboard', description: '대시보드 API' },
+      { name: 'User', description: '사용자 관리 API' },
       { name: 'Profile', description: '프로필 관리 API' },
       { name: 'Workspace', description: '워크스페이스 관리 API' },
       { name: 'Teams', description: '팀 관리 API' },
@@ -469,6 +470,161 @@ const options: swaggerJSDoc.Options = {
               content: {
                 'application/json': {
                   schema: { $ref: '#/components/schemas/Workspace' }
+                }
+              }
+            }
+          }
+        }
+      },
+      '/v1/user': {
+        get: {
+          tags: ['User'],
+          summary: '현재 사용자 정보 조회',
+          description: '인증된 사용자의 정보를 조회합니다',
+          security: [{ bearerAuth: [] }, { cookieAuth: [] }],
+          responses: {
+            200: {
+              description: '사용자 정보 조회 성공',
+              content: {
+                'application/json': {
+                  schema: { $ref: '#/components/schemas/User' }
+                }
+              }
+            }
+          }
+        },
+        patch: {
+          tags: ['User'],
+          summary: '비밀번호 변경 (로그인 상태)',
+          description: '로그인된 사용자의 비밀번호를 변경합니다',
+          security: [{ bearerAuth: [] }, { cookieAuth: [] }],
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  required: ['password', 'newPassword'],
+                  properties: {
+                    password: { type: 'string', description: '현재 비밀번호' },
+                    newPassword: { type: 'string', description: '새 비밀번호' }
+                  }
+                }
+              }
+            }
+          },
+          responses: {
+            200: {
+              description: '비밀번호 변경 성공',
+              content: {
+                'application/json': {
+                  schema: { $ref: '#/components/schemas/Success' }
+                }
+              }
+            }
+          }
+        }
+      },
+      '/v1/user/notlogin': {
+        patch: {
+          tags: ['User'],
+          summary: '비밀번호 변경 (비로그인 상태)',
+          description: '이메일로 비밀번호를 변경합니다',
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  required: ['email', 'password', 'newPassword'],
+                  properties: {
+                    email: { type: 'string', format: 'email' },
+                    password: { type: 'string', description: '현재 비밀번호' },
+                    newPassword: { type: 'string', description: '새 비밀번호' }
+                  }
+                }
+              }
+            }
+          },
+          responses: {
+            200: {
+              description: '비밀번호 변경 성공',
+              content: {
+                'application/json': {
+                  schema: { $ref: '#/components/schemas/Success' }
+                }
+              }
+            }
+          }
+        }
+      },
+      '/v1/user/attendance': {
+        get: {
+          tags: ['Attendance'],
+          summary: '현재 사용자 출석 기록 조회',
+          description: '현재 사용자의 출석 기록을 조회합니다',
+          security: [{ bearerAuth: [] }, { cookieAuth: [] }],
+          responses: {
+            200: {
+              description: '출석 기록 조회 성공',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'array',
+                    items: { $ref: '#/components/schemas/AttendanceRecord' }
+                  }
+                }
+              }
+            }
+          }
+        },
+        post: {
+          tags: ['Attendance'],
+          summary: '출석 기록 생성',
+          description: '새로운 출석 기록을 생성합니다',
+          security: [{ bearerAuth: [] }, { cookieAuth: [] }],
+          responses: {
+            200: {
+              description: '출석 기록 생성 성공',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      message: { type: 'string', example: '출석 기록이 생성되었습니다.' },
+                      user: { $ref: '#/components/schemas/AttendanceRecord' }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      '/v1/user/attendance/{userId}': {
+        get: {
+          tags: ['Attendance'],
+          summary: '특정 사용자 출석 기록 조회',
+          description: '특정 사용자의 출석 기록을 조회합니다',
+          security: [{ bearerAuth: [] }, { cookieAuth: [] }],
+          parameters: [
+            {
+              name: 'userId',
+              in: 'path',
+              required: true,
+              schema: { type: 'integer' },
+              description: '사용자 ID'
+            }
+          ],
+          responses: {
+            200: {
+              description: '출석 기록 조회 성공',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'array',
+                    items: { $ref: '#/components/schemas/AttendanceRecord' }
+                  }
                 }
               }
             }
