@@ -17,10 +17,6 @@ roomIdRouter.use('/message', messageRouter);
 // GET /v1/workspace/:workspaceId/message/:roomId - 워크스페이스 룸 상세 정보 조회
 roomIdRouter.get('/', authenticateToken, checkWorkspaceAccess, catchAsyncErrors(async (req, res) => {
     const roomId = req.params.roomId;
-    const workspaceId = req.params.workspaceId;
-    const userId = req.user?.userId;
-
-
     const members = await roomUserService.readId(Number(roomId));
     const messages = await messageService.readRoomIdMessage(Number(roomId));
     return res.status(200).json({ members, messages });
