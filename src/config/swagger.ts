@@ -19,7 +19,6 @@ const options: swaggerJSDoc.Options = {
     tags: [
       { name: 'Auth', description: '인증 관련 API' },
       { name: 'Dashboard', description: '대시보드 API' },
-      { name: 'User', description: '사용자 관리 API' },
       { name: 'Profile', description: '프로필 관리 API' },
       { name: 'Workspace', description: '워크스페이스 관리 API' },
       { name: 'Teams', description: '팀 관리 API' },
