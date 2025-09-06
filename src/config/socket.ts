@@ -56,7 +56,6 @@ export const initializeSocket = (server: HTTPServer) => {
     try {
       const decoded = verifyToken(token);
       socket.userId = decoded.userId;
-      console.log(`User ${decoded.userId} authenticated via Socket.IO`);
       next();
     } catch (error) {
       console.error('Socket.IO authentication error:', error);
@@ -65,7 +64,6 @@ export const initializeSocket = (server: HTTPServer) => {
   });
 
   io.on('connection', (socket: AuthenticatedSocket) => {
-    console.log(`User ${socket.userId} connected`);
 
     // Join a room for real-time messaging
     socket.on('join_room', (data: JoinRoomData) => {
@@ -73,7 +71,6 @@ export const initializeSocket = (server: HTTPServer) => {
       const roomKey = `room_${roomId}`;
 
       socket.join(roomKey);
-      console.log(`User ${socket.userId} joined room ${roomId}`);
 
       // Track online user
       if (!onlineUsers.has(roomId)) {
@@ -101,7 +98,6 @@ export const initializeSocket = (server: HTTPServer) => {
       const roomKey = `room_${roomId}`;
 
       socket.leave(roomKey);
-      console.log(`User ${socket.userId} left room ${roomId}`);
 
       // Remove user from online tracking
       if (onlineUsers.has(roomId)) {
@@ -176,7 +172,6 @@ export const initializeSocket = (server: HTTPServer) => {
             timestamp: new Date()
           });
 
-          console.log(`Message ${result.insertId} sent to room ${roomId} by user ${socket.userId}`);
         } else {
           socket.emit('message_error', { error: 'Failed to save message' });
         }
@@ -214,7 +209,6 @@ export const initializeSocket = (server: HTTPServer) => {
 
     // Handle disconnection
     socket.on('disconnect', () => {
-      console.log(`User ${socket.userId} disconnected`);
 
       // Remove user from all rooms' online tracking
       for (const [roomId, users] of onlineUsers.entries()) {
