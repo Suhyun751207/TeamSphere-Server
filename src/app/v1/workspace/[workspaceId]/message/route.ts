@@ -7,6 +7,7 @@ import { isRoomUserCreate } from "@interfaces/guard/RoomUser.guard";
 import roomUserService from "@services/RoomsUser";
 import roomsService from "@services/Rooms";
 import workspacesMembersService from "@services/workspacesMembers";
+import { checkWorkspaceAccess } from "@middleware/workspaceAuth.ts";
 
 const WorkspaceMessageRouter = Router({ mergeParams: true });
 WorkspaceMessageRouter.use('/:roomId', roomIdRouter);
@@ -46,22 +47,17 @@ WorkspaceMessageRouter.use('/:roomId', roomIdRouter);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-WorkspaceMessageRouter.get('/', authenticateToken, catchAsyncErrors(async (req, res) => {
+WorkspaceMessageRouter.get('/', authenticateToken, checkWorkspaceAccess, catchAsyncErrors(async (req, res) => {
     const userId = req.user?.userId;
     const workspaceId = req.params.workspaceId;
-    
-    // 워크스페이스 멤버인지 확인
-    const isMember = await workspacesMembersService.readByUserIdAndWorkspaceId(Number(userId), Number(workspaceId));
-    if (!isMember) {
-        return res.status(403).json({ message: "워크스페이스 멤버가 아닙니다." });
-    }
-    
+
+
     // 워크스페이스 타입의 룸들 조회
     const userRooms = await roomUserService.readByUserId(Number(userId));
     const workspaceRooms = await Promise.all(
         (userRooms || []).map(async (userRoom) => {
             const room = await roomsService.readIdPatch(userRoom.roomId);
-            if (room.type === "WORKSPACE" && room.roomId === Number(workspaceId)) {
+            if (room[0].type === "WORKSPACE" && room[0].roomId === Number(workspaceId)) {
                 return {
                     ...userRoom,
                     room
@@ -70,7 +66,7 @@ WorkspaceMessageRouter.get('/', authenticateToken, catchAsyncErrors(async (req, 
             return null;
         })
     );
-    
+
     const filteredRooms = workspaceRooms.filter(room => room !== null);
     return res.status(200).json(filteredRooms);
 }));
@@ -120,35 +116,29 @@ WorkspaceMessageRouter.get('/', authenticateToken, catchAsyncErrors(async (req, 
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-WorkspaceMessageRouter.post('/', authenticateToken, catchAsyncErrors(async (req, res) => {
+WorkspaceMessageRouter.post('/', authenticateToken, checkWorkspaceAccess, catchAsyncErrors(async (req, res) => {
     const userId = req.user?.userId;
     const workspaceId = req.params.workspaceId;
     const { title } = req.body;
-    
-    // 워크스페이스 멤버인지 확인
-    const isMember = await workspacesMembersService.readByUserIdAndWorkspaceId(Number(userId), Number(workspaceId));
-    if (!isMember) {
-        return res.status(403).json({ message: "워크스페이스 멤버가 아닙니다." });
-    }
-    
-    const data = { 
-        type: "WORKSPACE", 
+
+    const data = {
+        type: "WORKSPACE",
         roomId: Number(workspaceId),
         title: title || `워크스페이스 ${workspaceId} 룸`,
         lastMessageId: null
     };
-    
+
     if (!isRoomsCreate(data)) {
         return res.status(400).json({ message: isRoomsCreate.message(data) });
     }
-    
+
     const rooms = await roomsService.create(data);
 
     const data2 = { roomId: Number(rooms.insertId), userId: Number(userId) };
     if (!isRoomUserCreate(data2)) {
         return res.status(400).json({ message: isRoomUserCreate.message(data2) });
     }
-    
+
     const roomUser = await roomUserService.create(data2);
     return res.status(201).json({ rooms, roomUser });
 }));

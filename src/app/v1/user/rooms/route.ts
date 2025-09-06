@@ -50,14 +50,17 @@ roomsRouter.get('/', authenticateToken, catchAsyncErrors(async (req, res) => {
     
     const roomsWithDetails = await Promise.all(
         (userRooms || []).map(async (userRoom) => {
+            const room = await roomsService.readIdPatch(userRoom.roomId);
             return {
                 ...userRoom,
-                room: await roomsService.readIdPatch(userRoom.roomId)
+                room
             };
         })
     );
+
+    const dmRooms = roomsWithDetails.filter(roomDetail => roomDetail.room[0].type === "DM");
     
-    return res.status(200).json(roomsWithDetails);
+    return res.status(200).json(dmRooms);
 }));
 
 /**

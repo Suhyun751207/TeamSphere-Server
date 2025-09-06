@@ -5,6 +5,7 @@ import messageService from "@services/message.ts";
 import { isMessageCreate } from "@interfaces/guard/Message.guard.ts";
 import workspacesMembersService from "@services/workspacesMembers";
 import roomUserService from "@services/RoomsUser.ts";
+import { checkWorkspaceAccess } from "@middleware/workspaceAuth";
 
 const messageRouter = Router({ mergeParams: true });
 
@@ -46,24 +47,19 @@ const messageRouter = Router({ mergeParams: true });
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-messageRouter.get('/', authenticateToken, catchAsyncErrors(async (req, res) => {
+messageRouter.get('/', authenticateToken, checkWorkspaceAccess, catchAsyncErrors(async (req, res) => {
     const roomId = req.params.roomId;
     const workspaceId = req.params.workspaceId;
     const userId = req.user?.userId;
-    
-    // 워크스페이스 멤버인지 확인
-    const isMember = await workspacesMembersService.readByUserIdAndWorkspaceId(Number(userId), Number(workspaceId));
-    if (!isMember) {
-        return res.status(403).json({ message: "워크스페이스 멤버가 아닙니다." });
-    }
-    
-    // 룸 멤버인지 확인
+
+    // 룸 멤버인지 확인 
     const roomMembers = await roomUserService.readId(Number(roomId));
     const isRoomMember = roomMembers?.some((member: any) => member.userId === Number(userId));
+
     if (!isRoomMember) {
         return res.status(403).json({ message: "룸 멤버가 아닙니다." });
     }
-    
+
     const messages = await messageService.readRoomIdMessage(Number(roomId));
     return res.status(200).json(messages);
 }));
@@ -127,40 +123,35 @@ messageRouter.get('/', authenticateToken, catchAsyncErrors(async (req, res) => {
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-messageRouter.post('/', authenticateToken, catchAsyncErrors(async (req, res) => {
+messageRouter.post('/', authenticateToken, checkWorkspaceAccess, catchAsyncErrors(async (req, res) => {
     const roomId = req.params.roomId;
     const workspaceId = req.params.workspaceId;
     const userId = req.user?.userId;
-    const { content, messageType = "TEXT" } = req.body;
-    
-    // 워크스페이스 멤버인지 확인
-    const isMember = await workspacesMembersService.readByUserIdAndWorkspaceId(Number(userId), Number(workspaceId));
-    if (!isMember) {
-        return res.status(403).json({ message: "워크스페이스 멤버가 아닙니다." });
-    }
-    
+    const { content } = req.body;
+
     // 룸 멤버인지 확인
     const roomMembers = await roomUserService.readId(Number(roomId));
     const isRoomMember = roomMembers?.some((member: any) => member.userId === Number(userId));
     if (!isRoomMember) {
         return res.status(403).json({ message: "룸 멤버가 아닙니다." });
     }
-    
+
     const data = {
         roomId: Number(roomId),
         userId: Number(userId),
         content,
-        messageType,
+        type: "TEXT",
+        imagePath: null,
         isEdited: false,
-        isDeleted: false
+        isValid: false
     };
-    
+
     if (!isMessageCreate(data)) {
         return res.status(400).json({ message: isMessageCreate.message(data) });
     }
-    
+
     const message = await messageService.create(data);
-    
+
     // Socket을 통한 실시간 메시지 전송
     const { getSocketIO } = await import('@config/socket.ts');
     const io = getSocketIO();
@@ -169,7 +160,7 @@ messageRouter.post('/', authenticateToken, catchAsyncErrors(async (req, res) => 
         ...data,
         createdAt: new Date()
     });
-    
+
     return res.status(201).json(message);
 }));
 
@@ -227,30 +218,24 @@ messageRouter.post('/', authenticateToken, catchAsyncErrors(async (req, res) => 
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-messageRouter.patch('/:messageId', authenticateToken, catchAsyncErrors(async (req, res) => {
+messageRouter.patch('/:messageId', authenticateToken, checkWorkspaceAccess, catchAsyncErrors(async (req, res) => {
     const roomId = req.params.roomId;
     const messageId = req.params.messageId;
     const workspaceId = req.params.workspaceId;
     const userId = req.user?.userId;
     const { content } = req.body;
-    
-    // 워크스페이스 멤버인지 확인
-    const isMember = await workspacesMembersService.readByUserIdAndWorkspaceId(Number(userId), Number(workspaceId));
-    if (!isMember) {
-        return res.status(403).json({ message: "워크스페이스 멤버가 아닙니다." });
-    }
-    
+
     // 메시지 작성자인지 확인
     const message = await messageService.readId(Number(messageId));
     if (!message || message.userId !== Number(userId)) {
         return res.status(403).json({ message: "메시지 수정 권한이 없습니다." });
     }
-    
+
     const updatedMessage = await messageService.update(Number(messageId), {
         content,
         isEdited: true
     });
-    
+
     // Socket을 통한 실시간 메시지 업데이트
     const { getSocketIO } = await import('@config/socket.ts');
     const io = getSocketIO();
@@ -259,7 +244,7 @@ messageRouter.patch('/:messageId', authenticateToken, catchAsyncErrors(async (re
         content,
         isEdited: true
     });
-    
+
     return res.status(200).json(updatedMessage);
 }));
 
@@ -305,33 +290,27 @@ messageRouter.patch('/:messageId', authenticateToken, catchAsyncErrors(async (re
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-messageRouter.delete('/:messageId', authenticateToken, catchAsyncErrors(async (req, res) => {
+messageRouter.delete('/:messageId', authenticateToken, checkWorkspaceAccess, catchAsyncErrors(async (req, res) => {
     const roomId = req.params.roomId;
     const messageId = req.params.messageId;
     const workspaceId = req.params.workspaceId;
     const userId = req.user?.userId;
-    
-    // 워크스페이스 멤버인지 확인
-    const isMember = await workspacesMembersService.readByUserIdAndWorkspaceId(Number(userId), Number(workspaceId));
-    if (!isMember) {
-        return res.status(403).json({ message: "워크스페이스 멤버가 아닙니다." });
-    }
-    
+
     // 메시지 작성자인지 확인
     const message = await messageService.readId(Number(messageId));
     if (!message || message.userId !== Number(userId)) {
         return res.status(403).json({ message: "메시지 삭제 권한이 없습니다." });
     }
-    
+
     const deletedMessage = await messageService.delete(Number(messageId));
-    
+
     // Socket을 통한 실시간 메시지 삭제
     const { getSocketIO } = await import('@config/socket.ts');
     const io = getSocketIO();
     io.to(`room_${roomId}`).emit('messageDeleted', {
         messageId: Number(messageId)
     });
-    
+
     return res.status(200).json(deletedMessage);
 }));
 

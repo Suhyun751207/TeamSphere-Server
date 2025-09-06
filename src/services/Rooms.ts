@@ -15,9 +15,9 @@ async function read(id?:number ): Promise<Rooms[]|Rooms|undefined>{
   return repo.select({id})
 }
 
-async function readIdPatch(id:number): Promise<Rooms>{
+async function readIdPatch(id:number): Promise<Rooms[]>{
   const rows = await repo.select({ id });
-  return rows[0];
+  return rows;
 }
 
 async function readById(id: number): Promise<Rooms[] | undefined> {

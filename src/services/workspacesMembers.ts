@@ -27,9 +27,9 @@ async function readByWorkspacesIdUserId(workspaceId: number, userId: number): Pr
   return repo.select({workspaceId, userId});
 }
 
-async function readByUserIdAndWorkspaceId(userId: number, workspaceId: number): Promise<workspaceMember | null> {
+async function readByUserIdAndWorkspaceId(userId: number, workspaceId: number): Promise<workspaceMember | undefined> {
   const result = await repo.select({userId, workspaceId});
-  return result.length > 0 ? result[0] : null;
+  return result[0];
 }
 
 

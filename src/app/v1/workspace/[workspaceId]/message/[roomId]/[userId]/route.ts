@@ -4,6 +4,7 @@ import { authenticateToken } from "@middleware/auth.ts";
 import roomUserService from "@services/RoomsUser.ts";
 import { isRoomUserCreate } from "@interfaces/guard/RoomUser.guard.ts";
 import workspacesMembersService from "@services/workspacesMembers";
+import { checkWorkspaceAccess } from "@middleware/workspaceAuth";
 
 const roomsUserIdRouter = Router({ mergeParams: true });
 
@@ -55,20 +56,24 @@ const roomsUserIdRouter = Router({ mergeParams: true });
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-roomsUserIdRouter.post('/', authenticateToken, catchAsyncErrors(async (req, res) => {
+roomsUserIdRouter.post('/add', authenticateToken, checkWorkspaceAccess, catchAsyncErrors(async (req, res) => {
     const roomId = req.params.roomId;
     const userId = req.params.userId;
     const workspaceId = req.params.workspaceId;
     const requestUserId = req.user?.userId;
+    console.log(requestUserId);
+    console.log(userId);
+    console.log(workspaceId);
+    console.log(roomId);
     
-    // 워크스페이스 멤버인지 확인
-    const isMember = await workspacesMembersService.readByUserIdAndWorkspaceId(Number(requestUserId), Number(workspaceId));
-    if (!isMember) {
-        return res.status(403).json({ message: "워크스페이스 멤버가 아닙니다." });
+    
+    // Validate parameters
+    if (!requestUserId || !userId || !workspaceId || !roomId) {
+        return res.status(400).json({ message: "필수 매개변수가 누락되었습니다." });
     }
     
     // 추가할 사용자도 워크스페이스 멤버인지 확인
-    const isTargetMember = await workspacesMembersService.readByUserIdAndWorkspaceId(Number(userId), Number(workspaceId));
+    const isTargetMember = await workspacesMembersService.readByUserIdAndWorkspaceId(Number(requestUserId), Number(workspaceId));
     if (!isTargetMember) {
         return res.status(400).json({ message: "추가할 사용자가 워크스페이스 멤버가 아닙니다." });
     }
@@ -124,17 +129,11 @@ roomsUserIdRouter.post('/', authenticateToken, catchAsyncErrors(async (req, res)
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-roomsUserIdRouter.delete('/', authenticateToken, catchAsyncErrors(async (req, res) => {
+roomsUserIdRouter.delete('/remove', authenticateToken, checkWorkspaceAccess, catchAsyncErrors(async (req, res) => {
     const roomId = req.params.roomId;
     const userId = req.params.userId;
     const workspaceId = req.params.workspaceId;
     const requestUserId = req.user?.userId;
-    
-    // 워크스페이스 멤버인지 확인
-    const isMember = await workspacesMembersService.readByUserIdAndWorkspaceId(Number(requestUserId), Number(workspaceId));
-    if (!isMember) {
-        return res.status(403).json({ message: "워크스페이스 멤버가 아닙니다." });
-    }
     
     const roomUser = await roomUserService.deleteByRoomIdAndUserId(Number(roomId), Number(userId));
     return res.status(200).json(roomUser);
