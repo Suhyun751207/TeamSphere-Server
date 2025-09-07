@@ -9,7 +9,7 @@ export const checkWorkspaceAccess = async (req: Request, res: Response, next: Ne
     const workspaceId = Number(req.params.workspaceId);
 
     if (!userId) {
-      res.status(401).json({
+      res.status(403).json({
         success: false,
         message: '인증이 필요합니다.'
       });
@@ -17,7 +17,7 @@ export const checkWorkspaceAccess = async (req: Request, res: Response, next: Ne
     }
 
     if (!workspaceId || isNaN(workspaceId)) {
-      res.status(400).json({
+      res.status(404).json({
         success: false,
         message: '유효하지 않은 워크스페이스 ID입니다.'
       });
@@ -29,7 +29,7 @@ export const checkWorkspaceAccess = async (req: Request, res: Response, next: Ne
     const hasAccess = userWorkspaceMembers.some(member => member.workspaceId === workspaceId);
 
     if (!hasAccess) {
-      res.status(403).json({
+      res.status(401).json({
         success: false,
         message: '해당 워크스페이스에 접근할 권한이 없습니다.'
       });
@@ -52,7 +52,7 @@ export const checkWorkspaceAdminOrManager = async (req: Request, res: Response, 
     const workspaceId = Number(req.params.workspaceId);
 
     if (!userId) {
-      res.status(401).json({
+      res.status(403).json({
         success: false,
         message: '인증이 필요합니다.'
       });
@@ -60,7 +60,7 @@ export const checkWorkspaceAdminOrManager = async (req: Request, res: Response, 
     }
 
     if (!workspaceId || isNaN(workspaceId)) {
-      res.status(400).json({
+      res.status(404).json({
         success: false,
         message: '유효하지 않은 워크스페이스 ID입니다.'
       });
@@ -72,7 +72,7 @@ export const checkWorkspaceAdminOrManager = async (req: Request, res: Response, 
     const userMember = userWorkspaceMembers.find(member => member.workspaceId === workspaceId);
 
     if (!userMember) {
-      res.status(403).json({
+      res.status(401).json({
         success: false,
         message: '해당 워크스페이스에 접근할 권한이 없습니다.'
       });
@@ -105,7 +105,7 @@ export const checkTeamAdminOrManager = async (req: Request, res: Response, next:
     const teamId = Number(req.params.teamId);
 
     if (!userId) {
-      res.status(401).json({
+      res.status(403).json({
         success: false,
         message: '인증이 필요합니다.'
       });
@@ -113,7 +113,7 @@ export const checkTeamAdminOrManager = async (req: Request, res: Response, next:
     }
 
     if (!workspaceId || isNaN(workspaceId)) {
-      res.status(400).json({
+      res.status(404).json({
         success: false,
         message: '유효하지 않은 워크스페이스 ID입니다.'
       });
@@ -121,7 +121,7 @@ export const checkTeamAdminOrManager = async (req: Request, res: Response, next:
     }
 
     if (!teamId || isNaN(teamId)) {
-      res.status(400).json({
+      res.status(404).json({
         success: false,
         message: '유효하지 않은 팀 ID입니다.'
       });
@@ -131,7 +131,7 @@ export const checkTeamAdminOrManager = async (req: Request, res: Response, next:
     const hasWorkspaceAccess = userWorkspaceMembers.some(member => member.workspaceId === workspaceId);
 
     if (!hasWorkspaceAccess) {
-      res.status(403).json({
+      res.status(401).json({
         success: false,
         message: '해당 워크스페이스에 접근할 권한이 없습니다.'
       });
@@ -172,7 +172,7 @@ export const checkTeamMember = async (req: Request, res: Response, next: NextFun
     const teamId = Number(req.params.teamId);
 
     if (!userId) {
-      res.status(401).json({
+      res.status(403).json({
         success: false,
         message: '인증이 필요합니다.'
       });
@@ -180,7 +180,7 @@ export const checkTeamMember = async (req: Request, res: Response, next: NextFun
     }
 
     if (!workspaceId || isNaN(workspaceId)) {
-      res.status(400).json({
+      res.status(404).json({
         success: false,
         message: '유효하지 않은 워크스페이스 ID입니다.'
       });
@@ -188,7 +188,7 @@ export const checkTeamMember = async (req: Request, res: Response, next: NextFun
     }
 
     if (!teamId || isNaN(teamId)) {
-      res.status(400).json({
+      res.status(404).json({
         success: false,
         message: '유효하지 않은 팀 ID입니다.'
       });
@@ -198,7 +198,7 @@ export const checkTeamMember = async (req: Request, res: Response, next: NextFun
     const hasWorkspaceAccess = userWorkspaceMembers.some(member => member.workspaceId === workspaceId);
 
     if (!hasWorkspaceAccess) {
-      res.status(403).json({
+      res.status(401).json({
         success: false,
         message: '해당 워크스페이스에 접근할 권한이 없습니다.'
       });
