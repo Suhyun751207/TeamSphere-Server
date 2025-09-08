@@ -2,6 +2,7 @@ import { Server as HTTPServer } from 'http';
 import { Server as SocketIOServer, Socket } from 'socket.io';
 import { verifyToken } from '@utils/jwt';
 import messageService from '@services/message';
+import roomsService from '@services/Rooms';
 import { MessageType } from '@services/ENUM/message_ENUM';
 
 interface AuthenticatedSocket extends Socket {
@@ -141,6 +142,23 @@ export const initializeSocket = (server: HTTPServer) => {
         if (result.insertId) {
           // Fetch the created message with full details
           const createdMessage = await messageService.readId(result.insertId);
+
+          // Update rooms table with lastMessageId
+          try {
+            const room = await roomsService.readIdPatch(roomId);
+            if (room && room.length > 0) {
+              const updateData = {
+                roomId: roomId,
+                lastMessageId: result.insertId,
+                type: room[0].type || "WORKSPACE",
+                title: room[0].title || null
+              };
+              await roomsService.update(roomId, updateData);
+              console.log(`Updated room ${roomId} lastMessageId to ${result.insertId}`);
+            }
+          } catch (updateError) {
+            console.error('Failed to update room lastMessageId:', updateError);
+          }
 
           const messageResponse: MessageResponse = {
             id: createdMessage.id,
