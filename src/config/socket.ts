@@ -173,9 +173,9 @@ export const initializeSocket = (server: HTTPServer) => {
             updatedAt: createdMessage.updatedAt
           };
 
-          // Emit to all users in the room (including sender)
+          // Emit to all users in the room EXCEPT the sender
           const roomKey = `room_${roomId}`;
-          io.to(roomKey).emit('new_message', messageResponse);
+          socket.to(roomKey).emit('new_message', messageResponse);
 
           // Emit room update event for room list updates
           io.emit('room_updated', {

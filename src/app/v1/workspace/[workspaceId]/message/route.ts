@@ -51,13 +51,12 @@ WorkspaceMessageRouter.get('/', authenticateToken, checkWorkspaceAccess, catchAs
     const userId = req.user?.userId;
     const workspaceId = req.params.workspaceId;
 
-
     // 워크스페이스 타입의 룸들 조회
     const userRooms = await roomUserService.readByUserId(Number(userId));
     const workspaceRooms = await Promise.all(
         (userRooms || []).map(async (userRoom) => {
             const room = await roomsService.readIdPatch(userRoom.roomId);
-            if (room[0].type === "WORKSPACE" && room[0].roomId === Number(workspaceId)) {
+            if (room[0].type === "WORKSPACE" && room[0].id === userRoom.roomId) {
                 return {
                     ...userRoom,
                     room
