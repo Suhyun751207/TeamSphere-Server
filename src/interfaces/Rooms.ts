@@ -1,11 +1,12 @@
 import { RoomType } from "../services/ENUM/room_ENUM.ts";
 
-export const roomsKeys = ['id', 'type', 'roomId', 'title', 'lastMessageId', 'createdAt', 'updatedAt'] as const;
+export const roomsKeys = ['id', 'type', 'roomId', 'title', 'workspaceId', 'lastMessageId', 'createdAt', 'updatedAt'] as const;
 export interface Rooms {
     id: number;
     type: RoomType;
     roomId: number | null;
     title: string | null;
+    workspaceId: number | null;
     lastMessageId: number | null;
     createdAt: Date;
     updatedAt: Date;

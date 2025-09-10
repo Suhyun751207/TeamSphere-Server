@@ -54,6 +54,7 @@ roomIdRouter.patch('/:messageId', authenticateToken, checkWorkspaceAccess, catch
     const room = await roomsService.readIdPatch(Number(roomId));
     const data = {
         roomId: Number(workspaceId),
+        workspaceId: Number(workspaceId),
         lastMessageId: Number(req.params.messageId),
         type: "WORKSPACE",
         title: room[0].title || null

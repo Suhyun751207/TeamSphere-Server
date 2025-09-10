@@ -56,7 +56,7 @@ WorkspaceMessageRouter.get('/', authenticateToken, checkWorkspaceAccess, catchAs
     const workspaceRooms = await Promise.all(
         (userRooms || []).map(async (userRoom) => {
             const room = await roomsService.readIdPatch(userRoom.roomId);
-            if (room[0].type === "WORKSPACE" && room[0].id === userRoom.roomId) {
+            if (room[0].type === "WORKSPACE" && room[0].id === userRoom.roomId && room[0].workspaceId === Number(workspaceId)) {
                 return {
                     ...userRoom,
                     room
@@ -123,6 +123,7 @@ WorkspaceMessageRouter.post('/', authenticateToken, checkWorkspaceAccess, catchA
     const data = {
         type: "WORKSPACE",
         roomId: Number(workspaceId),
+        workspaceId: Number(workspaceId),
         title: title || `워크스페이스 ${workspaceId} 룸`,
         lastMessageId: null
     };

@@ -44,7 +44,7 @@ roomIdRouter.get('/members', authenticateToken, catchAsyncErrors(async (req, res
 
 roomIdRouter.patch('/:messageId', authenticateToken, catchAsyncErrors(async (req, res) => {
     const room = await roomsService.readIdPatch(Number(req.params.roomId));
-    const data = { roomId: null, lastMessageId: Number(req.params.messageId), type: "DM", title: null };
+    const data = { roomId: null, workspaceId: null, lastMessageId: Number(req.params.messageId), type: "DM", title: null };
     if (!room) return res.status(404).json({ message: "Room not found" });
     if (!isRoomsUpdate(data)) return res.status(400).json({ message: isRoomsUpdate.message(data) });
     const rooms = await roomsService.update(Number(req.params.roomId), data);

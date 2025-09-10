@@ -6,41 +6,19 @@ import { isUserUpdate } from "@interfaces/guard/Users.guard";
 import authService from "@services/Auth";
 import ProfileRouter from "./profile/route.ts";
 import roomsRouter from "./rooms/route.ts";
-import attendanceRecordsService from "@services/AttendanceRecords.ts";
-import { isAttendanceRecordsCreate } from "@interfaces/guard/AttendanceRecords.guard.ts";
+import attendanceRouter from "./attendance/route.ts";
 
 const userRouter = Router({ mergeParams: true });
 
 userRouter.use('/profile', ProfileRouter);
 userRouter.use('/rooms', roomsRouter);
+userRouter.use('/attendance', attendanceRouter);
 
 userRouter.get('/', authenticateToken, catchAsyncErrors(async (req, res) => {
     const userId = req.user?.userId;
     const user = await userService.read(userId!);
     return res.status(200).json(user);
 }));
-
-userRouter.get('/attendance', authenticateToken, catchAsyncErrors(async (req, res) => {
-    const userId = req.user?.userId;
-    const user = await attendanceRecordsService.readUserId(userId!);
-    return res.status(200).json(user);
-}));
-
-userRouter.post('/attendance', authenticateToken, catchAsyncErrors(async (req, res) => {
-    const userId = req.user?.userId;
-    const data = { userId };
-    if (!isAttendanceRecordsCreate(data)) return res.status(400).json({ message: isAttendanceRecordsCreate.message(data) });
-    const user = await attendanceRecordsService.create(data);
-    return res.status(200).json({ message: "출석 기록이 생성되었습니다.", user });
-}));
-
-userRouter.get('/attendance/:userid', authenticateToken, catchAsyncErrors(async (req, res) => {
-    const userId = req.params.userid;
-    const user = await attendanceRecordsService.readUserId(Number(userId));
-    return res.status(200).json(user);
-}));
-
-
 
 // 로그인 상태에서 비밀번호 변경
 userRouter.patch('/', authenticateToken, catchAsyncErrors(async (req, res) => {

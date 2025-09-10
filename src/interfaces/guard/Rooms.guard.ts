@@ -6,6 +6,7 @@ export const isRoomsCreate=createTypeGuard<RoomsCreate>({
     roomId: {type: "number", nullable: true },
     type: {type: "string", enum: room_ENUM},
     title: {type: "string", nullable: true },
+    workspaceId: {type: "number", nullable: true },
     lastMessageId: {type: "number", nullable: true },
 }).optional();
 
@@ -13,5 +14,6 @@ export const isRoomsUpdate=createTypeGuard<RoomsUpdate>({
     roomId: {type: "number", nullable: true },
     type: {type: "string", enum: room_ENUM},
     title: {type: "string", nullable: true },
+    workspaceId: {type: "number", nullable: true },
     lastMessageId: {type: "number", nullable: true },
 }).optional();

@@ -149,6 +149,7 @@ export const initializeSocket = (server: HTTPServer) => {
             if (room && room.length > 0) {
               const updateData = {
                 roomId: roomId,
+                workspaceId: room[0].workspaceId,
                 lastMessageId: result.insertId,
                 type: room[0].type || "WORKSPACE",
                 title: room[0].title || null
