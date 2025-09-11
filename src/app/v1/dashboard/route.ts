@@ -110,7 +110,6 @@ dashboardRouter.get("/", authenticateToken, catchAsyncErrors(async (req, res) =>
         );
     };
 
-    if (!user || !profile || !activityLog || !attendanceRecords || !rooms || !workspaces) return res.status(400).json({ message: "User or Profile or ActivityLog or AttendanceRecords or Rooms or Workspaces not found" });
     const data = {
         user,
         profile,

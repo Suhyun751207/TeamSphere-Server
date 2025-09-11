@@ -56,7 +56,7 @@ const activityLogsRouter = Router({ mergeParams: true });
  */
 activityLogsRouter.get("/", authenticateToken, checkWorkspaceAccess, catchAsyncErrors(async (req, res) => {
     const workspaceId = req.params.workspaceId;
-    const activityLogs = await activityLogsService.read(Number(workspaceId));
+    const activityLogs = await activityLogsService.readByWorkspaceId(Number(workspaceId));
     return res.status(200).json(activityLogs);
 }));
 
@@ -116,8 +116,7 @@ activityLogsRouter.post("/", authenticateToken, checkWorkspaceAccess, catchAsync
     const body = req.body;
     const workspaceId = req.params.workspaceId;
     const userId = req.user?.userId;
-    const workspaceMember = await workspaceMemberService.readByWorkspacesIdUserId(Number(workspaceId), Number(userId));
-    const data = { ...body, workspaceId: Number(workspaceId), userId: workspaceMember[0].id };
+    const data = { ...body, workspaceId: Number(workspaceId), userId: userId };
     if (!isActivityLogsCreate(data)) return res.status(400).json({ message: isActivityLogsCreate.message(data) });
     const activityLogResult = await activityLogsService.create(data);
     return res.status(201).json(activityLogResult);
