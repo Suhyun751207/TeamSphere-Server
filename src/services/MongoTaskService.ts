@@ -12,6 +12,10 @@ async function readByTaskId(task_id: number): Promise<MongoTaskDocument[]> {
   return await MongoTaskModel.find({ task_id }).sort({ created_at: -1 });
 }
 
+async function getTasksByTeamUserIds(teamUserIds: number[]): Promise<MongoTaskDocument[]> {
+  return await MongoTaskModel.find({ workspaceTeamUserId: { $in: teamUserIds } }).sort({ createdAt: -1 });
+}
+
 async function create(data: MongoTaskCreate): Promise<MongoTaskDocument> {
   const task = new MongoTaskModel(data);
   return await task.save();
@@ -34,6 +38,7 @@ async function _delete(id: number): Promise<MongoTaskDocument | null> {
 const mongoTaskService = {
   read,
   readByTaskId,
+  getTasksByTeamUserIds,
   create,
   update,
   delete: _delete,

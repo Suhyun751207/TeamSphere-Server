@@ -25,6 +25,12 @@ async function readById(id: number): Promise<Rooms[] | undefined> {
   return rows;
 }
 
+async function readId(id: number): Promise<Rooms | undefined> {
+  const rows = await repo.select({ id });
+  return rows[0];
+}
+
+
 async function create(data:RoomsCreate): Promise<ResultSetHeader>{
   return repo.insert([data]);
 };
@@ -41,6 +47,7 @@ async function _delete(id:number):Promise<ResultSetHeader>{
 const roomsService={
   read,
   readById,
+  readId,
   readIdPatch,
   create,
   update,

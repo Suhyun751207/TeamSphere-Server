@@ -15,6 +15,10 @@ async function read(userId?:number ): Promise<ActivityLogs[]|ActivityLogs|undefi
   return repo.select({userId})
 }
 
+async function readByWorkspaceId(workspaceId:number): Promise<ActivityLogs[]|undefined>{
+  return repo.select({workspaceId})
+}
+
 async function readByUserId(userId:number): Promise<ActivityLogs[]|undefined>{
   return repo.select({userId})
 }
@@ -34,6 +38,7 @@ async function _delete(userId:number):Promise<ResultSetHeader>{
 const activityLogsService={
   read,
   readByUserId,
+  readByWorkspaceId,
   create,
   update,
   delete: _delete,

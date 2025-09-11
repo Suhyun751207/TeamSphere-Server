@@ -23,6 +23,11 @@ const MongoTaskSchema = new Schema<MongoTaskDocument>({
     required: true,
     index: true 
   },
+  workspace_team_user_id: {
+    type: Number,
+    required: true,
+    index: true
+  },
   title: { 
     type: String, 
     required: true,
@@ -33,6 +38,18 @@ const MongoTaskSchema = new Schema<MongoTaskDocument>({
     type: String, 
     trim: true,
     maxlength: 2048
+  },
+  status: {
+    type: String,
+    required: true,
+    enum: ['PENDING', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'],
+    default: 'PENDING'
+  },
+  priority: {
+    type: String,
+    required: true,
+    enum: ['LOW', 'MEDIUM', 'HIGH', 'URGENT'],
+    default: 'MEDIUM'
   },
   tags: [{ 
     type: String,
@@ -66,8 +83,13 @@ MongoTaskSchema.pre('save', async function(next) {
 });
 
 MongoTaskSchema.index({ task_id: 1 });
+MongoTaskSchema.index({ workspace_team_user_id: 1 });
+MongoTaskSchema.index({ status: 1 });
+MongoTaskSchema.index({ priority: 1 });
 MongoTaskSchema.index({ created_at: -1 });
 MongoTaskSchema.index({ tags: 1 });
+MongoTaskSchema.index({ workspace_team_user_id: 1, status: 1 });
+MongoTaskSchema.index({ workspace_team_user_id: 1, priority: 1 });
 
 export const MongoTaskModel = mongoose.model<MongoTaskDocument>('Task', MongoTaskSchema);
 export { Counter };

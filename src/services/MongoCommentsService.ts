@@ -26,6 +26,12 @@ async function readReplies(parent_id: number): Promise<MongoCommentsDocument[]> 
   // sort 오름차순(ASC)
 }
 
+async function getCommentsByTeamUserIds(teamUserIds: number[]): Promise<MongoCommentsDocument[]> {
+  return await MongoCommentsModel.find({ 
+    workspace_team_user_id: { $in: teamUserIds } 
+  }).sort({ created_at: -1 });
+}
+
 async function create(data: MongoCommentsCreate): Promise<MongoCommentsDocument> {
   const comment = new MongoCommentsModel(data);
   return await comment.save();
@@ -50,6 +56,7 @@ const mongoCommentsService = {
   readMemberId,
   readByTaskId,
   readReplies,
+  getCommentsByTeamUserIds,
   create,
   update,
   delete: _delete,

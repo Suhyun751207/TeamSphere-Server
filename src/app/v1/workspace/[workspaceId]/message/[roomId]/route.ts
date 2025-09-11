@@ -22,6 +22,12 @@ roomIdRouter.get('/', authenticateToken, checkWorkspaceAccess, catchAsyncErrors(
     return res.status(200).json({ members, messages });
 }));
 
+roomIdRouter.get('/info', authenticateToken, checkWorkspaceAccess, catchAsyncErrors(async (req, res) => {
+    const roomId = req.params.roomId;
+    const room = await roomsService.readId(Number(roomId));
+    return res.status(200).json({ room });
+}));
+
 // GET /v1/workspace/:workspaceId/message/:roomId/members - 워크스페이스 룸 멤버 조회
 roomIdRouter.get('/members', authenticateToken, checkWorkspaceAccess, catchAsyncErrors(async (req, res) => {
     const roomId = req.params.roomId;
