@@ -8,12 +8,18 @@ import connectDB from "@config/database";
 import { initializeSocket } from "@config/socket";
 import { setupSwagger } from "@config/swagger";
 import route from "./route.ts";
+import path from "path";
 
 dotenv.config();
 
 const app = express();
 const server = createServer(app);
 const PORT = process.env.PORT || 8080;
+
+// app.use(express.static(path.join(__dirname, "../../../client/build")));
+// app.get("*", (req, res) => {
+//     res.sendFile(path.join(__dirname, "../../../client/build", "index.html"));
+// });
 
 app.use(
     cors({
@@ -37,9 +43,9 @@ app.use("/", route);
 
 (async () => {
     await connectDB();
-    
+
     initializeSocket(server);
-    
+
     const port = +(process.env.PORT ?? 8081);
     server.listen(port, "0.0.0.0", () => {
         console.log(`Server is listening on http://localhost:${port}`);

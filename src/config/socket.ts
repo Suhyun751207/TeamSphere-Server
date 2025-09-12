@@ -152,7 +152,8 @@ export const initializeSocket = (server: HTTPServer) => {
                 workspaceId: room[0].workspaceId,
                 lastMessageId: result.insertId,
                 type: room[0].type || "WORKSPACE",
-                title: room[0].title || null
+                title: room[0].title || null,
+                teamId: room[0].teamId || null
               };
               await roomsService.update(roomId, updateData);
               console.log(`Updated room ${roomId} lastMessageId to ${result.insertId}`);

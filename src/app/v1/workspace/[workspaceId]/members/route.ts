@@ -6,7 +6,7 @@ import profilesService from "@services/Profiles.ts";
 import { authenticateToken } from "@middleware/auth.ts";
 import { checkWorkspaceAccess, checkWorkspaceAdminOrManager } from "@middleware/workspaceAuth.ts";
 import { workspaceMember } from "@interfaces/workspacesMembers.ts";
-import { isWorkspaceMemberCreate } from "@interfaces/guard/workspacesMembers.guard.ts";
+import { isWorkspaceMemberCreate, isWorkspaceMemberUpdate } from "@interfaces/guard/workspacesMembers.guard.ts";
 
 const workspaceIdMemberRouter = Router({ mergeParams: true });
 
@@ -74,6 +74,12 @@ workspaceIdMemberRouter.get("/", authenticateToken, checkWorkspaceAccess, catchA
     return res.status(200).json(membersWithDetails);
 }));
 
+workspaceIdMemberRouter.get("/me", authenticateToken, checkWorkspaceAccess, catchAsyncErrors(async (req, res) => {
+    const workspaceId = Number(req.params.workspaceId);
+    const member = await workspaceMemberService.readByWorkspacesIdUserId(workspaceId, Number(req.user?.userId));
+    return res.status(200).json(member);
+}));
+
 /**
  * @swagger
  * /v1/workspace/{workspaceId}/members:
@@ -130,7 +136,7 @@ workspaceIdMemberRouter.get("/", authenticateToken, checkWorkspaceAccess, catchA
 workspaceIdMemberRouter.post("/", authenticateToken, checkWorkspaceAdminOrManager, catchAsyncErrors(async (req, res) => {
     const body = req.body;
     const workspaceId = Number(req.params.workspaceId);
-    const data = {...body, workspaceId};
+    const data = { ...body, workspaceId };
     if (!isWorkspaceMemberCreate(data)) return res.status(400).json({ message: isWorkspaceMemberCreate.message(data) });
     const userId = req.body.userId;
     const role = data.role;
@@ -140,8 +146,18 @@ workspaceIdMemberRouter.post("/", authenticateToken, checkWorkspaceAdminOrManage
     if (isUserAlreadyMember) {
         return res.status(400).json({ message: "이미 존재하는 유저입니다." });
     }
-    const workspaceMemberResult = await workspaceMemberService.create({workspaceId, userId: userId!, role});
+    const workspaceMemberResult = await workspaceMemberService.create({ workspaceId, userId: userId!, role });
     return res.status(201).json(workspaceMemberResult);
 }));
+
+workspaceIdMemberRouter.patch("/", authenticateToken, checkWorkspaceAdminOrManager, catchAsyncErrors(async (req, res) => {
+    const body = req.body;
+    const workspaceId = Number(req.params.workspaceId);
+    const data = { workspaceId, userId: body.userId, role: body.role };
+    if (!isWorkspaceMemberUpdate(data)) return res.status(400).json({ message: isWorkspaceMemberUpdate.message(data) });
+    const workspaceMemberResult = await workspaceMemberService.updateWorkspaceIdUserId(workspaceId, body.userId, data);
+    return res.status(200).json(workspaceMemberResult);
+}));
+
 
 export default workspaceIdMemberRouter;

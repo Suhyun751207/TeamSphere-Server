@@ -8,6 +8,7 @@ export const isRoomsCreate=createTypeGuard<RoomsCreate>({
     title: {type: "string", nullable: true },
     workspaceId: {type: "number", nullable: true },
     lastMessageId: {type: "number", nullable: true },
+    teamId: {type: "number", nullable: true },
 }).optional();
 
 export const isRoomsUpdate=createTypeGuard<RoomsUpdate>({
@@ -16,4 +17,5 @@ export const isRoomsUpdate=createTypeGuard<RoomsUpdate>({
     title: {type: "string", nullable: true },
     workspaceId: {type: "number", nullable: true },
     lastMessageId: {type: "number", nullable: true },
+    teamId: {type: "number", nullable: true },
 }).optional();
