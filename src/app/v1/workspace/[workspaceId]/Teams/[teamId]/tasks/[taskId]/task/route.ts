@@ -9,7 +9,7 @@ import taskIdRouter from "./[taskId]/route.ts";
 const taskRouter = Router({ mergeParams: true });
 taskRouter.use('/:taskId', taskIdRouter);
 
-taskRouter.get('/', authenticateToken, checkTeamMember, TeamUserIdSelect, catchAsyncErrors(async (req, res) => {
+taskRouter.get('/', authenticateToken, checkTeamMember, catchAsyncErrors(async (req, res) => {
     const taskId = Number(req.params.taskId);
     const tasks = await mongoTaskService.readByTaskId(taskId);
     return res.status(200).json(tasks);
