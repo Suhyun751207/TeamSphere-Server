@@ -3,7 +3,7 @@ import { MongoCommentsCreate, MongoCommentsUpdate } from "@interfaces/MongoComme
 
 export const isMongoCommentsCreate = createTypeGuard<MongoCommentsCreate>({
     task_id: { type: "number" },
-    member_id: { type: "number" },
+    workspace_team_user_id: { type: "number" },
     content: { type: "string" },
     parent_id: { type: "number", optional: true, nullable: true }
 }).optional();

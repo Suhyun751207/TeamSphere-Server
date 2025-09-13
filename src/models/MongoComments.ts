@@ -18,7 +18,7 @@ const MongoCommentsSchema = new Schema<MongoCommentsDocument>({
     required: true,
     index: true 
   },
-  member_id: { 
+  workspace_team_user_id: { 
     type: Number, 
     required: true,
     index: true 
