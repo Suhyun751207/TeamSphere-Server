@@ -100,8 +100,8 @@ workspaceRouter.post("/", authenticateToken, catchAsyncErrors(async (req, res) =
     const body = req.body;
     const adminId = req.user?.userId;
     if (!isWorkspaceCreate(body)) return res.status(400).json({ message: isWorkspaceCreate.message(body) });
-    const workspaceResult = await workspaceService.create({...body, adminId: adminId!});
-    const workspaceMemberResult = await workspaceMemberService.create({workspaceId: workspaceResult.insertId, userId: adminId!, role: "Admin"});
+    const workspaceResult = await workspaceService.create({ ...body, adminId: adminId! });
+    const workspaceMemberResult = await workspaceMemberService.create({ workspaceId: workspaceResult.insertId, userId: adminId!, role: "Admin" });
     return res.status(201).json({
         workspace: workspaceResult,
         workspaceMember: workspaceMemberResult

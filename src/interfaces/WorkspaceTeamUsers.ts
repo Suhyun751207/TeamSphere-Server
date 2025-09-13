@@ -1,7 +1,7 @@
 import { WorkspaceRole } from "../services/ENUM/workspace_roles_enum.ts";
 
-export const userKeys = ['id', 'memberId', 'teamId', 'role', 'createdAt', 'updatedAt'] as const;
-export interface User {
+export const WorkspaceTeamUsersKeys = ['id', 'memberId', 'teamId', 'role', 'createdAt', 'updatedAt'] as const;
+export interface WorkspaceTeamUsers {
   id: number;
   memberId: number;
   teamId: number;
@@ -10,6 +10,6 @@ export interface User {
   updatedAt: Date;
 }
 
-export type UserAutoSetKeys = "id" | "createdAt" | "updatedAt"
-export interface UserCreate extends Omit<User, UserAutoSetKeys> { };
-export interface UserUpdate extends Partial<UserCreate> { }; 
+export type WorkspaceTeamUsersAutoSetKeys = "id" | "createdAt" | "updatedAt"
+export interface WorkspaceTeamUsersCreate extends Omit<WorkspaceTeamUsers, WorkspaceTeamUsersAutoSetKeys> { };
+export interface WorkspaceTeamUsersUpdate extends Partial<WorkspaceTeamUsersCreate> { }; 
