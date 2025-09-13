@@ -1,10 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
 import { verifyToken, JwtPayload } from '../utils/jwt.ts';
+import { WorkspaceTeamUsers } from '@interfaces/WorkspaceTeamUsers.ts';
 
 declare global {
   namespace Express {
     interface Request {
       user?: JwtPayload;
+      team?: WorkspaceTeamUsers;
     }
   }
 }

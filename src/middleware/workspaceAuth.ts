@@ -222,3 +222,63 @@ export const checkTeamMember = async (req: Request, res: Response, next: NextFun
     });
   }
 };
+
+export const TeamUserIdSelect = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const userId = req.user?.userId;
+    const workspaceId = Number(req.params.workspaceId);
+
+    if (!userId) {
+      res.status(403).json({
+        success: false,
+        message: '인증이 필요합니다.'
+      });
+      return;
+    }
+
+    if (!workspaceId || isNaN(workspaceId)) {
+      res.status(404).json({
+        success: false,
+        message: '유효하지 않은 워크스페이스 ID입니다.'
+      });
+      return;
+    }
+
+    const userWorkspaceMembers = await workspaceMemberService.readByUserId(userId);
+
+    if (!userWorkspaceMembers || userWorkspaceMembers.length === 0) {
+      res.status(404).json({
+        success: false,
+        message: '워크스페이스 멤버 정보를 찾을 수 없습니다.'
+      });
+      return;
+    }
+    const currentWorkspaceMember = userWorkspaceMembers.find(member => member.workspaceId === workspaceId);
+
+    if (!currentWorkspaceMember) {
+      res.status(404).json({
+        success: false,
+        message: '해당 워크스페이스의 멤버 정보를 찾을 수 없습니다.'
+      });
+      return;
+    }
+
+    const teamUserInfo = await workspaceTeamUsersService.readByMemberId(currentWorkspaceMember.id);
+
+    if (!teamUserInfo || teamUserInfo.length === 0) {
+      res.status(404).json({
+        success: false,
+        message: '팀 사용자 정보를 찾을 수 없습니다.'
+      });
+      return;
+    }
+
+    req.team = teamUserInfo[0];
+    next();
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: '서버 오류가 발생했습니다.'
+    });
+  }
+};

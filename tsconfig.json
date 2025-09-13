@@ -20,5 +20,6 @@
       "@config/*": ["config/*"],
       "@models/*": ["models/*"]
     }
-  }
+  },
+  "include": ["src", "types"]
 }

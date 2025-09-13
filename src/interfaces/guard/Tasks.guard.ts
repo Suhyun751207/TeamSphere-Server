@@ -2,6 +2,7 @@ import { createTypeGuard } from "type-wizard";
 import { tasksCreate } from "../Tasks.ts";
 
 export const isTasksCreate=createTypeGuard<tasksCreate>({
+    teamId: {type: "number"},
     teamMemberId: {type: "number"},
     externalId: {type: "string", nullable: true},
     state: {type: "string"},

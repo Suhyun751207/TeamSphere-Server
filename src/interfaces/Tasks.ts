@@ -1,9 +1,10 @@
 import { TaskPriority } from "../services/ENUM/task_priority_enum.ts";
 import { TaskState } from "../services/ENUM/task_states_enum.ts";
 
-export const tasksKeys = ['id', 'teamMemberId', 'state', 'priority', 'task', 'externalId', 'createdAt', 'updatedAt'] as const;
+export const tasksKeys = ['id', 'teamId','teamMemberId', 'state', 'priority', 'task', 'externalId', 'createdAt', 'updatedAt'] as const;
 export interface tasks {
   id: number;
+  teamId: number;
   teamMemberId: number;
   state: TaskState;
   priority: TaskPriority;

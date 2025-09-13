@@ -7,10 +7,8 @@ import { isWorkspaceTeamUserCreate } from "@interfaces/guard/WorkspaceTeamUsers.
 import { WorkspaceRole } from "@services/ENUM/workspace_roles_enum.ts";
 import workspaceMemberService from "@services/workspacesMembers.ts";
 import profilesService from "@services/Profiles.ts";
-import taskRouter from "./tasks/route.ts";
 
 const teamIdMemberIdRouter = Router({ mergeParams: true });
-teamIdMemberIdRouter.use("/tasks", taskRouter);
 
 // 특정 팀 멤버 조회
 teamIdMemberIdRouter.get('/', authenticateToken, checkTeamMember, catchAsyncErrors(async (req, res) => {
@@ -39,18 +37,18 @@ teamIdMemberIdRouter.patch('/', authenticateToken, checkTeamAdminOrManager, catc
     const Id = Number(req.params.memberId);
     const teamId = Number(req.params.teamId);
     const memberId = Number(req.params.memberId);
-    const role:WorkspaceRole = req.body.role;
+    const role: WorkspaceRole = req.body.role;
     const data = { teamId, memberId, role };
     if (!isWorkspaceTeamUserCreate(data)) return res.status(400).json({ message: isWorkspaceTeamUserCreate.message(data) });
     const teamMember = await workspaceTeamUsersService.update(Id, teamId, data);
-    return res.status(200).json({teamMember});
+    return res.status(200).json({ teamMember });
 }))
 
 // 팀 맴버 삭제
 teamIdMemberIdRouter.delete('/', authenticateToken, checkTeamAdminOrManager, catchAsyncErrors(async (req, res) => {
     const Id = Number(req.params.memberId);
     const teamMember = await workspaceTeamUsersService.delete(Id);
-    return res.status(200).json({teamMember});
+    return res.status(200).json({ teamMember });
 }))
 
 
