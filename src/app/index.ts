@@ -8,6 +8,7 @@ import connectDB from "@config/database";
 import { initializeSocket } from "@config/socket";
 import { setupSwagger } from "@config/swagger";
 import route from "./route";
+import 'module-alias/register';
 import path from "path";
 
 dotenv.config();
