@@ -26,6 +26,8 @@ app.use(
         origin: [
             "localhost:3000",
             "http://localhost:3000",
+            "teamsphere-client-production.up.railway.app",
+            "https://teamsphere-client-production.up.railway.app"
         ],
         credentials: true,
         methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
