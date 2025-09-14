@@ -14,6 +14,10 @@ const options: swaggerJSDoc.Options = {
       {
         url: 'http://localhost:8080',
         description: 'Development server'
+      },
+      {
+        url: 'https://teamsphere-server-production.up.railway.app/',
+        description: 'Production server'
       }
     ],
     tags: [
