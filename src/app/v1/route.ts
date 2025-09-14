@@ -7,6 +7,7 @@ import dashboardRouter from "./dashboard/route";
 const v1Router = Router();
 
 v1Router.get("/", catchAsyncErrors(async (_req, res) => {
+  console.log("hello user?")
   return res.status(200).json({ message: "test" });
 }));
 
