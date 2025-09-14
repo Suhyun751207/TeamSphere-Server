@@ -1,10 +1,10 @@
 import { Router } from "express";
-import catchAsyncErrors from "@utils/catchAsyncErrors.ts";
-import { authenticateToken } from "@middleware/auth.ts";
-import messageService from "@services/message.ts";
-import { isMessageCreate } from "@interfaces/guard/Message.guard.ts";
+import catchAsyncErrors from "@utils/catchAsyncErrors";
+import { authenticateToken } from "@middleware/auth";
+import messageService from "@services/message";
+import { isMessageCreate } from "@interfaces/guard/Message.guard";
 import workspacesMembersService from "@services/workspacesMembers";
-import roomUserService from "@services/RoomsUser.ts";
+import roomUserService from "@services/RoomsUser";
 import { checkWorkspaceAccess } from "@middleware/workspaceAuth";
 
 const messageRouter = Router({ mergeParams: true });
@@ -153,7 +153,7 @@ messageRouter.post('/', authenticateToken, checkWorkspaceAccess, catchAsyncError
     const message = await messageService.create(data);
 
     // Socket을 통한 실시간 메시지 전송
-    const { getSocketIO } = await import('@config/socket.ts');
+    const { getSocketIO } = await import('@config/socket');
     const io = getSocketIO();
     io.to(`room_${roomId}`).emit('newMessage', {
         id: message.insertId,
@@ -237,7 +237,7 @@ messageRouter.patch('/:messageId', authenticateToken, checkWorkspaceAccess, catc
     });
 
     // Socket을 통한 실시간 메시지 업데이트
-    const { getSocketIO } = await import('@config/socket.ts');
+    const { getSocketIO } = await import('@config/socket');
     const io = getSocketIO();
     io.to(`room_${roomId}`).emit('messageUpdated', {
         messageId: Number(messageId),
@@ -305,7 +305,7 @@ messageRouter.delete('/:messageId', authenticateToken, checkWorkspaceAccess, cat
     const deletedMessage = await messageService.delete(Number(messageId));
 
     // Socket을 통한 실시간 메시지 삭제
-    const { getSocketIO } = await import('@config/socket.ts');
+    const { getSocketIO } = await import('@config/socket');
     const io = getSocketIO();
     io.to(`room_${roomId}`).emit('messageDeleted', {
         messageId: Number(messageId)

@@ -1,6 +1,6 @@
 import { createTypeGuard } from "type-wizard";
-import { RoomsCreate, RoomsUpdate } from "../Rooms.ts";
-import { room_ENUM } from "../../services/ENUM/room_ENUM.ts";
+import { RoomsCreate, RoomsUpdate } from "../Rooms";
+import { room_ENUM } from "../../services/ENUM/room_ENUM";
 
 export const isRoomsCreate=createTypeGuard<RoomsCreate>({
     roomId: {type: "number", nullable: true },

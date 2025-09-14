@@ -1,16 +1,16 @@
 import { Router } from "express";
-import catchAsyncErrors from "@utils/catchAsyncErrors.ts";
-import { authenticateToken } from "@middleware/auth.ts";
-import { checkTeamAdminOrManager, checkTeamMember } from "@middleware/workspaceAuth.ts";
-import tasksService from "@services/Tasks.ts";
-import workspaceTeamUsersService from "@services/WorkspaceTeamUsers.ts";
-import { isTasksCreate } from "@interfaces/guard/Tasks.guard.ts";
+import catchAsyncErrors from "@utils/catchAsyncErrors";
+import { authenticateToken } from "@middleware/auth";
+import { checkTeamAdminOrManager, checkTeamMember } from "@middleware/workspaceAuth";
+import tasksService from "@services/Tasks";
+import workspaceTeamUsersService from "@services/WorkspaceTeamUsers";
+import { isTasksCreate } from "@interfaces/guard/Tasks.guard";
 
-import { TaskPriority } from "@services/ENUM/task_priority_enum.ts";
-import { TaskState } from "@services/ENUM/task_states_enum.ts";
+import { TaskPriority } from "@services/ENUM/task_priority_enum";
+import { TaskState } from "@services/ENUM/task_states_enum";
 
-import tasksMemberIdRouter from "./[memberId]/route.ts";
-import tasksIdRouter from "./[taskId]/route.ts";
+import tasksMemberIdRouter from "./[memberId]/route";
+import tasksIdRouter from "./[taskId]/route";
 
 const tasksRouter = Router({ mergeParams: true });
 tasksRouter.use('/member/:memberId', tasksMemberIdRouter);

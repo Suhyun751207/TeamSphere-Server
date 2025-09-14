@@ -1,5 +1,5 @@
 import { createTypeGuard } from "type-wizard";
-import { WorkspaceCreate } from "../workspaces.ts";
+import { WorkspaceCreate } from "../workspaces";
 
 export const isWorkspaceCreate=createTypeGuard<WorkspaceCreate>({
     adminId: {type: "number"},

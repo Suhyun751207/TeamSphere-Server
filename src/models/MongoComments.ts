@@ -1,11 +1,11 @@
 import mongoose, { Schema, Document } from 'mongoose';
-import { MongoComments } from '@interfaces/MongoComments.ts';
+import { MongoComments } from '@interfaces/MongoComments';
 
 export interface MongoCommentsDocument extends Omit<MongoComments, 'id'>, Document {
   id: number;
 }
 
-import { Counter } from '@models/MongoTask.ts';
+import { Counter } from '@models/MongoTask';
 
 const MongoCommentsSchema = new Schema<MongoCommentsDocument>({
   id: { 

@@ -1,5 +1,5 @@
-import { MongoTaskModel, MongoTaskDocument } from '@models/MongoTask.ts';
-import { MongoTaskCreate, MongoTaskUpdate } from '@interfaces/MongoTask.ts';
+import { MongoTaskModel, MongoTaskDocument } from '@models/MongoTask';
+import { MongoTaskCreate, MongoTaskUpdate } from '@interfaces/MongoTask';
 
 async function read(): Promise<MongoTaskDocument[]>;
 async function read(id: number): Promise<MongoTaskDocument | null>;

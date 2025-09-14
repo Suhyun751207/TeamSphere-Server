@@ -1,5 +1,5 @@
 import { createTypeGuard } from "type-wizard";
-import { tasksCreate } from "../Tasks.ts";
+import { tasksCreate } from "../Tasks";
 
 export const isTasksCreate=createTypeGuard<tasksCreate>({
     teamId: {type: "number"},

@@ -1,15 +1,15 @@
 import { Router } from "express";
-import catchAsyncErrors from "@utils/catchAsyncErrors.ts";
-import { isWorkspaceCreate } from "@interfaces/guard/workspaces.guard.ts";
-import workspaceService from "@services/workspaces.ts";
-import { authenticateToken } from "@middleware/auth.ts";
-import { checkWorkspaceAccess, checkWorkspaceAdminOrManager } from "@middleware/workspaceAuth.ts";
-import workspaceMemberService from "@services/workspacesMembers.ts";
+import catchAsyncErrors from "@utils/catchAsyncErrors";
+import { isWorkspaceCreate } from "@interfaces/guard/workspaces.guard";
+import workspaceService from "@services/workspaces";
+import { authenticateToken } from "@middleware/auth";
+import { checkWorkspaceAccess, checkWorkspaceAdminOrManager } from "@middleware/workspaceAuth";
+import workspaceMemberService from "@services/workspacesMembers";
 import workspaceTeamService from "@services/workspaceTeams";
-import workspaceTeamUsersService from "@services/WorkspaceTeamUsers.ts";
-import tasksService from "@services/Tasks.ts";
-import profilesService from "@services/Profiles.ts";
-import attendanceRecordsService from "@services/AttendanceRecords.ts";
+import workspaceTeamUsersService from "@services/WorkspaceTeamUsers";
+import tasksService from "@services/Tasks";
+import profilesService from "@services/Profiles";
+import attendanceRecordsService from "@services/AttendanceRecords";
 
 const DashboardWorkspaceIdRouter = Router({ mergeParams: true });
 

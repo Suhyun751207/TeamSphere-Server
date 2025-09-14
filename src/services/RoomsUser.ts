@@ -1,5 +1,5 @@
 import { repository, ResultSetHeader } from "mysql2-wizard";
-import { RoomUser, RoomUserAutoSetKeys, RoomUserCreate, roomUserKeys } from "../interfaces/RoomUser.ts";
+import { RoomUser, RoomUserAutoSetKeys, RoomUserCreate, roomUserKeys } from "../interfaces/RoomUser";
 
 const repo =repository<RoomUser, RoomUserAutoSetKeys>({
   table: 'TeamSphere.room_user',

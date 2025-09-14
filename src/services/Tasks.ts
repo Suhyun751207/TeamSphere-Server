@@ -1,5 +1,5 @@
 import { repository, ResultSetHeader } from "mysql2-wizard";
-import { tasks, tasksAutoSetKeys, tasksCreate, tasksKeys } from "../interfaces/Tasks.ts";
+import { tasks, tasksAutoSetKeys, tasksCreate, tasksKeys } from "../interfaces/Tasks";
 
 const repo = repository<tasks, tasksAutoSetKeys>({
   table: 'TeamSphere.tasks',

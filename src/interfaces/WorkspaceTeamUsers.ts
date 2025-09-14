@@ -1,4 +1,4 @@
-import { WorkspaceRole } from "../services/ENUM/workspace_roles_enum.ts";
+import { WorkspaceRole } from "../services/ENUM/workspace_roles_enum";
 
 export const WorkspaceTeamUsersKeys = ['id', 'memberId', 'teamId', 'role', 'createdAt', 'updatedAt'] as const;
 export interface WorkspaceTeamUsers {

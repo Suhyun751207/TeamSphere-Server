@@ -1,9 +1,9 @@
 import { Router } from "express";
-import catchAsyncErrors from "@utils/catchAsyncErrors.ts";
-import { authenticateToken } from "@middleware/auth.ts";
-import { checkTeamMember } from "@middleware/workspaceAuth.ts";
-import mongoCommentsService from "@services/MongoCommentsService.ts";
-import { isMongoCommentsUpdate } from "@interfaces/guard/MongoComments.guard.ts";
+import catchAsyncErrors from "@utils/catchAsyncErrors";
+import { authenticateToken } from "@middleware/auth";
+import { checkTeamMember } from "@middleware/workspaceAuth";
+import mongoCommentsService from "@services/MongoCommentsService";
+import { isMongoCommentsUpdate } from "@interfaces/guard/MongoComments.guard";
 import workspaceTeamUsersService from "@services/WorkspaceTeamUsers";
 
 const commentsIdRouter = Router({ mergeParams: true });

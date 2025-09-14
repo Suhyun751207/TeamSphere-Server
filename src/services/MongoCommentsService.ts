@@ -1,5 +1,5 @@
-import { MongoCommentsModel, MongoCommentsDocument } from '@models/MongoComments.ts';
-import { MongoCommentsCreate, MongoCommentsUpdate } from '@interfaces/MongoComments.ts';
+import { MongoCommentsModel, MongoCommentsDocument } from '@models/MongoComments';
+import { MongoCommentsCreate, MongoCommentsUpdate } from '@interfaces/MongoComments';
 
 async function read(): Promise<MongoCommentsDocument[]>;
 async function read(id: number): Promise<MongoCommentsDocument | null>;

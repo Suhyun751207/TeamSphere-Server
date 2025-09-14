@@ -1,6 +1,6 @@
 import { createTypeGuard } from "type-wizard";
-import { profilesCreate } from "../Profiles.ts";
-import { genders_enum } from "../../services/ENUM/genders_enum.ts";
+import { profilesCreate } from "../Profiles";
+import { genders_enum } from "../../services/ENUM/genders_enum";
 
 export const isProfilesCreate=createTypeGuard<profilesCreate>({
     userId: {type: "number"},

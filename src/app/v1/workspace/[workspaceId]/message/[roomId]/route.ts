@@ -1,14 +1,14 @@
 import { Router } from "express";
-import catchAsyncErrors from "@utils/catchAsyncErrors.ts";
-import { authenticateToken } from "@middleware/auth.ts";
-import roomsUserIdRouter from "./[userId]/route.ts";
-import messageRouter from "./message/route.ts";
-import messageService from "@services/message.ts";
-import roomUserService from "@services/RoomsUser.ts";
-import { isRoomsUpdate } from "@interfaces/guard/Rooms.guard.ts";
-import roomsService from "@services/Rooms.ts";
+import catchAsyncErrors from "@utils/catchAsyncErrors";
+import { authenticateToken } from "@middleware/auth";
+import roomsUserIdRouter from "./[userId]/route";
+import messageRouter from "./message/route";
+import messageService from "@services/message";
+import roomUserService from "@services/RoomsUser";
+import { isRoomsUpdate } from "@interfaces/guard/Rooms.guard";
+import roomsService from "@services/Rooms";
 import workspacesMembersService from "@services/workspacesMembers";
-import { checkWorkspaceAccess } from "@middleware/workspaceAuth.ts";
+import { checkWorkspaceAccess } from "@middleware/workspaceAuth";
 
 const roomIdRouter = Router({ mergeParams: true });
 roomIdRouter.use('/:userId', roomsUserIdRouter);
@@ -41,7 +41,7 @@ roomIdRouter.get('/members', authenticateToken, checkWorkspaceAccess, catchAsync
     }
 
     // Get online users from socket tracking
-    const { getOnlineUsers } = await import('@config/socket.ts');
+    const { getOnlineUsers } = await import('@config/socket');
     const onlineUserIds = getOnlineUsers(Number(roomId));
 
     // Add online status to members

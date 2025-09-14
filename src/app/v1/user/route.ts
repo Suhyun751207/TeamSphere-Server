@@ -1,12 +1,12 @@
 import { Router } from "express";
-import catchAsyncErrors from "@utils/catchAsyncErrors.ts";
-import { authenticateToken } from "@middleware/auth.ts";
+import catchAsyncErrors from "@utils/catchAsyncErrors";
+import { authenticateToken } from "@middleware/auth";
 import userService from "@services/Users";
 import { isUserUpdate } from "@interfaces/guard/Users.guard";
 import authService from "@services/Auth";
-import ProfileRouter from "./profile/route.ts";
-import roomsRouter from "./rooms/route.ts";
-import attendanceRouter from "./attendance/route.ts";
+import ProfileRouter from "./profile/route";
+import roomsRouter from "./rooms/route";
+import attendanceRouter from "./attendance/route";
 
 const userRouter = Router({ mergeParams: true });
 

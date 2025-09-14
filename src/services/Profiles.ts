@@ -1,5 +1,5 @@
 import { repository, ResultSetHeader } from "mysql2-wizard";
-import { profiles, profilesAutoSetKeys, profilesCreate, profilesKeys } from "../interfaces/Profiles.ts";
+import { profiles, profilesAutoSetKeys, profilesCreate, profilesKeys } from "../interfaces/Profiles";
 
 const repo =repository<profiles, profilesAutoSetKeys>({
   table: 'TeamSphere.profiles',

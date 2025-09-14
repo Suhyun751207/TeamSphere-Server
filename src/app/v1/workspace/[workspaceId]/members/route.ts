@@ -1,12 +1,12 @@
 import { Router } from "express";
-import catchAsyncErrors from "@utils/catchAsyncErrors.ts";
-import workspaceMemberService from "@services/workspacesMembers.ts";
-import userService from "@services/Users.ts";
-import profilesService from "@services/Profiles.ts";
-import { authenticateToken } from "@middleware/auth.ts";
-import { checkWorkspaceAccess, checkWorkspaceAdminOrManager } from "@middleware/workspaceAuth.ts";
-import { workspaceMember } from "@interfaces/workspacesMembers.ts";
-import { isWorkspaceMemberCreate, isWorkspaceMemberUpdate } from "@interfaces/guard/workspacesMembers.guard.ts";
+import catchAsyncErrors from "@utils/catchAsyncErrors";
+import workspaceMemberService from "@services/workspacesMembers";
+import userService from "@services/Users";
+import profilesService from "@services/Profiles";
+import { authenticateToken } from "@middleware/auth";
+import { checkWorkspaceAccess, checkWorkspaceAdminOrManager } from "@middleware/workspaceAuth";
+import { workspaceMember } from "@interfaces/workspacesMembers";
+import { isWorkspaceMemberCreate, isWorkspaceMemberUpdate } from "@interfaces/guard/workspacesMembers.guard";
 
 const workspaceIdMemberRouter = Router({ mergeParams: true });
 

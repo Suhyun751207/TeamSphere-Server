@@ -7,7 +7,7 @@ import dotenv from "dotenv";
 import connectDB from "@config/database";
 import { initializeSocket } from "@config/socket";
 import { setupSwagger } from "@config/swagger";
-import route from "./route.ts";
+import route from "./route";
 import path from "path";
 
 dotenv.config();

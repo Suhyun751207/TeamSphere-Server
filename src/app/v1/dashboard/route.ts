@@ -1,5 +1,5 @@
 import { Router } from "express";
-import catchAsyncErrors from "@utils/catchAsyncErrors.ts";
+import catchAsyncErrors from "@utils/catchAsyncErrors";
 import mongoTaskService from "@services/MongoTaskService";
 import userService from "@services/Users";
 import profilesService from "@services/Profiles";

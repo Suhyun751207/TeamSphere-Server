@@ -1,8 +1,8 @@
 import { ResultSetHeader } from "mysql2-wizard";
-import userService from "./Users.ts";
-import { User, UserCreate, UserUpdate } from "../interfaces/Users.ts";
-import { hashPassword, comparePassword } from "../utils/password.ts";
-import { generateToken, JwtPayload } from "../utils/jwt.ts";
+import userService from "./Users";
+import { User, UserCreate, UserUpdate } from "../interfaces/Users";
+import { hashPassword, comparePassword } from "../utils/password";
+import { generateToken, JwtPayload } from "../utils/jwt";
 
 export interface AuthResponse {
   success: boolean;

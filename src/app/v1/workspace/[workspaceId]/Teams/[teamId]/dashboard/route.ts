@@ -1,7 +1,7 @@
 import { Router } from "express";
-import catchAsyncErrors from "@utils/catchAsyncErrors.ts";
-import { authenticateToken } from "@middleware/auth.ts";
-import { checkTeamMember } from "@middleware/workspaceAuth.ts";
+import catchAsyncErrors from "@utils/catchAsyncErrors";
+import { authenticateToken } from "@middleware/auth";
+import { checkTeamMember } from "@middleware/workspaceAuth";
 import workspaceTeamService from "@services/workspaceTeams";
 import workspaceTeamUsersService from "@services/WorkspaceTeamUsers";
 import workspaceMemberService from "@services/workspacesMembers";

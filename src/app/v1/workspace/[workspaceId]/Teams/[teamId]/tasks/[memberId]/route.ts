@@ -1,8 +1,8 @@
 import { Router } from "express";
-import catchAsyncErrors from "@utils/catchAsyncErrors.ts";
-import { authenticateToken } from "@middleware/auth.ts";
-import { checkTeamMember } from "@middleware/workspaceAuth.ts";
-import tasksService from "@services/Tasks.ts";
+import catchAsyncErrors from "@utils/catchAsyncErrors";
+import { authenticateToken } from "@middleware/auth";
+import { checkTeamMember } from "@middleware/workspaceAuth";
+import tasksService from "@services/Tasks";
 
 const tasksIdRouter = Router({ mergeParams: true });
 

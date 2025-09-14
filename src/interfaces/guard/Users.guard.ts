@@ -1,5 +1,5 @@
 import { createTypeGuard } from "type-wizard";
-import { UserCreate, UserUpdate } from "../Users.ts";
+import { UserCreate, UserUpdate } from "../Users";
 
 export const isUserCreate=createTypeGuard<UserCreate>({
     email: {type: "string"},

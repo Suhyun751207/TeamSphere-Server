@@ -1,11 +1,11 @@
 import { Router } from "express";
-import catchAsyncErrors from "@utils/catchAsyncErrors.ts";
-import { authenticateToken } from "@middleware/auth.ts";
+import catchAsyncErrors from "@utils/catchAsyncErrors";
+import { authenticateToken } from "@middleware/auth";
 import userService from "@services/Users";
 import profilesService from "@services/Profiles";
 import { isProfilesCreate } from "@interfaces/guard/Profiles.guard";
 import { genders_enum } from "@services/ENUM/genders_enum";
-import { upload } from "@middleware/upload.ts";
+import { upload } from "@middleware/upload";
 import { UploadService } from "@services/uploadService";
 
 const ProfileIdRouter = Router({ mergeParams: true });

@@ -1,8 +1,8 @@
 import { Router } from "express";
-import catchAsyncErrors from "@utils/catchAsyncErrors.ts";
-import { authenticateToken } from "@middleware/auth.ts";
+import catchAsyncErrors from "@utils/catchAsyncErrors";
+import { authenticateToken } from "@middleware/auth";
 import { isRoomUserCreate } from "@interfaces/guard/RoomUser.guard";
-import roomUserService from "@services/RoomsUser.ts";
+import roomUserService from "@services/RoomsUser";
 
 const roomsUserIdRouter = Router({ mergeParams: true });
 

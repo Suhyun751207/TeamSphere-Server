@@ -1,6 +1,6 @@
 import { createTypeGuard } from "type-wizard";
-import { MessageCreate, MessageUpdate } from "../message.ts";
-import { message_ENUM } from "../../services/ENUM/message_ENUM.ts";
+import { MessageCreate, MessageUpdate } from "../message";
+import { message_ENUM } from "../../services/ENUM/message_ENUM";
 
 export const isMessageCreate=createTypeGuard<MessageCreate>({
     roomId: {type: "number"},

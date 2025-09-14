@@ -1,5 +1,5 @@
-import { Gender } from "../services/ENUM/genders_enum.ts";
-import { SubscriptionState } from "../services/ENUM/subscription_states_enum.ts";
+import { Gender } from "../services/ENUM/genders_enum";
+import { SubscriptionState } from "../services/ENUM/subscription_states_enum";
 
 export const profilesKeys=['userId','name','age','gender','phone','imagePath','subscriptionState','createdAt','updatedAt'] as const;
 export interface profiles {

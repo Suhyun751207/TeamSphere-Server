@@ -1,13 +1,13 @@
 import { Router } from "express";
-import taskRouter from "./task/route.ts";
-import { authenticateToken } from "@middleware/auth.ts";
-import { checkTeamMember } from "@middleware/workspaceAuth.ts";
-import catchAsyncErrors from "@utils/catchAsyncErrors.ts";
-import workspaceTeamUsersService from "@services/WorkspaceTeamUsers.ts";
-import { TaskState } from "@services/ENUM/task_states_enum.ts";
-import { TaskPriority } from "@services/ENUM/task_priority_enum.ts";
-import { isTasksCreate } from "@interfaces/guard/Tasks.guard.ts";
-import tasksService from "@services/Tasks.ts";
+import taskRouter from "./task/route";
+import { authenticateToken } from "@middleware/auth";
+import { checkTeamMember } from "@middleware/workspaceAuth";
+import catchAsyncErrors from "@utils/catchAsyncErrors";
+import workspaceTeamUsersService from "@services/WorkspaceTeamUsers";
+import { TaskState } from "@services/ENUM/task_states_enum";
+import { TaskPriority } from "@services/ENUM/task_priority_enum";
+import { isTasksCreate } from "@interfaces/guard/Tasks.guard";
+import tasksService from "@services/Tasks";
 
 const tasksIdRouter = Router({ mergeParams: true });
 

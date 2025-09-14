@@ -1,5 +1,5 @@
 import { repository, ResultSetHeader } from "mysql2-wizard";
-import { ActivityLogs, ActivityLogsAutoSetKeys, ActivityLogsCreate, ActivityLogsKeys } from "../interfaces/ActivityLogs.ts";
+import { ActivityLogs, ActivityLogsAutoSetKeys, ActivityLogsCreate, ActivityLogsKeys } from "../interfaces/ActivityLogs";
 
 const repo =repository<ActivityLogs, ActivityLogsAutoSetKeys>({
   table: 'TeamSphere.activity_logs',

@@ -1,5 +1,5 @@
 import { repository, ResultSetHeader } from "mysql2-wizard";
-import { workspaceKeys, Workspace, WorkspaceAutoSetKeys, WorkspaceCreate } from "../interfaces/workspaces.ts";
+import { workspaceKeys, Workspace, WorkspaceAutoSetKeys, WorkspaceCreate } from "../interfaces/workspaces";
 
 const repo =repository<Workspace, WorkspaceAutoSetKeys>({
   table: 'TeamSphere.workspaces',

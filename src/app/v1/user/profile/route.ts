@@ -1,13 +1,13 @@
 import { Router } from "express";
-import catchAsyncErrors from "@utils/catchAsyncErrors.ts";
-import { authenticateToken, optionalAuth } from "@middleware/auth.ts";
+import catchAsyncErrors from "@utils/catchAsyncErrors";
+import { authenticateToken, optionalAuth } from "@middleware/auth";
 import userService from "@services/Users";
 import profilesService from "@services/Profiles";
 import { isProfilesCreate } from "@interfaces/guard/Profiles.guard";
-import ProfileIdRouter from "./[profileId]/route.ts";
+import ProfileIdRouter from "./[profileId]/route";
 import { genders_enum } from "@services/ENUM/genders_enum";
-import { upload } from "@middleware/upload.ts";
-import { UploadService } from "@services/uploadService.ts";
+import { upload } from "@middleware/upload";
+import { UploadService } from "@services/uploadService";
 
 const ProfileRouter = Router({ mergeParams: true });
 

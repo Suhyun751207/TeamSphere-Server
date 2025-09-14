@@ -1,9 +1,9 @@
 import { Router } from "express";
-import catchAsyncErrors from "@utils/catchAsyncErrors.ts";
-import { authenticateToken } from "@middleware/auth.ts";
-import messageService from "@services/message.ts";
-import { isMessageCreate } from "@interfaces/guard/Message.guard.ts";
-import roomUserService from "@services/RoomsUser.ts";
+import catchAsyncErrors from "@utils/catchAsyncErrors";
+import { authenticateToken } from "@middleware/auth";
+import messageService from "@services/message";
+import { isMessageCreate } from "@interfaces/guard/Message.guard";
+import roomUserService from "@services/RoomsUser";
 import { checkTeamMember } from "@middleware/workspaceAuth";
 
 const messageRouter = Router({ mergeParams: true });
@@ -166,7 +166,7 @@ messageRouter.post('/', authenticateToken, checkTeamMember, catchAsyncErrors(asy
     const message = await messageService.create(data);
 
     // Socket을 통한 실시간 메시지 전송
-    const { getSocketIO } = await import('@config/socket.ts');
+    const { getSocketIO } = await import('@config/socket');
     const io = getSocketIO();
     io.to(`room_${roomId}`).emit('newMessage', {
         id: message.insertId,
@@ -257,7 +257,7 @@ messageRouter.patch('/:messageId', authenticateToken, checkTeamMember, catchAsyn
     });
 
     // Socket을 통한 실시간 메시지 업데이트
-    const { getSocketIO } = await import('@config/socket.ts');
+    const { getSocketIO } = await import('@config/socket');
     const io = getSocketIO();
     io.to(`room_${roomId}`).emit('messageUpdated', {
         messageId: Number(messageId),
@@ -332,7 +332,7 @@ messageRouter.delete('/:messageId', authenticateToken, checkTeamMember, catchAsy
     const deletedMessage = await messageService.delete(Number(messageId));
 
     // Socket을 통한 실시간 메시지 삭제
-    const { getSocketIO } = await import('@config/socket.ts');
+    const { getSocketIO } = await import('@config/socket');
     const io = getSocketIO();
     io.to(`room_${roomId}`).emit('messageDeleted', {
         messageId: Number(messageId)

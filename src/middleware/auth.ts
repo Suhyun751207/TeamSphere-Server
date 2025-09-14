@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { verifyToken, JwtPayload } from '../utils/jwt.ts';
-import { WorkspaceTeamUsers } from '@interfaces/WorkspaceTeamUsers.ts';
+import { verifyToken, JwtPayload } from '../utils/jwt';
+import { WorkspaceTeamUsers } from '@interfaces/WorkspaceTeamUsers';
 
 declare global {
   namespace Express {

@@ -1,10 +1,10 @@
 import { Router } from "express";
-import catchAsyncErrors from "@utils/catchAsyncErrors.ts";
-import { authenticateToken } from "@middleware/auth.ts";
-import { checkTeamMember, TeamUserIdSelect } from "@middleware/workspaceAuth.ts";
-import mongoTaskService from "@services/MongoTaskService.ts";
-import { isMongoTaskUpdate } from "@interfaces/guard/MongoTask.guard.ts";
-import commentsRouter from "./comments/route.ts";
+import catchAsyncErrors from "@utils/catchAsyncErrors";
+import { authenticateToken } from "@middleware/auth";
+import { checkTeamMember, TeamUserIdSelect } from "@middleware/workspaceAuth";
+import mongoTaskService from "@services/MongoTaskService";
+import { isMongoTaskUpdate } from "@interfaces/guard/MongoTask.guard";
+import commentsRouter from "./comments/route";
 
 const taskIdRouter = Router({ mergeParams: true });
 taskIdRouter.use('/comments', commentsRouter);

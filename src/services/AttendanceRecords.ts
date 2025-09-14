@@ -1,5 +1,5 @@
 import { repository, ResultSetHeader } from "mysql2-wizard";
-import { AttendanceRecords, AttendanceRecordsAutoSetKeys, AttendanceRecordsCreate, AttendanceRecordsKeys } from "../interfaces/AttendanceRecords.ts";
+import { AttendanceRecords, AttendanceRecordsAutoSetKeys, AttendanceRecordsCreate, AttendanceRecordsKeys } from "../interfaces/AttendanceRecords";
 
 const repo =repository<AttendanceRecords, AttendanceRecordsAutoSetKeys>({
   table: 'TeamSphere.attendance_records',

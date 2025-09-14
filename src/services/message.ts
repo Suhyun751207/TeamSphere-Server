@@ -1,5 +1,5 @@
 import { repository, ResultSetHeader } from "mysql2-wizard";
-import { messageKeys, Message, MessageAutoSetKeys, MessageCreate } from "../interfaces/message.ts";
+import { messageKeys, Message, MessageAutoSetKeys, MessageCreate } from "../interfaces/message";
 
 const repo =repository<Message, MessageAutoSetKeys>({
   table: 'TeamSphere.message',

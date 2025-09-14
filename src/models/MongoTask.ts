@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document } from 'mongoose';
-import { MongoTask } from '@interfaces/MongoTask.ts';
+import { MongoTask } from '@interfaces/MongoTask';
 
 export interface MongoTaskDocument extends Omit<MongoTask, 'id'>, Document {
   id: number;

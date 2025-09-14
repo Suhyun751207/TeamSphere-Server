@@ -1,4 +1,4 @@
-import { MessageType } from "../services/ENUM/message_ENUM.ts";
+import { MessageType } from "../services/ENUM/message_ENUM";
 
 export const messageKeys = ['id', 'roomId','userId', 'type', 'content', 'imagePath','isEdited', 'isValid', 'createdAt', 'updatedAt'] as const;
 export interface Message {

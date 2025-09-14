@@ -1,4 +1,4 @@
-import { RoomType } from "../services/ENUM/room_ENUM.ts";
+import { RoomType } from "../services/ENUM/room_ENUM";
 
 export const roomsKeys = ['id', 'type', 'roomId', 'title', 'workspaceId', 'teamId', 'lastMessageId', 'createdAt', 'updatedAt'] as const;
 export interface Rooms {

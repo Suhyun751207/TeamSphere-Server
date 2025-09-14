@@ -1,6 +1,6 @@
 import { Router } from "express";
-import catchAsyncErrors from "@utils/catchAsyncErrors.ts";
-import { authenticateToken } from "@middleware/auth.ts";
+import catchAsyncErrors from "@utils/catchAsyncErrors";
+import { authenticateToken } from "@middleware/auth";
 import { isRoomsCreate } from "@interfaces/guard/Rooms.guard";
 import roomIdRouter from "./[roomId]/route";
 import { isRoomUserCreate } from "@interfaces/guard/RoomUser.guard";

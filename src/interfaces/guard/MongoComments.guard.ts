@@ -1,5 +1,5 @@
 import { createTypeGuard } from "type-wizard";
-import { MongoCommentsCreate, MongoCommentsUpdate } from "@interfaces/MongoComments.ts";
+import { MongoCommentsCreate, MongoCommentsUpdate } from "@interfaces/MongoComments";
 
 export const isMongoCommentsCreate = createTypeGuard<MongoCommentsCreate>({
     task_id: { type: "number" },

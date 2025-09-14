@@ -1,5 +1,5 @@
 import { createTypeGuard } from "type-wizard";
-import { RoomUserCreate, RoomUserUpdate } from "../RoomUser.ts";
+import { RoomUserCreate, RoomUserUpdate } from "../RoomUser";
 
 export const isRoomUserCreate=createTypeGuard<RoomUserCreate>({
     roomId: {type: "number"},

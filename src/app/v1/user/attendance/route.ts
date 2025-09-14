@@ -1,8 +1,8 @@
 import { Router } from "express";
-import catchAsyncErrors from "@utils/catchAsyncErrors.ts";
-import { authenticateToken } from "@middleware/auth.ts";
-import attendanceRecordsService from "@services/AttendanceRecords.ts";
-import { isAttendanceRecordsCreate } from "@interfaces/guard/AttendanceRecords.guard.ts";
+import catchAsyncErrors from "@utils/catchAsyncErrors";
+import { authenticateToken } from "@middleware/auth";
+import attendanceRecordsService from "@services/AttendanceRecords";
+import { isAttendanceRecordsCreate } from "@interfaces/guard/AttendanceRecords.guard";
 
 const attendanceRouter = Router({ mergeParams: true });
 

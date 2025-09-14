@@ -1,13 +1,13 @@
 import { Router } from "express";
-import catchAsyncErrors from "@utils/catchAsyncErrors.ts";
-import { authenticateToken } from "@middleware/auth.ts";
-import { checkTeamAdminOrManager, checkTeamMember } from "@middleware/workspaceAuth.ts";
-import workspaceTeamUsersService from "@services/WorkspaceTeamUsers.ts";
-import { isWorkspaceTeamUserCreate } from "@interfaces/guard/WorkspaceTeamUsers.guard.ts";
-import { WorkspaceRole } from "@services/ENUM/workspace_roles_enum.ts";
-import teamIdMemberIdRouter from "./[memberId]/route.ts";
-import workspaceMemberService from "@services/workspacesMembers.ts";
-import profilesService from "@services/Profiles.ts";
+import catchAsyncErrors from "@utils/catchAsyncErrors";
+import { authenticateToken } from "@middleware/auth";
+import { checkTeamAdminOrManager, checkTeamMember } from "@middleware/workspaceAuth";
+import workspaceTeamUsersService from "@services/WorkspaceTeamUsers";
+import { isWorkspaceTeamUserCreate } from "@interfaces/guard/WorkspaceTeamUsers.guard";
+import { WorkspaceRole } from "@services/ENUM/workspace_roles_enum";
+import teamIdMemberIdRouter from "./[memberId]/route";
+import workspaceMemberService from "@services/workspacesMembers";
+import profilesService from "@services/Profiles";
 
 const teamIdMemberRouter = Router({ mergeParams: true });
 teamIdMemberRouter.use("/:memberId", teamIdMemberIdRouter);
