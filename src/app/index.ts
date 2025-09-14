@@ -1,4 +1,5 @@
 import "dotenv/config";
+import 'module-alias/register';
 import express from "express";
 import { createServer } from "http";
 import cors from "cors";
@@ -8,7 +9,6 @@ import connectDB from "../config/database";
 import { initializeSocket } from "../config/socket";
 import { setupSwagger } from "../config/swagger";
 import route from "./route";
-import 'module-alias/register';
 import path from "path";
 
 dotenv.config();
