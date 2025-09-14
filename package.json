@@ -5,11 +5,20 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "nodemon --watch src --ext ts --exec \"ts-node -r tsconfig-paths/register ./src/app/index.ts\"",
-    "build": "tsc",
-    "start": "node src/app/index.js",
+    "build": "rimraf dist && tsc",
+    "build:watch": "tsc --watch",
+    "build:prod": "rimraf dist && tsc --project tsconfig.json && npm run copy-assets",
+    "copy-assets": "copyfiles -u 1 src/**/*.json src/**/*.sql src/**/*.html dist/",
+    "start": "node dist/app/index.js",
+    "start:prod": "NODE_ENV=production node dist/app/index.js",
     "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
     "generate-docs": "ts-node -r tsconfig-paths/register ./scripts/generate-swagger.ts",
-    "deploy-docs": "npm run generate-docs && firebase deploy --only hosting"
+    "deploy-docs": "npm run generate-docs && firebase deploy --only hosting",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "format": "prettier --write src/**/*.ts"
   },
   "keywords": [
     "collaboration",
@@ -63,6 +72,12 @@
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.2",
+    "rimraf": "^5.0.1",
+    "copyfiles": "^2.4.1",
+    "eslint": "^8.57.0",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "prettier": "^3.2.5"
   }
 }
