@@ -8,9 +8,8 @@
     "strict": true,
     "skipLibCheck": true,
     "preserveValueImports": false,
-    "outDir": "./build",
-    "noEmit": true,
-    "allowImportingTsExtensions": true,
+    "outDir": "./dist",
+    "noEmit": false,
     "resolveJsonModule": true,
     "baseUrl": "./src",
     "paths": {
