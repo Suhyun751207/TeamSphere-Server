@@ -11,7 +11,8 @@
     "noEmit": false,
     "outDir": "./dist",
     "resolveJsonModule": true,
-    "baseUrl": "./src",
+    "baseUrl": "./dist",
+    // "baseUrl": "./src",
     "paths": {
       "@utils/*": ["utils/*"],
       "@middleware/*": ["middleware/*"],
