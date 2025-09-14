@@ -24,7 +24,7 @@ tasksRouter.get('/', authenticateToken, checkTeamMember, catchAsyncErrors(async 
 }))
 
 tasksRouter.post('/', authenticateToken, checkTeamMember, catchAsyncErrors(async (req, res) => {
-    const memberId = Number(req.params.memberId);
+    const memberId = Number(req.body.teamMemberId);
     const teamId = Number(req.params.teamId);
     const teamInfo = await workspaceTeamUsersService.readMemberIdAndTeamId(memberId, teamId);
     if (!teamInfo || teamInfo.length === 0) {
