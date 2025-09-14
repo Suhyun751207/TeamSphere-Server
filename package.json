@@ -18,7 +18,8 @@
     "deploy-docs": "npm run generate-docs && firebase deploy --only hosting",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --fix",
-    "format": "prettier --write src/**/*.ts"
+    "format": "prettier --write src/**/*.ts",
+    "postinstall": "npm run build"
   },
   "keywords": [
     "collaboration",
