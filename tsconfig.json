@@ -9,9 +9,10 @@
     "skipLibCheck": true,
     "preserveValueImports": false,
     "noEmit": false,
-    "outDir": "./dist",
+    "outDir": "dist",
     "resolveJsonModule": true,
-    "baseUrl": "./dist",
+    "noImplicitAny": false,
+    "baseUrl": "src",
     // "baseUrl": "./src",
     "paths": {
       "@utils/*": ["utils/*"],
