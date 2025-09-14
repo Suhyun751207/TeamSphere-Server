@@ -11,6 +11,7 @@
     "outDir": "./build",
     "noEmit": true,
     "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
     "baseUrl": "./src",
     "paths": {
       "@utils/*": ["utils/*"],
