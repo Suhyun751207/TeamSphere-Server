@@ -8,8 +8,8 @@
     "strict": true,
     "skipLibCheck": true,
     "preserveValueImports": false,
-    "outDir": "./dist",
     "noEmit": false,
+    "outDir": "./dist",
     "resolveJsonModule": true,
     "baseUrl": "./src",
     "paths": {
