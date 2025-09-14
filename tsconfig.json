@@ -10,8 +10,10 @@
     "preserveValueImports": false,
     "noEmit": false,
     "outDir": "dist",
+    "rootDir": "src",
     "resolveJsonModule": true,
     "noImplicitAny": false,
+    "strictNullChecks": false,
     "baseUrl": "src",
     // "baseUrl": "./src",
     "paths": {
