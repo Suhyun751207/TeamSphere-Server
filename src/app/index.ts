@@ -27,7 +27,9 @@ app.use(
             "localhost:3000",
             "http://localhost:3000",
             "teamsphere-client-production.up.railway.app",
-            "https://teamsphere-client-production.up.railway.app"
+            "https://teamsphere-client-production.up.railway.app",
+            "teamsphere-client.railway.internal",
+            "https://teamsphere-client.railway.internal",
         ],
         credentials: true,
         methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
