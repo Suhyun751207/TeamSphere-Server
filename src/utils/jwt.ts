@@ -28,7 +28,7 @@ export const setTokenCookie = (res: Response, token: string): void => {
     expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     httpOnly: false,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'none' as const,
+    sameSite: 'lax' as const,
   };
 
   res.cookie('accesstoken', token, cookieOptions);
