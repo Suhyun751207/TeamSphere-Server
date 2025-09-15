@@ -27,11 +27,21 @@ async function readUserId(id:number): Promise<AttendanceRecords[]|undefined>{
 
 async function checkTodayAttendance(userId: number): Promise<boolean> {
   try {
-    const today = new Date();
-    const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    const todayEnd = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+    // 현재 시간을 한국 시간으로 변환
+    const now = new Date();
+    const kstOffset = 9 * 60 * 60 * 1000; // KST는 UTC+9
+    const kstTime = new Date(now.getTime() + kstOffset + (now.getTimezoneOffset() * 60 * 1000));
     
-    // 모든 출석체크 기록을 가져와서 필터링
+    // 한국 시간 기준으로 오늘의 시작과 끝 (UTC)
+    const kstYear = kstTime.getFullYear();
+    const kstMonth = kstTime.getMonth();
+    const kstDate = kstTime.getDate();
+    
+    // 한국 시간으로 자정 기준 UTC 시간 계산
+    const kstStart = new Date(Date.UTC(kstYear, kstMonth, kstDate, 0, 0, 0) - kstOffset);
+    const kstEnd = new Date(Date.UTC(kstYear, kstMonth, kstDate + 1, 0, 0, 0) - kstOffset);
+    
+    // 모든 출석체크 기록 가져오기
     const allAttendance = await repo.select({ userId: userId });
     
     if (!Array.isArray(allAttendance)) {
@@ -40,10 +50,10 @@ async function checkTodayAttendance(userId: number): Promise<boolean> {
     
     // 오늘 날짜의 출석체크 기록 필터링
     const todayAttendance = allAttendance.filter(record => {
-      const recordDate = new Date(record.createdAt);
-      return recordDate >= todayStart && recordDate < todayEnd;
+      const recordDate = new Date(record.createdAt.getTime() + 9*60*60*1000);
+      return recordDate >= kstStart && recordDate < kstEnd;
     });
-    
+
     return todayAttendance.length > 0;
   } catch (error) {
     console.error('오늘 출석체크 확인 오류:', error);

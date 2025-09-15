@@ -364,11 +364,11 @@ export async function processUserMessage(message: string, conversationHistory: {
 
             6) 출석체크
             사용자: "출석체크 해줘"
-            AI: {"action":"attendance_check","parameters":{},"message":"출석체크를 진행하겠습니다."}
+            AI: {"action":"attendance_check","parameters":{},"message":""}
             사용자: "출석 확인해줘"
-            AI: {"action":"attendance_check","parameters":{},"message":"출석체크를 진행하겠습니다."}
+            AI: {"action":"attendance_check","parameters":{},"message":""}
             사용자: "오늘 출석"
-            AI: {"action":"attendance_check","parameters":{},"message":"출석체크를 진행하겠습니다."}
+            AI: {"action":"attendance_check","parameters":{},"message":""}
 
             ==================================================
             ✅ 워크스페이스/팀 이름 추출 규칙

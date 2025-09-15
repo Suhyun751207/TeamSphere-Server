@@ -557,22 +557,23 @@ chatRouter.post('/', async (req: Request, res: Response) => {
 
       case 'attendance_check':
         try {
-          console.log('출석체크 요청 처리 시작');
-          
-          // 오늘 출석체크 여부 확인
           const hasCheckedToday = await attendanceRecordsService.checkTodayAttendance(userId);
           
           if (hasCheckedToday) {
             result = {
               status: 'success',
-              message: '오늘 이미 출석체크를 완료했습니다.',
+              message: '오늘 출석체크는 완료했습니다.',
               data: { alreadyChecked: true }
             };
           } else {
-            // 출석체크 기록 생성
+            // 출석체크 기록 생성 (한국 시간 기준)
+            const now = new Date();
+            const kstOffset = 9 * 60 * 60 * 1000; // KST는 UTC+9
+            const kstTime = new Date(now.getTime() + kstOffset + (now.getTimezoneOffset() * 60 * 1000));
+            
             const attendanceData = {
               userId: userId,
-              checkInTime: new Date(),
+              checkInTime: kstTime,
               status: 'present'
             };
             
