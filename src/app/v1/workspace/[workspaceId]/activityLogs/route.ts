@@ -116,7 +116,10 @@ activityLogsRouter.post("/", authenticateToken, checkWorkspaceAccess, catchAsync
     const body = req.body;
     const workspaceId = req.params.workspaceId;
     const userId = req.user?.userId;
-    const data = { ...body, workspaceId: Number(workspaceId), userId: userId };
+    const workspaceMember = await workspaceMemberService.readByUserIdAndWorkspaceId(userId!, Number(workspaceId));
+    if (!workspaceMember) return res.status(403).json({ message: "워크스페이스 접근 권한 없음" });
+
+    const data = { ...body, workspaceId: Number(workspaceId), userId: workspaceMember[0].id };
     if (!isActivityLogsCreate(data)) return res.status(400).json({ message: isActivityLogsCreate.message(data) });
     const activityLogResult = await activityLogsService.create(data);
     return res.status(201).json(activityLogResult);
