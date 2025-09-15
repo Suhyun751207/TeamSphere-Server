@@ -14,13 +14,9 @@ dotenv.config();
 
 const app = express();
 const server = createServer(app);
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT;
 
-app.use(express.static("build"));
-
-app.get("*", (req, res) => {
-  res.sendFile(__dirname + "/build/index.html");
-});
+// Static file serving removed - client will be deployed separately
 
 app.use(
     cors({
@@ -41,6 +37,11 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
+// Favicon route
+app.get('/favicon.ico', (req, res) => {
+    res.status(204).end();
+});
+
 // Swagger 설정
 setupSwagger(app);
 
@@ -51,8 +52,8 @@ app.use("/", route);
 
     initializeSocket(server);
 
-    const port = +(process.env.PORT ?? 8081);
+    const port = +(process.env.PORT ?? 8080);
     server.listen(port, "0.0.0.0", () => {
-        console.log(`Server is listening on http://localhost:${port}`);
+        console.log(`INFO  Accepting connections at http://localhost:${port}`);
     });
 })();
