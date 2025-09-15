@@ -280,6 +280,7 @@ chatRouter.post('/', async (req: Request, res: Response) => {
         }
         break;
       case 'create_activity_log':
+        skipActivityLog = true; // 활동로그 생성 요청은 중복 기록 방지
         try {
           const message = aiResponse.parameters.message;
           const workspaceName = aiResponse.parameters.workspaceName;
