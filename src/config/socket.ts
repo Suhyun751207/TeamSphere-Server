@@ -40,7 +40,14 @@ const onlineUsers = new Map<number, Set<number>>(); // roomId -> Set of userIds
 export const initializeSocket = (server: HTTPServer) => {
   io = new SocketIOServer(server, {
     cors: {
-      origin: "http://localhost:3000",
+      origin: [
+        "localhost:3000",
+        "http://localhost:3000",
+        "teamsphere-client-production.up.railway.app",
+        "https://teamsphere-client-production.up.railway.app",
+        "teamsphere-client.railway.internal",
+        "https://teamsphere-client.railway.internal",
+      ],
       methods: ["GET", "POST"],
       credentials: true
     }

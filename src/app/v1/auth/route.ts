@@ -134,11 +134,13 @@ authRouter.post("/login", catchAsyncErrors(async (req, res) => {
     if (result.token) {
         setTokenCookie(res, result.token);
     }
-    return res.status(200).json({
+    const data = {
         success: result.success,
         message: result.message,
         user: result.user
-    });
+    }
+    console.log(data)
+    return res.status(200).json(data);
 }));
 
 /**
