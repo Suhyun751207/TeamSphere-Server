@@ -61,6 +61,6 @@ app.use("/", route);
 
     const port = +(process.env.PORT ?? 8080);
     server.listen(port, "0.0.0.0", () => {
-        console.log(`INFO  Accepting connections at http://localhost:${port}`);
+        console.log(`Server Start, port : ${port}`);
     });
 })();
