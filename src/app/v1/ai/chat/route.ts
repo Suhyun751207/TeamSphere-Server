@@ -8,6 +8,7 @@ import workspaceTeamUsersService from '../../../../services/WorkspaceTeamUsers';
 import tasksService from '../../../../services/Tasks';
 import activityLogsService from '../../../../services/ActivityLogs';
 import profilesService from '../../../../services/Profiles';
+import attendanceRecordsService from '../../../../services/AttendanceRecords';
 import { isWorkspaceCreate } from '../../../../interfaces/guard/workspaces.guard';
 import catchAsyncErrors from '../../../../utils/catchAsyncErrors';
 
@@ -551,6 +552,43 @@ chatRouter.post('/', async (req: Request, res: Response) => {
         } catch (error) {
           console.error('일반 대화 처리 오류:', error);
           result = { status: 'error', message: '대화 처리 중 오류가 발생했습니다.' };
+        }
+        break;
+
+      case 'attendance_check':
+        try {
+          console.log('출석체크 요청 처리 시작');
+          
+          // 오늘 출석체크 여부 확인
+          const hasCheckedToday = await attendanceRecordsService.checkTodayAttendance(userId);
+          
+          if (hasCheckedToday) {
+            result = {
+              status: 'success',
+              message: '오늘 이미 출석체크를 완료했습니다.',
+              data: { alreadyChecked: true }
+            };
+          } else {
+            // 출석체크 기록 생성
+            const attendanceData = {
+              userId: userId,
+              checkInTime: new Date(),
+              status: 'present'
+            };
+            
+            await attendanceRecordsService.create(attendanceData);
+            
+            result = {
+              status: 'success',
+              message: '출석체크가 완료되었습니다.',
+              data: { alreadyChecked: false }
+            };
+          }
+          
+          console.log('출석체크 처리 완료:', result);
+        } catch (error) {
+          console.error('출석체크 처리 오류:', error);
+          result = { status: 'error', message: '출석체크 처리 중 오류가 발생했습니다.' };
         }
         break;
     }

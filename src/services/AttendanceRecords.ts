@@ -25,6 +25,32 @@ async function readUserId(id:number): Promise<AttendanceRecords[]|undefined>{
   return repo.select({userId: id})
 }
 
+async function checkTodayAttendance(userId: number): Promise<boolean> {
+  try {
+    const today = new Date();
+    const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const todayEnd = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+    
+    // 모든 출석체크 기록을 가져와서 필터링
+    const allAttendance = await repo.select({ userId: userId });
+    
+    if (!Array.isArray(allAttendance)) {
+      return false;
+    }
+    
+    // 오늘 날짜의 출석체크 기록 필터링
+    const todayAttendance = allAttendance.filter(record => {
+      const recordDate = new Date(record.createdAt);
+      return recordDate >= todayStart && recordDate < todayEnd;
+    });
+    
+    return todayAttendance.length > 0;
+  } catch (error) {
+    console.error('오늘 출석체크 확인 오류:', error);
+    return false;
+  }
+}
+
 async function create(data:AttendanceRecordsCreate): Promise<ResultSetHeader>{
   return repo.insert([data]);
 };
@@ -41,6 +67,7 @@ const attendanceRecordsService={
   read,
   readId,
   readUserId,
+  checkTodayAttendance,
   create,
   update,
   delete: _delete,

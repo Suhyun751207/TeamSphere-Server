@@ -303,6 +303,7 @@ export async function processUserMessage(message: string, conversationHistory: {
             1. 직전 assistant 메시지가 clarification 요청이었다면, 사용자 응답을 이름으로 간주
 {{ ... }}
             - update_profile      (parameters: {field, value})
+            - attendance_check    (parameters: {})
             - general_chat        (parameters: {type, content?})
             - clarification_needed (parameters: {clarificationType: "workspace_name" | "team_name" | "task_title"})
 
@@ -360,6 +361,14 @@ export async function processUserMessage(message: string, conversationHistory: {
             5) 불완전 응답
             사용자: "음... 잘 모르겠어"
             AI: {"action":"clarification_needed","parameters":{"clarificationType":"workspace_name"},"message":"워크스페이스 이름을 다시 알려주세요. 예: \"프로젝트A\"와 같이 말씀해 주세요."}
+
+            6) 출석체크
+            사용자: "출석체크 해줘"
+            AI: {"action":"attendance_check","parameters":{},"message":"출석체크를 진행하겠습니다."}
+            사용자: "출석 확인해줘"
+            AI: {"action":"attendance_check","parameters":{},"message":"출석체크를 진행하겠습니다."}
+            사용자: "오늘 출석"
+            AI: {"action":"attendance_check","parameters":{},"message":"출석체크를 진행하겠습니다."}
 
             ==================================================
             ✅ 워크스페이스/팀 이름 추출 규칙
