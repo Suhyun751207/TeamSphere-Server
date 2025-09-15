@@ -14,7 +14,7 @@ const serviceAccount = {
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  storageBucket: "teamsphere-ae765.appspot.com",
+  storageBucket: "teamsphere-ae765.firebasestorage.app",
 });
 
 const bucket = admin.storage().bucket();
