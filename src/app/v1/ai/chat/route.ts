@@ -56,6 +56,7 @@ chatRouter.post('/', async (req: Request, res: Response) => {
     // 액션에 따라 실제 API 호출
     let result = null;
     let workspaceIdForLog = 0;
+    let skipActivityLog = false; // 활동로그 기록 건너뛰기 플래그
     
     switch (aiResponse.action) {
       case 'create_workspace':
@@ -556,6 +557,7 @@ chatRouter.post('/', async (req: Request, res: Response) => {
         break;
 
       case 'attendance_check':
+        skipActivityLog = true; // 출석체크는 활동로그 기록 건너뛰기
         try {
           const hasCheckedToday = await attendanceRecordsService.checkTodayAttendance(userId);
           
@@ -592,22 +594,58 @@ chatRouter.post('/', async (req: Request, res: Response) => {
           result = { status: 'error', message: '출석체크 처리 중 오류가 발생했습니다.' };
         }
         break;
+      
+      case 'specify_workspace':
+        try {
+          const workspaceName = aiResponse.parameters.workspaceName;
+          
+          if (!workspaceName) {
+            result = { status: 'error', message: '워크스페이스 이름이 필요합니다.' };
+            break;
+          }
+          
+          // 사용자의 워크스페이스 목록에서 찾기
+          const userWorkspaces = await workspaceService.read();
+          const targetWorkspace = userWorkspaces.find(ws => 
+            ws.name.toLowerCase().includes(workspaceName.toLowerCase()) ||
+            workspaceName.toLowerCase().includes(ws.name.toLowerCase())
+          );
+          
+          if (!targetWorkspace) {
+            result = { 
+              status: 'error', 
+              message: `"${workspaceName}" 워크스페이스를 찾을 수 없습니다. 먼저 워크스페이스를 생성해주세요.` 
+            };
+            break;
+          }
+          
+          // 세션에 워크스페이스 ID 저장 (실제로는 세션 관리가 필요)
+          // 여기서는 workspaceIdForLog를 설정하여 이후 활동로그에 사용
+          workspaceIdForLog = targetWorkspace.id;
+          
+          result = { 
+            status: 'success', 
+            message: `"${targetWorkspace.name}" 워크스페이스가 지정되었습니다. 이제부터 이 워크스페이스에 활동로그를 기록합니다.`,
+            data: { workspaceId: targetWorkspace.id, workspaceName: targetWorkspace.name }
+          };
+          
+          // 워크스페이스 지정 자체도 활동로그에 기록
+          await logActivity(targetWorkspace.id, '워크스페이스 지정', `${targetWorkspace.name} 워크스페이스로 활동 공간 지정`);
+          
+        } catch (error) {
+          console.error('워크스페이스 지정 오류:', error);
+          result = { status: 'error', message: '워크스페이스 지정 중 오류가 발생했습니다.' };
+        }
+        break;
     }
 
     // 최종 응답 전에 활동 로그 기록 (성공/실패 관계없이)
-    if (workspaceIdForLog > 0) {
+    // 출석체크는 활동로그 기록 건너뛰기
+    // 사용자가 명시적으로 워크스페이스를 지정한 경우에만 활동로그 기록
+    if (!skipActivityLog && workspaceIdForLog > 0) {
       logActivity(workspaceIdForLog, 'AI 챗봇 요청', `메시지: "${message}"`);
-    } else {
-      // 워크스페이스를 찾지 못한 경우에도 기록
-      try {
-        const userWorkspaces = await workspaceService.read();
-        if (userWorkspaces.length > 0) {
-          logActivity(userWorkspaces[0].id, 'AI 챗봇 요청', `메시지: "${message}"`);
-        }
-      } catch (error) {
-        console.error('기본 활동 로그 기록 오류:', error);
-      }
     }
+    // 워크스페이스를 지정하지 않은 경우에는 활동로그를 기록하지 않음
 
     res.json({
       success: true,

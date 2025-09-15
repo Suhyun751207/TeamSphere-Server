@@ -867,6 +867,38 @@ function parseFallbackResponse(text: string, conversationHistory: { role: 'user'
             };
         }
 
+        // 워크스페이스 지정 패턴
+        const workspaceSpecPatterns = [
+            /(?:워크스페이스|workspace)[\s]*(?:지정|선택|변경|이동)[\s]*(?:해줘|해줄래|할게|할께)/i,
+            /(?:이제|부터|다음부터)[\s]*(?:이|그)[\s]*(?:워크스페이스|workspace)[\s]*(?:에서|로|에)[\s]*(?:작업|활동)[\s]*(?:할게|할께)/i,
+            /(?:워크스페이스|workspace)[\s]*([a-zA-Z0-9가-힣\s\-_]+)[\s]*(?:에서|로|에)[\s]*(?:작업|활동)[\s]*(?:할게|할께)/i,
+            /(?:워크스페이스|workspace)[\s]*([a-zA-Z0-9가-힣\s\-_]+)[\s]*(?:지정|선택|변경)/i
+        ];
+        
+        for (const pattern of workspaceSpecPatterns) {
+            const match = cleanText.match(pattern);
+            if (match) {
+                const workspaceName = match[1]?.trim();
+                if (workspaceName) {
+                    return {
+                        action: 'specify_workspace',
+                        parameters: {
+                            workspaceName: workspaceName
+                        },
+                        message: `"${workspaceName}" 워크스페이스에서 활동하겠습니다. 이제부터 이 워크스페이스에 활동로그를 기록합니다.`
+                    };
+                } else {
+                    return {
+                        action: 'clarification_needed',
+                        parameters: {
+                            clarificationType: 'workspace_name'
+                        },
+                        message: '어떤 워크스페이스에서 활동할지 알려주세요. 예: "프로젝트A 워크스페이스에서 작업할게"'
+                    };
+                }
+            }
+        }
+
         // 도움 요청 패턴
         const helpPatterns = [
             /^(도움|help|도와줘|도와줘요|도움말|설명서|가이드|사용법|어떻게\s+써|어떻게\s+해|뭐\s+어때)$/i,
@@ -916,6 +948,8 @@ function getHelpMessage(): string {
 🏢 **워크스페이스 관리**
 - "[이름] 워크스페이스 만들어줘"
 - "[이름] 워크스페이스 생성해줘"
+- "[이름] 워크스페이스에서 작업할게"
+- "[이름] 워크스페이스로 지정해줘"
 
 👥 **팀 관리**
 - "[이름] 팀 만들어줘"
