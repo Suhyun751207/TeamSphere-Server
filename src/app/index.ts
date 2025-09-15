@@ -42,6 +42,10 @@ app.get('/favicon.ico', (req, res) => {
     res.status(204).end();
 });
 
+app.get('/', (req, res) => {
+    res.status(204).end();
+});
+
 // Swagger 설정
 setupSwagger(app);
 
