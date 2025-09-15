@@ -565,20 +565,173 @@ const options: swaggerJSDoc.Options = {
           }
         }
       },
-      '/v1/user/attendance': {
+      '/v1/user/profile': {
         get: {
-          tags: ['Attendance'],
-          summary: '현재 사용자 출석 기록 조회',
-          description: '현재 사용자의 출석 기록을 조회합니다',
+          tags: ['Profile'],
+          summary: '모든 사용자 프로필 조회',
+          description: '모든 사용자의 프로필 정보를 조회합니다',
           security: [{ bearerAuth: [] }, { cookieAuth: [] }],
           responses: {
             200: {
-              description: '출석 기록 조회 성공',
+              description: '프로필 목록 조회 성공',
               content: {
                 'application/json': {
                   schema: {
                     type: 'array',
-                    items: { $ref: '#/components/schemas/AttendanceRecord' }
+                    items: { $ref: '#/components/schemas/Profile' }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      '/v1/user/rooms': {
+        get: {
+          tags: ['DM Messages'],
+          summary: '사용자 DM 룸 목록 조회',
+          description: '사용자의 DM 룸 목록을 조회합니다',
+          security: [{ bearerAuth: [] }, { cookieAuth: [] }],
+          responses: {
+            200: {
+              description: 'DM 룸 목록 조회 성공',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      properties: {
+                        id: { type: 'integer' },
+                        roomId: { type: 'integer' },
+                        userId: { type: 'integer' },
+                        room: { $ref: '#/components/schemas/Room' }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      '/v1/workspace/{workspaceId}': {
+        get: {
+          tags: ['Workspace'],
+          summary: '워크스페이스 상세 정보 조회',
+          description: '특정 워크스페이스의 상세 정보를 조회합니다',
+          security: [{ bearerAuth: [] }, { cookieAuth: [] }],
+          parameters: [
+            {
+              in: 'path',
+              name: 'workspaceId',
+              required: true,
+              schema: { type: 'integer' },
+              description: '워크스페이스 ID'
+            }
+          ],
+          responses: {
+            200: {
+              description: '워크스페이스 상세 정보',
+              content: {
+                'application/json': {
+                  schema: { $ref: '#/components/schemas/Workspace' }
+                }
+              }
+            }
+          }
+        }
+      },
+      '/v1/workspace/{workspaceId}/members': {
+        get: {
+          tags: ['Members'],
+          summary: '워크스페이스 멤버 목록 조회',
+          description: '특정 워크스페이스의 멤버 목록을 조회합니다',
+          security: [{ bearerAuth: [] }, { cookieAuth: [] }],
+          parameters: [
+            {
+              in: 'path',
+              name: 'workspaceId',
+              required: true,
+              schema: { type: 'integer' },
+              description: '워크스페이스 ID'
+            }
+          ],
+          responses: {
+            200: {
+              description: '멤버 목록 조회 성공',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'array',
+                    items: { $ref: '#/components/schemas/WorkspaceMember' }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      '/v1/workspace/{workspaceId}/Teams': {
+        get: {
+          tags: ['Teams'],
+          summary: '워크스페이스 팀 목록 조회',
+          description: '특정 워크스페이스의 모든 팀 목록을 조회합니다',
+          security: [{ bearerAuth: [] }, { cookieAuth: [] }],
+          parameters: [
+            {
+              in: 'path',
+              name: 'workspaceId',
+              required: true,
+              schema: { type: 'integer' },
+              description: '워크스페이스 ID'
+            }
+          ],
+          responses: {
+            200: {
+              description: '팀 목록 조회 성공',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'array',
+                    items: { $ref: '#/components/schemas/Team' }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      '/v1/workspace/{workspaceId}/Teams/{teamId}/tasks': {
+        get: {
+          tags: ['Tasks'],
+          summary: '팀 작업 목록 조회',
+          description: '특정 팀의 모든 작업 목록을 조회합니다',
+          security: [{ bearerAuth: [] }, { cookieAuth: [] }],
+          parameters: [
+            {
+              in: 'path',
+              name: 'workspaceId',
+              required: true,
+              schema: { type: 'integer' },
+              description: '워크스페이스 ID'
+            },
+            {
+              in: 'path',
+              name: 'teamId',
+              required: true,
+              schema: { type: 'integer' },
+              description: '팀 ID'
+            }
+          ],
+          responses: {
+            200: {
+              description: '작업 목록 조회 성공',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'array',
+                    items: { $ref: '#/components/schemas/Task' }
                   }
                 }
               }
@@ -586,20 +739,82 @@ const options: swaggerJSDoc.Options = {
           }
         },
         post: {
-          tags: ['Attendance'],
-          summary: '출석 기록 생성',
-          description: '새로운 출석 기록을 생성합니다',
+          tags: ['Tasks'],
+          summary: '팀 작업 생성',
+          description: '특정 팀에 새로운 작업을 생성합니다',
           security: [{ bearerAuth: [] }, { cookieAuth: [] }],
+          parameters: [
+            {
+              in: 'path',
+              name: 'workspaceId',
+              required: true,
+              schema: { type: 'integer' },
+              description: '워크스페이스 ID'
+            },
+            {
+              in: 'path',
+              name: 'teamId',
+              required: true,
+              schema: { type: 'integer' },
+              description: '팀 ID'
+            }
+          ],
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  required: ['teamMemberId', 'state', 'priority'],
+                  properties: {
+                    teamMemberId: { type: 'integer' },
+                    state: { type: 'string', enum: ['TODO', 'IN_PROGRESS', 'DONE', 'CANCELLED'] },
+                    priority: { type: 'string', enum: ['LOW', 'MEDIUM', 'HIGH', 'URGENT'] },
+                    task: { type: 'string' }
+                  }
+                }
+              }
+            }
+          },
           responses: {
             200: {
-              description: '출석 기록 생성 성공',
+              description: '작업 생성 성공',
+              content: {
+                'application/json': {
+                  schema: { $ref: '#/components/schemas/Task' }
+                }
+              }
+            }
+          }
+        }
+      },
+      '/v1/workspace/{workspaceId}/message': {
+        get: {
+          tags: ['Messages'],
+          summary: '워크스페이스 내 모든 룸 조회',
+          description: '특정 워크스페이스 내의 모든 룸을 조회합니다',
+          security: [{ bearerAuth: [] }, { cookieAuth: [] }],
+          parameters: [
+            {
+              in: 'path',
+              name: 'workspaceId',
+              required: true,
+              schema: { type: 'integer' },
+              description: '워크스페이스 ID'
+            }
+          ],
+          responses: {
+            200: {
+              description: '룸 목록 조회 성공',
               content: {
                 'application/json': {
                   schema: {
-                    type: 'object',
-                    properties: {
-                      message: { type: 'string', example: '출석 기록이 생성되었습니다.' },
-                      user: { $ref: '#/components/schemas/AttendanceRecord' }
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      properties: {
+                        room: { $ref: '#/components/schemas/Room' }
+                      }
                     }
                   }
                 }
@@ -619,42 +834,6 @@ const options: swaggerJSDoc.Options = {
           }
         }
       },
-      '/v1/user/profile': {
-        get: {
-          tags: ['Profile'],
-          summary: '모든 사용자 프로필 조회',
-          security: [{ bearerAuth: [] }],
-          responses: {
-            200: { description: '프로필 목록 조회 성공', content: { 'application/json': { schema: { type: 'object', properties: { user: { type: 'array', items: { $ref: '#/components/schemas/User' } }, profile: { type: 'array', items: { $ref: '#/components/schemas/Profile' } } } } } } }
-          }
-        },
-        post: {
-          tags: ['Profile'],
-          summary: '새 프로필 생성',
-          security: [{ bearerAuth: [] }],
-          requestBody: {
-            required: true,
-            content: {
-              'application/json': {
-                schema: {
-                  type: 'object',
-                  required: ['name', 'age', 'gender', 'phone'],
-                  properties: {
-                    name: { type: 'string' },
-                    age: { type: 'integer' },
-                    gender: { type: 'string', enum: ['Male', 'Female', 'Other'] },
-                    phone: { type: 'string' },
-                    imagePath: { type: 'string' }
-                  }
-                }
-              }
-            }
-          },
-          responses: {
-            200: { description: '프로필 생성 성공', content: { 'application/json': { schema: { $ref: '#/components/schemas/Profile' } } } }
-          }
-        }
-      },
       '/v1/user/profile/me': {
         get: {
           tags: ['Profile'],
@@ -662,66 +841,6 @@ const options: swaggerJSDoc.Options = {
           security: [{ bearerAuth: [] }],
           responses: {
             200: { description: '사용자 프로필 조회 성공', content: { 'application/json': { schema: { type: 'object', properties: { user: { $ref: '#/components/schemas/User' }, profile: { $ref: '#/components/schemas/Profile' } } } } } }
-          }
-        }
-      },
-      '/v1/user/rooms': {
-        get: {
-          tags: ['DM Messages'],
-          summary: '사용자 DM 룸 목록 조회',
-          security: [{ bearerAuth: [] }],
-          responses: {
-            200: { description: 'DM 룸 목록 조회 성공', content: { 'application/json': { schema: { type: 'array', items: { type: 'object' } } } } }
-          }
-        },
-        post: {
-          tags: ['DM Messages'],
-          summary: '새 DM 룸 생성',
-          security: [{ bearerAuth: [] }],
-          responses: {
-            201: { description: 'DM 룸 생성 성공', content: { 'application/json': { schema: { type: 'object' } } } }
-          }
-        }
-      },
-      '/v1/workspace/{workspaceId}': {
-        get: {
-          tags: ['Workspace'],
-          summary: '워크스페이스 상세 정보 조회',
-          security: [{ bearerAuth: [] }],
-          parameters: [{ name: 'workspaceId', in: 'path', required: true, schema: { type: 'integer' } }],
-          responses: {
-            200: { description: '워크스페이스 정보 조회 성공', content: { 'application/json': { schema: { type: 'object', properties: { workspace: { $ref: '#/components/schemas/Workspace' }, workspaceMember: { type: 'array', items: { type: 'object' } } } } } } }
-          }
-        },
-        patch: {
-          tags: ['Workspace'],
-          summary: '워크스페이스 정보 수정',
-          security: [{ bearerAuth: [] }],
-          parameters: [{ name: 'workspaceId', in: 'path', required: true, schema: { type: 'integer' } }],
-          requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', properties: { name: { type: 'string' }, description: { type: 'string' } } } } } },
-          responses: {
-            200: { description: '워크스페이스 수정 성공', content: { 'application/json': { schema: { $ref: '#/components/schemas/Workspace' } } } }
-          }
-        }
-      },
-      '/v1/workspace/{workspaceId}/members': {
-        get: {
-          tags: ['Members'],
-          summary: '워크스페이스 멤버 목록 조회',
-          security: [{ bearerAuth: [] }],
-          parameters: [{ name: 'workspaceId', in: 'path', required: true, schema: { type: 'integer' } }],
-          responses: {
-            200: { description: '멤버 목록 조회 성공', content: { 'application/json': { schema: { type: 'array', items: { type: 'object' } } } } }
-          }
-        },
-        post: {
-          tags: ['Members'],
-          summary: '워크스페이스에 새 멤버 추가',
-          security: [{ bearerAuth: [] }],
-          parameters: [{ name: 'workspaceId', in: 'path', required: true, schema: { type: 'integer' } }],
-          requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', required: ['userId', 'role'], properties: { userId: { type: 'integer' }, role: { type: 'string', enum: ['Admin', 'Manager', 'Member', 'Viewer'] } } } } } },
-          responses: {
-            201: { description: '멤버 추가 성공', content: { 'application/json': { schema: { type: 'object' } } } }
           }
         }
       },
@@ -876,27 +995,6 @@ const options: swaggerJSDoc.Options = {
           requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', required: ['content'], properties: { content: { type: 'string' }, parent_id: { type: 'integer' } } } } } },
           responses: {
             200: { description: '댓글 생성 성공', content: { 'application/json': { schema: { $ref: '#/components/schemas/MongoComment' } } } }
-          }
-        }
-      },
-      '/v1/workspace/{workspaceId}/message': {
-        get: {
-          tags: ['Messages'],
-          summary: '워크스페이스 내 모든 룸 조회',
-          security: [{ bearerAuth: [] }],
-          parameters: [{ name: 'workspaceId', in: 'path', required: true, schema: { type: 'integer' } }],
-          responses: {
-            200: { description: '룸 목록 조회 성공', content: { 'application/json': { schema: { type: 'array', items: { type: 'object' } } } } }
-          }
-        },
-        post: {
-          tags: ['Messages'],
-          summary: '워크스페이스 룸 생성',
-          security: [{ bearerAuth: [] }],
-          parameters: [{ name: 'workspaceId', in: 'path', required: true, schema: { type: 'integer' } }],
-          requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', properties: { title: { type: 'string' } } } } } },
-          responses: {
-            201: { description: '룸 생성 성공', content: { 'application/json': { schema: { type: 'object' } } } }
           }
         }
       },
