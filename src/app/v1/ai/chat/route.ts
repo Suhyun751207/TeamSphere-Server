@@ -81,9 +81,6 @@ chatRouter.post('/', async (req: Request, res: Response) => {
           
           workspaceIdForLog = workspaceResult.insertId;
           
-          // 활동 로그 기록
-          await logActivity(workspaceResult.insertId, '워크스페이스 생성', `${workspaceData.name} 워크스페이스 생성`);
-          
           result = { 
             status: 'success', 
             action: 'create_workspace',
@@ -152,9 +149,6 @@ chatRouter.post('/', async (req: Request, res: Response) => {
           const teamMemberResult = await workspaceTeamUsersService.create(teamMemberData);
           
           workspaceIdForLog = workspaceId;
-          
-          // 활동 로그 기록
-          await logActivity(workspaceId, '팀 생성', `${teamName} 팀 생성`);
           
           result = { 
             status: 'success', 
@@ -257,9 +251,6 @@ chatRouter.post('/', async (req: Request, res: Response) => {
           const taskResult = await tasksService.create(taskData);
           
           workspaceIdForLog = workspaceId;
-          
-          // 활동 로그 기록
-          await logActivity(workspaceId, '작업 생성', `${taskTitle} 작업 생성`);
           
           result = { 
             status: 'success', 
@@ -630,9 +621,6 @@ chatRouter.post('/', async (req: Request, res: Response) => {
             data: { workspaceId: targetWorkspace.id, workspaceName: targetWorkspace.name }
           };
           
-          // 워크스페이스 지정 자체도 활동로그에 기록
-          await logActivity(targetWorkspace.id, '워크스페이스 지정', `${targetWorkspace.name} 워크스페이스로 활동 공간 지정`);
-          
         } catch (error) {
           console.error('워크스페이스 지정 오류:', error);
           result = { status: 'error', message: '워크스페이스 지정 중 오류가 발생했습니다.' };
@@ -640,13 +628,8 @@ chatRouter.post('/', async (req: Request, res: Response) => {
         break;
     }
 
-    // 최종 응답 전에 활동 로그 기록 (성공/실패 관계없이)
-    // 출석체크는 활동로그 기록 건너뛰기
-    // 사용자가 명시적으로 워크스페이스를 지정한 경우에만 활동로그 기록
-    if (!skipActivityLog && workspaceIdForLog > 0) {
-      logActivity(workspaceIdForLog, 'AI 챗봇 요청', `메시지: "${message}"`);
-    }
-    // 워크스페이스를 지정하지 않은 경우에는 활동로그를 기록하지 않음
+    // 활동 로그는 사용자가 명시적으로 요청할 때만 생성됨
+    // 다른 모든 AI 챗봇 요청에 대해서는 활동로그를 기록하지 않음
 
     res.json({
       success: true,
