@@ -7,6 +7,7 @@ import authService from "@services/Auth";
 import ProfileRouter from "./profile/route";
 import roomsRouter from "./rooms/route";
 import attendanceRouter from "./attendance/route";
+import { generateToken } from "@utils/jwt";
 
 const userRouter = Router({ mergeParams: true });
 
@@ -19,6 +20,12 @@ userRouter.get('/', authenticateToken, catchAsyncErrors(async (req, res) => {
     const user = await userService.read(userId!);
     return res.status(200).json(user);
 }));
+
+userRouter.get('/token', authenticateToken, catchAsyncErrors(async (req, res) => {
+    const userId = req.user?.userId;
+    return res.status(200).json({ token: generateToken({ userId, email: req.user?.email }) });
+}));
+
 
 // 로그인 상태에서 비밀번호 변경
 userRouter.patch('/', authenticateToken, catchAsyncErrors(async (req, res) => {
