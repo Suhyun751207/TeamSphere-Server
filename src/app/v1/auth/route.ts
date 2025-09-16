@@ -22,16 +22,12 @@ const authRouter = Router({ mergeParams: true });
  *             type: object
  *             required:
  *               - email
- *               - username
  *               - password
  *             properties:
  *               email:
  *                 type: string
  *                 format: email
  *                 example: user@example.com
- *               username:
- *                 type: string
- *                 example: johndoe
  *               password:
  *                 type: string
  *                 minLength: 6

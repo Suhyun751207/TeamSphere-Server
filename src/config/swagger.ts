@@ -356,10 +356,9 @@ const options: swaggerJSDoc.Options = {
               'application/json': {
                 schema: {
                   type: 'object',
-                  required: ['email', 'username', 'password'],
+                  required: ['email', 'password'],
                   properties: {
                     email: { type: 'string', format: 'email' },
-                    username: { type: 'string' },
                     password: { type: 'string', minLength: 6 }
                   }
                 }
