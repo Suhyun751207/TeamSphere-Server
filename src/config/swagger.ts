@@ -26,6 +26,7 @@ const options: swaggerJSDoc.Options = {
       { name: 'User', description: '사용자 관리 API' },
       { name: 'Profile', description: '프로필 관리 API' },
       { name: 'Attendance', description: '출석 관리 API' },
+      { name: 'AI Chat', description: 'AI 챗봇 API' },
       { name: 'DM Messages', description: 'DM 메시징 API' },
       { name: 'Workspace', description: '워크스페이스 관리 API' },
       { name: 'Members', description: '워크스페이스 멤버 관리 API' },
@@ -258,6 +259,65 @@ const options: swaggerJSDoc.Options = {
             date: { type: 'string', format: 'date' },
             createdAt: { type: 'string', format: 'date-time' },
             updatedAt: { type: 'string', format: 'date-time' }
+          }
+        },
+        AIChatRequest: {
+          type: 'object',
+          required: ['message'],
+          properties: {
+            message: {
+              type: 'string',
+              description: 'AI 챗봇에게 보낼 메시지',
+              example: '프로젝트A 워크스페이스 만들어줘'
+            }
+          }
+        },
+        AIChatResponse: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean', example: true },
+            data: {
+              type: 'object',
+              properties: {
+                aiResponse: {
+                  type: 'object',
+                  properties: {
+                    action: { type: 'string', example: 'create_workspace' },
+                    message: { type: 'string', example: '프로젝트A 워크스페이스를 생성하겠습니다.' },
+                    parameters: {
+                      type: 'object',
+                      properties: {
+                        workspaceName: { type: 'string', example: '프로젝트A' }
+                      }
+                    }
+                  }
+                },
+                result: {
+                  type: 'object',
+                  properties: {
+                    status: { type: 'string', example: 'success' },
+                    action: { type: 'string', example: 'create_workspace' },
+                    workspace: {
+                      type: 'object',
+                      properties: {
+                        id: { type: 'integer', example: 1 },
+                        name: { type: 'string', example: '프로젝트A' }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        TokenResponse: {
+          type: 'object',
+          properties: {
+            token: {
+              type: 'string',
+              description: 'JWT 액세스 토큰',
+              example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+            }
           }
         }
       }

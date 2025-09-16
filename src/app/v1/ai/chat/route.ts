@@ -17,6 +17,48 @@ const chatRouter = Router();
 // 인증 미들웨어 적용
 chatRouter.use(authenticateToken);
 
+/**
+ * @swagger
+ * /v1/ai/chat:
+ *   post:
+ *     tags: [AI Chat]
+ *     summary: AI 챗봇 메시지 처리
+ *     description: 사용자의 자연어 메시지를 분석하여 워크스페이스, 팀, 작업 등을 생성하거나 관리합니다.
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/AIChatRequest'
+ *     responses:
+ *       200:
+ *         description: 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/AIChatResponse'
+ *       400:
+ *         description: 잘못된 요청
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: 인증 실패
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: 서버 오류
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 // 챗봇 메시지 처리
 chatRouter.post('/', async (req: Request, res: Response) => {
   try {

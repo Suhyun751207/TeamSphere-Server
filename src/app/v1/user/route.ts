@@ -21,6 +21,30 @@ userRouter.get('/', authenticateToken, catchAsyncErrors(async (req, res) => {
     return res.status(200).json(user);
 }));
 
+/**
+ * @swagger
+ * /v1/user/token:
+ *   get:
+ *     tags: [User]
+ *     summary: JWT 토큰 재발급
+ *     description: 로그인된 사용자의 JWT 액세스 토큰을 재발급합니다.
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     responses:
+ *       200:
+ *         description: 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/TokenResponse'
+ *       401:
+ *         description: 인증 실패
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 userRouter.get('/token', authenticateToken, catchAsyncErrors(async (req, res) => {
     const userId = req.user?.userId;
     return res.status(200).json({ token: generateToken({ userId, email: req.user?.email }) });
