@@ -9,6 +9,7 @@ import { initializeSocket } from "../config/socket";
 import { setupSwagger } from "../config/swagger";
 import route from "./route";
 import path from "path";
+import { TspecDocsMiddleware } from "tspec";
 
 dotenv.config();
 
@@ -53,6 +54,7 @@ app.use("/", route);
 
 (async () => {
     await connectDB();
+    app.use("/docs", TspecDocsMiddleware);
 
     initializeSocket(server);
 
